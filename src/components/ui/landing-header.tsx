@@ -56,19 +56,19 @@ export function LandingHeader({ isLoggedIn = false }: LandingHeaderProps) {
           </button>
         </div>
 
-        {/* Centro: logo */}
+        {/* Centro: logo solo, sin borde ni fondo */}
         <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-shrink-0">
           <a
             href="/"
-            className="relative flex h-20 w-20 items-center justify-center transition hover:opacity-90 sm:h-24 sm:w-24"
+            className="block h-14 w-14 transition hover:opacity-90 sm:h-16 sm:w-16"
             aria-label="Fuente Palmera Pádel - Inicio"
           >
             <Image
               src="/logo.png"
               alt="Fuente Palmera Pádel"
-              width={256}
-              height={256}
-              className="size-full object-contain"
+              width={64}
+              height={64}
+              className="h-full w-full object-contain object-center"
               unoptimized
               priority
             />
