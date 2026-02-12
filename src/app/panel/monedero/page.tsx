@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { revalidatePath } from 'next/cache';
 import { getCachedAuth } from '@/lib/auth-server';
 import { AdminPageHeader } from '@/components/ui/admin-page-header';
 import { WalletRechargeButton } from '@/components/ui/wallet-recharge-button';
@@ -24,12 +23,6 @@ export default async function PanelMonederoPage({ searchParams }: PageProps) {
 
   if (!user) return null;
 
-  // Tras volver de Stripe con éxito, revalidar para que al refrescar o volver se vea el saldo actualizado
-  if (params?.success === '1') {
-    revalidatePath('/panel/monedero');
-    revalidatePath('/panel');
-  }
-
   const balance = profile?.wallet_balance ?? 0;
 
   const { data: transactions } = await supabase
@@ -43,7 +36,7 @@ export default async function PanelMonederoPage({ searchParams }: PageProps) {
     <div className="space-y-8">
       {params?.success === '1' && (
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">
-          Pago completado. El saldo se actualizará en unos segundos.
+          Pago completado. Si no ves el saldo actualizado, refresca la página.
         </div>
       )}
       {params?.cancel === '1' && (
