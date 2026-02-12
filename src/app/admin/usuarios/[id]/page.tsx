@@ -20,7 +20,7 @@ export default async function AdminUsuarioPage({ params }: PageProps) {
     return (
       <div className="space-y-4">
         <p className="font-medium text-stone-600">Usuario no encontrado.</p>
-        <Link href="/admin/usuarios" className="font-bold text-[#B5235D] hover:underline">
+        <Link href="/admin/usuarios" className="font-bold text-[#1d4ed8] hover:underline">
           Volver a Usuarios
         </Link>
       </div>

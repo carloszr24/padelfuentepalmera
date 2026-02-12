@@ -20,7 +20,7 @@ html {
   outline: none;
 }
 :focus-visible {
-  outline: 2px solid #B5235D;
+  outline: 2px solid #1d4ed8;
   outline-offset: 2px;
 }
 
@@ -28,6 +28,30 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Entrada suave del hero: solo CSS, respeta prefers-reduced-motion */
+@keyframes hero-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-entrance {
+  animation: hero-fade-in 0.6s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-entrance {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @layer utilities {

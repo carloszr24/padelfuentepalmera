@@ -52,7 +52,7 @@ export default async function AdminUsuariosPage({
                 name="q"
                 defaultValue={q}
                 placeholder="Buscar por nombre, email..."
-                className="w-full min-w-[200px] rounded-xl border border-stone-300 bg-white py-2.5 pl-9 pr-4 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#B5235D] focus:ring-1 focus:ring-[#B5235D]"
+                className="w-full min-w-[200px] rounded-xl border border-stone-300 bg-white py-2.5 pl-9 pr-4 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#1d4ed8] focus:ring-1 focus:ring-[#1d4ed8]"
               />
             </div>
             <button
@@ -109,7 +109,7 @@ export default async function AdminUsuariosPage({
                 <div className="flex flex-wrap items-center gap-2">
                   <Link
                     href={`/admin/usuarios/${p.id}`}
-                    className="rounded-lg border border-[#B5235D]/50 bg-[#B5235D]/10 px-3 py-1.5 text-xs font-bold text-[#B5235D] transition hover:bg-[#B5235D]/20"
+                    className="rounded-lg border border-[#1d4ed8]/50 bg-[#1d4ed8]/10 px-3 py-1.5 text-xs font-bold text-[#1d4ed8] transition hover:bg-[#1d4ed8]/20"
                   >
                     Ver perfil
                   </Link>

@@ -72,11 +72,13 @@ export default async function AdminHorariosBloqueadosPage() {
                   start_time: string;
                   end_time: string;
                   reason: string | null;
-                  courts: { name: string } | null;
-                }) => (
+                  courts: { name: string } | { name: string }[] | null;
+                }) => {
+                  const courtName = Array.isArray(b.courts) ? b.courts[0]?.name : b.courts?.name;
+                  return (
                   <tr key={b.id} className="border-b border-stone-100 transition hover:bg-stone-50">
                     <td className="px-4 py-3.5 align-middle font-bold text-stone-900">
-                      {b.courts?.name ?? b.court_id.slice(0, 8)}
+                      {courtName ?? b.court_id.slice(0, 8)}
                     </td>
                     <td className="px-4 py-3.5 align-middle font-medium text-stone-800">
                       {new Date(b.blocked_date).toLocaleDateString('es-ES', {
@@ -93,13 +95,14 @@ export default async function AdminHorariosBloqueadosPage() {
                       <AdminDeleteBlockButton blockId={b.id} />
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>
         )}
         <p className="mt-4">
-          <Link href="/admin/pistas" className="text-sm font-bold text-[#B5235D] hover:underline">
+          <Link href="/admin/pistas" className="text-sm font-bold text-[#1d4ed8] hover:underline">
             ← Volver a Pistas
           </Link>
         </p>

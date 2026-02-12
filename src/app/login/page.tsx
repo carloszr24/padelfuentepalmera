@@ -23,7 +23,7 @@ export default async function LoginPage() {
       <div className="mx-auto flex min-h-screen max-w-6xl items-center justify-center px-4 md:px-6 lg:px-8">
         <div className="grid w-full gap-10 rounded-3xl border border-stone-200 bg-white p-6 shadow-xl shadow-stone-200/80 md:grid-cols-[1.1fr,1fr] md:p-10">
           <div className="space-y-4">
-            <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#B5235D]">
+            <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#1d4ed8]">
               Fuente Palmera Padel Club
             </p>
             <h1 className="text-2xl font-bold tracking-tight text-stone-900 md:text-3xl">
@@ -43,7 +43,7 @@ export default async function LoginPage() {
               </p>
               <Link
                 href="/registro"
-                className="mt-3 inline-flex text-xs font-bold text-[#B5235D] hover:text-[#9a1e4d]"
+                className="mt-3 inline-flex text-xs font-bold text-[#1d4ed8] hover:text-[#1e40af]"
               >
                 Ir al registro →
               </Link>

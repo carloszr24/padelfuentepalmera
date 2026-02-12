@@ -53,7 +53,7 @@ export function AuthLoginForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#B5235D] focus:ring-2 focus:ring-[#B5235D]/20"
+          className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
           placeholder="tu@email.com"
         />
       </div>
@@ -72,7 +72,7 @@ export function AuthLoginForm() {
           onChange={(e) => setPassword(e.target.value)}
           required
           minLength={6}
-          className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#B5235D] focus:ring-2 focus:ring-[#B5235D]/20"
+          className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
           placeholder="••••••••"
         />
       </div>
@@ -84,7 +84,7 @@ export function AuthLoginForm() {
       <button
         type="submit"
         disabled={loading}
-        className="mt-2 w-full rounded-full bg-[#B5235D] px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-[#B5235D]/30 hover:bg-[#cf2a6c] disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-2 w-full rounded-full bg-[#1d4ed8] px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-[#1d4ed8]/30 hover:bg-[#2563eb] disabled:cursor-not-allowed disabled:opacity-60"
       >
         {loading ? 'Entrando...' : 'Iniciar sesión'}
       </button>

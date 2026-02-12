@@ -129,7 +129,7 @@ export function AdminWalletRechargeButton({
                     value={amount === '' ? '' : String(amount)}
                     onChange={handleChange}
                     placeholder={mode === 'add' ? 'Ej. 15' : 'Ej. 5'}
-                    className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#B5235D] focus:ring-2 focus:ring-[#B5235D]/20"
+                    className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
                   />
                   <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs font-medium text-stone-500">
                     EUR

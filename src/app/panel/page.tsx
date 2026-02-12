@@ -36,14 +36,14 @@ export default async function PanelPage() {
         <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm transition hover:border-stone-300 hover:bg-white">
           <p className="text-xs font-bold uppercase tracking-wider text-stone-500">Saldo monedero</p>
           <p className="mt-3 text-2xl font-bold text-stone-900">{Number(balance).toFixed(2)} €</p>
-          <Link href="/panel/monedero" className="mt-2 inline-block text-xs font-bold text-[#B5235D] hover:text-[#9a1e4d]">
+          <Link href="/panel/monedero" className="mt-2 inline-block text-xs font-bold text-[#1d4ed8] hover:text-[#1e40af]">
             Recargar →
           </Link>
         </div>
         <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm transition hover:border-stone-300 hover:bg-white">
           <p className="text-xs font-bold uppercase tracking-wider text-stone-500">Mis reservas</p>
           <p className="mt-3 text-2xl font-bold text-stone-900">{bookings?.length ?? 0}</p>
-          <Link href="/panel/reservas" className="mt-2 inline-block text-xs font-bold text-[#B5235D] hover:text-[#9a1e4d]">
+          <Link href="/panel/reservas" className="mt-2 inline-block text-xs font-bold text-[#1d4ed8] hover:text-[#1e40af]">
             Ver todas →
           </Link>
         </div>

@@ -11,7 +11,7 @@ export function WalletRechargeButton() {
         type="button"
         onClick={() => setOpen(true)}
         className="rounded-full px-5 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90"
-        style={{ backgroundColor: '#B5235D' }}
+        style={{ backgroundColor: '#1d4ed8' }}
       >
         Recargar monedero
       </button>

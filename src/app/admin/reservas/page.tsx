@@ -62,7 +62,7 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
               name="desde"
               type="date"
               defaultValue={desde ?? ''}
-              className="rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none focus:border-[#B5235D] focus:ring-1 focus:ring-[#B5235D]"
+              className="rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none focus:border-[#1d4ed8] focus:ring-1 focus:ring-[#1d4ed8]"
             />
           </div>
           <div className="flex items-center gap-2">
@@ -72,7 +72,7 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
               name="hasta"
               type="date"
               defaultValue={hasta ?? ''}
-              className="rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none focus:border-[#B5235D] focus:ring-1 focus:ring-[#B5235D]"
+              className="rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none focus:border-[#1d4ed8] focus:ring-1 focus:ring-[#1d4ed8]"
             />
           </div>
           <button

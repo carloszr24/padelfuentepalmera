@@ -15,7 +15,7 @@ const SLOT_STARTS = [
   '20:00',
 ];
 
-const ACCENT = '#B5235D'; // rosa del proyecto
+const ACCENT = '#1d4ed8'; // azul del club
 
 function slotEnd(start: string): string {
   const [h, m] = start.split(':').map(Number);
@@ -138,7 +138,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva' }: Booking
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="rounded-full bg-[#B5235D] px-4 py-2 text-sm font-bold text-white shadow-lg shadow-[#B5235D]/30 transition hover:scale-[1.02] hover:bg-[#cf2a6c] active:scale-[0.98]"
+        className="rounded-full bg-[#1d4ed8] px-4 py-2 text-sm font-bold text-white shadow-lg shadow-[#1d4ed8]/30 transition hover:scale-[1.02] hover:bg-[#2563eb] active:scale-[0.98]"
       >
         {triggerLabel}
       </button>
@@ -198,7 +198,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva' }: Booking
                               key={d.date}
                               type="button"
                               onClick={() => setDate(d.date)}
-                              className={`flex min-w-[5.5rem] flex-shrink-0 flex-col items-center rounded-xl border px-4 py-3.5 text-center font-bold transition ${date === d.date ? 'border-[#B5235D] bg-[#B5235D]/15 text-[#B5235D]' : 'border-stone-300 bg-stone-50 text-stone-700 hover:bg-stone-100'}`}
+                              className={`flex min-w-[5.5rem] flex-shrink-0 flex-col items-center rounded-xl border px-4 py-3.5 text-center font-bold transition ${date === d.date ? 'border-[#1d4ed8] bg-[#1d4ed8]/15 text-[#1d4ed8]' : 'border-stone-300 bg-stone-50 text-stone-700 hover:bg-stone-100'}`}
                             >
                               <span className="text-xs font-semibold">{d.dayShort}</span>
                               <span className="mt-1 text-xl font-bold">{d.date.slice(8, 10)}</span>
@@ -218,7 +218,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva' }: Booking
                               key={String(c.id)}
                               type="button"
                               onClick={() => setCourtId(String(c.id))}
-                              className={`rounded-xl border px-6 py-3 text-base font-bold transition ${courtId === String(c.id) ? 'border-[#B5235D] bg-[#B5235D] text-white' : 'border-stone-300 bg-stone-50 text-stone-700 hover:bg-stone-100'}`}
+                              className={`rounded-xl border px-6 py-3 text-base font-bold transition ${courtId === String(c.id) ? 'border-[#1d4ed8] bg-[#1d4ed8] text-white' : 'border-stone-300 bg-stone-50 text-stone-700 hover:bg-stone-100'}`}
                             >
                               {c.name}
                             </button>
@@ -239,7 +239,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva' }: Booking
                           type="button"
                           onClick={showSlots}
                           disabled={!courtId || !date || loadingSlots}
-                          className={`rounded-xl px-6 py-3 text-base font-bold text-white transition disabled:opacity-50 disabled:pointer-events-none ${date && courtId ? 'bg-[#B5235D] hover:bg-[#cf2a6c]' : 'bg-stone-300'}`}
+                          className={`rounded-xl px-6 py-3 text-base font-bold text-white transition disabled:opacity-50 disabled:pointer-events-none ${date && courtId ? 'bg-[#1d4ed8] hover:bg-[#2563eb]' : 'bg-stone-300'}`}
                         >
                           Ver horarios disponibles
                         </button>
@@ -273,7 +273,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva' }: Booking
                           key={slot}
                           type="button"
                           onClick={() => setSelectedSlot(slot)}
-                          className={`flex flex-col items-center justify-center rounded-xl border py-5 font-bold transition ${selectedSlot === slot ? 'border-[#B5235D] bg-[#B5235D] text-white' : 'border-stone-300 bg-stone-50 text-stone-700 hover:bg-stone-100'}`}
+                          className={`flex flex-col items-center justify-center rounded-xl border py-5 font-bold transition ${selectedSlot === slot ? 'border-[#1d4ed8] bg-[#1d4ed8] text-white' : 'border-stone-300 bg-stone-50 text-stone-700 hover:bg-stone-100'}`}
                         >
                           <span className="text-xl font-bold">{slot}</span>
                           <span className="mt-1.5 text-xs font-medium opacity-90">
@@ -296,7 +296,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva' }: Booking
                       type="button"
                       onClick={() => selectedSlot && setStep('confirm')}
                       disabled={!selectedSlot}
-                      className={`ml-auto rounded-xl px-6 py-3 text-base font-bold text-white transition disabled:opacity-50 disabled:pointer-events-none ${selectedSlot ? 'bg-[#B5235D] hover:bg-[#cf2a6c]' : 'bg-stone-300'}`}
+                      className={`ml-auto rounded-xl px-6 py-3 text-base font-bold text-white transition disabled:opacity-50 disabled:pointer-events-none ${selectedSlot ? 'bg-[#1d4ed8] hover:bg-[#2563eb]' : 'bg-stone-300'}`}
                     >
                       Siguiente
                     </button>
@@ -335,7 +335,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva' }: Booking
                     <button
                       type="submit"
                       disabled={loading}
-                      className="ml-auto rounded-xl bg-[#B5235D] px-6 py-3 text-base font-bold text-white shadow-lg shadow-[#B5235D]/30 hover:bg-[#cf2a6c] disabled:opacity-60"
+                      className="ml-auto rounded-xl bg-[#1d4ed8] px-6 py-3 text-base font-bold text-white shadow-lg shadow-[#1d4ed8]/30 hover:bg-[#2563eb] disabled:opacity-60"
                     >
                       {loading ? 'Creando...' : 'Confirmar reserva'}
                     </button>

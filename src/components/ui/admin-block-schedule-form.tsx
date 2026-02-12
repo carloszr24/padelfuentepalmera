@@ -77,7 +77,7 @@ export function AdminBlockScheduleForm({ courts }: Props) {
           id="court"
           value={courtId}
           onChange={(e) => setCourtId(e.target.value)}
-          className="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none focus:border-[#B5235D] focus:ring-1 focus:ring-[#B5235D]"
+          className="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none focus:border-[#1d4ed8] focus:ring-1 focus:ring-[#1d4ed8]"
           required
         >
           <option value="">— Elegir —</option>
@@ -94,7 +94,7 @@ export function AdminBlockScheduleForm({ courts }: Props) {
           value={blockedDate}
           onChange={(e) => setBlockedDate(e.target.value)}
           min={today}
-          className="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none focus:border-[#B5235D] focus:ring-1 focus:ring-[#B5235D]"
+          className="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none focus:border-[#1d4ed8] focus:ring-1 focus:ring-[#1d4ed8]"
           required
         />
       </div>
@@ -104,7 +104,7 @@ export function AdminBlockScheduleForm({ courts }: Props) {
           id="slot"
           value={SLOT_OPTIONS.findIndex((s) => s.start === slot.start && s.end === slot.end)}
           onChange={(e) => setSlot(SLOT_OPTIONS[Number(e.target.value)])}
-          className="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none focus:border-[#B5235D] focus:ring-1 focus:ring-[#B5235D]"
+          className="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none focus:border-[#1d4ed8] focus:ring-1 focus:ring-[#1d4ed8]"
         >
           {SLOT_OPTIONS.map((s, i) => (
             <option key={i} value={i}>{s.label}</option>
@@ -119,13 +119,13 @@ export function AdminBlockScheduleForm({ courts }: Props) {
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           placeholder="Mantenimiento, torneo…"
-          className="min-w-[160px] rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#B5235D] focus:ring-1 focus:ring-[#B5235D]"
+          className="min-w-[160px] rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#1d4ed8] focus:ring-1 focus:ring-[#1d4ed8]"
         />
       </div>
       <button
         type="submit"
         disabled={loading}
-        className="rounded-lg bg-[#B5235D] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#9f1e50] disabled:opacity-60"
+        className="rounded-lg bg-[#1d4ed8] px-4 py-2 text-sm font-bold text-white transition hover:bg-[#1e40af] disabled:opacity-60"
       >
         {loading ? 'Añadiendo…' : 'Bloquear franja'}
       </button>

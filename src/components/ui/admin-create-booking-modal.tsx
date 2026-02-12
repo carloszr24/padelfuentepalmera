@@ -135,7 +135,7 @@ export function AdminCreateBookingModal({
           <div className="space-y-4">
             <div>
               <label className="mb-1 block text-xs font-bold text-stone-600">Cliente</label>
-              <select value={userId} onChange={(e) => setUserId(e.target.value)} className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 focus:border-[#B5235D] focus:outline-none focus:ring-1 focus:ring-[#B5235D]">
+              <select value={userId} onChange={(e) => setUserId(e.target.value)} className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 focus:border-[#1d4ed8] focus:outline-none focus:ring-1 focus:ring-[#1d4ed8]">
                 <option value="">Selecciona usuario</option>
                 {users.map((u) => (
                   <option key={u.id} value={u.id}>{u.full_name || u.email || u.id.slice(0, 8)}</option>
@@ -144,7 +144,7 @@ export function AdminCreateBookingModal({
             </div>
             <div>
               <label className="mb-1 block text-xs font-bold text-stone-600">Pista</label>
-              <select value={courtId} onChange={(e) => setCourtId(e.target.value)} className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 focus:border-[#B5235D] focus:outline-none focus:ring-1 focus:ring-[#B5235D]">
+              <select value={courtId} onChange={(e) => setCourtId(e.target.value)} className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 focus:border-[#1d4ed8] focus:outline-none focus:ring-1 focus:ring-[#1d4ed8]">
                 <option value="">Selecciona pista</option>
                 {courts.map((c) => (
                   <option key={c.id} value={c.id}>{c.name}</option>
@@ -155,7 +155,7 @@ export function AdminCreateBookingModal({
               <label className="mb-2 block text-xs font-bold text-stone-600">Fecha</label>
               <div className="flex gap-2 overflow-x-auto pb-2">
                 {dateStrip.map(({ date: d, label }) => (
-                  <button key={d} type="button" onClick={() => setDate(d)} className={`flex-shrink-0 rounded-xl border px-3 py-2 text-xs font-bold transition ${date === d ? 'border-[#B5235D] bg-[#B5235D]/15 text-[#B5235D]' : 'border-stone-300 bg-stone-50 text-stone-700 hover:bg-stone-100'}`}>
+                  <button key={d} type="button" onClick={() => setDate(d)} className={`flex-shrink-0 rounded-xl border px-3 py-2 text-xs font-bold transition ${date === d ? 'border-[#1d4ed8] bg-[#1d4ed8]/15 text-[#1d4ed8]' : 'border-stone-300 bg-stone-50 text-stone-700 hover:bg-stone-100'}`}>
                     {label}
                   </button>
                 ))}
@@ -164,7 +164,7 @@ export function AdminCreateBookingModal({
             {error && <p className="text-xs font-medium text-red-600">{error}</p>}
             <div className="flex justify-end gap-2 pt-2">
               <button type="button" onClick={onClose} className="rounded-xl border border-stone-300 px-4 py-2 text-sm font-bold text-stone-700 hover:bg-stone-100">Cancelar</button>
-              <button type="button" onClick={goToSlots} disabled={!canShowSlots || loadingSlots} className="rounded-xl bg-[#B5235D] px-4 py-2 text-sm font-bold text-white disabled:opacity-50">Elegir hora</button>
+              <button type="button" onClick={goToSlots} disabled={!canShowSlots || loadingSlots} className="rounded-xl bg-[#1d4ed8] px-4 py-2 text-sm font-bold text-white disabled:opacity-50">Elegir hora</button>
             </div>
           </div>
         )}
@@ -179,7 +179,7 @@ export function AdminCreateBookingModal({
             ) : (
               <div className="grid grid-cols-3 gap-2">
                 {slots.map((slot) => (
-                  <button key={slot} type="button" onClick={() => setSelectedSlot(slot)} className={`rounded-xl border py-2 text-sm font-bold transition ${selectedSlot === slot ? 'border-[#B5235D] bg-[#B5235D]/15 text-[#B5235D]' : 'border-stone-300 bg-stone-50 text-stone-700 hover:bg-stone-100'}`}>
+                  <button key={slot} type="button" onClick={() => setSelectedSlot(slot)} className={`rounded-xl border py-2 text-sm font-bold transition ${selectedSlot === slot ? 'border-[#1d4ed8] bg-[#1d4ed8]/15 text-[#1d4ed8]' : 'border-stone-300 bg-stone-50 text-stone-700 hover:bg-stone-100'}`}>
                     {slot}
                   </button>
                 ))}
@@ -188,7 +188,7 @@ export function AdminCreateBookingModal({
             {error && <p className="text-xs font-medium text-red-600">{error}</p>}
             <div className="flex justify-end gap-2 pt-2">
               <button type="button" onClick={() => setStep('choose')} className="rounded-xl border border-stone-300 px-4 py-2 text-sm font-bold text-stone-700 hover:bg-stone-100">Atrás</button>
-              <button type="button" onClick={handleCreate} disabled={!selectedSlot || loading} className="rounded-xl bg-[#B5235D] px-4 py-2 text-sm font-bold text-white disabled:opacity-50">
+              <button type="button" onClick={handleCreate} disabled={!selectedSlot || loading} className="rounded-xl bg-[#1d4ed8] px-4 py-2 text-sm font-bold text-white disabled:opacity-50">
                 {loading ? 'Creando...' : `Crear reserva ${selectedSlot}`}
               </button>
             </div>

@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 
 const NAV_LINKS = [
-  { href: '#por-que', label: 'Por qué elegirnos' },
+  { href: '#que-te-ofrecemos', label: 'Qué te ofrecemos' },
   { href: '#novedades', label: 'Novedades' },
   { href: '#resenas', label: 'Reseñas' },
   { href: '#contacto', label: 'Contacto' },
@@ -94,7 +94,7 @@ export function LandingHeader({ isLoggedIn = false }: LandingHeaderProps) {
           )}
           <a
             href={isLoggedIn ? '/panel/reservas' : '/registro'}
-            className="hidden rounded-full bg-[#B5235D] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#B5235D]/40 transition hover:scale-[1.02] hover:bg-[#cf2a6c] hover:shadow-[#B5235D]/50 md:inline-flex md:px-5"
+            className="hidden rounded-full bg-[#1d4ed8] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#1d4ed8]/40 transition hover:scale-[1.02] hover:bg-[#2563eb] hover:shadow-[#1d4ed8]/50 md:inline-flex md:px-5"
           >
             Reserva tu pista
           </a>

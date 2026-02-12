@@ -18,7 +18,7 @@ export function AdminCreateBookingTrigger({ courts, users }: Props) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="rounded-full bg-[#B5235D] px-4 py-2 text-xs font-bold text-white shadow-lg shadow-[#B5235D]/30 hover:bg-[#cf2a6c]"
+        className="rounded-full bg-[#1d4ed8] px-4 py-2 text-xs font-bold text-white shadow-lg shadow-[#1d4ed8]/30 hover:bg-[#2563eb]"
       >
         Crear reserva
       </button>

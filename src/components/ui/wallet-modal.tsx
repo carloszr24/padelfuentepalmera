@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-const ACCENT = '#B5235D';
+const ACCENT = '#1d4ed8';
 const QUICK_AMOUNTS = [10, 20, 30, 50, 75, 100];
 const MIN_EUR = 10;
 const MAX_EUR = 500;
@@ -106,7 +106,7 @@ export function WalletModal({ open, onClose, trigger }: WalletModalProps) {
                     setSelectedQuick(eur);
                     setCustomAmount('');
                   }}
-                  className={`rounded-xl border px-4 py-2 text-sm font-bold transition ${selectedQuick === eur ? 'border-[#B5235D] bg-[#B5235D]/10 text-[#B5235D]' : 'border-stone-300 bg-stone-50 text-stone-700 hover:bg-stone-100'}`}
+                  className={`rounded-xl border px-4 py-2 text-sm font-bold transition ${selectedQuick === eur ? 'border-[#1d4ed8] bg-[#1d4ed8]/10 text-[#1d4ed8]' : 'border-stone-300 bg-stone-50 text-stone-700 hover:bg-stone-100'}`}
                 >
                   {eur} €
                 </button>
@@ -130,7 +130,7 @@ export function WalletModal({ open, onClose, trigger }: WalletModalProps) {
                 setCustomAmount(e.target.value);
                 setSelectedQuick(null);
               }}
-              className="w-full rounded-xl border border-stone-300 bg-white px-4 py-3 text-stone-900 placeholder:text-stone-400 focus:border-[#B5235D] focus:outline-none focus:ring-1 focus:ring-[#B5235D]"
+              className="w-full rounded-xl border border-stone-300 bg-white px-4 py-3 text-stone-900 placeholder:text-stone-400 focus:border-[#1d4ed8] focus:outline-none focus:ring-1 focus:ring-[#1d4ed8]"
             />
           </div>
 
