@@ -34,7 +34,7 @@ export default function PrivacidadPage() {
             <p>
               Recogemos los datos necesarios para gestionar su cuenta: nombre, correo electrónico y, opcionalmente,
               teléfono. Para las reservas y el monedero almacenamos el historial de reservas y de transacciones
-              (recargas, señales, reembolsos). Los pagos con tarjeta se procesan a través de Stripe; no almacenamos
+              (recargas, depósitos, reembolsos). Los pagos con tarjeta se procesan a través de Stripe; no almacenamos
               datos de tarjeta en nuestros servidores.
             </p>
           </section>

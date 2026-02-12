@@ -42,7 +42,7 @@ export async function GET(request: Request) {
   if (hasta) query = query.lte('booking_date', hasta);
   const { data: bookings } = await query;
 
-  const headers = ['Fecha', 'Hora inicio', 'Hora fin', 'Pista', 'Usuario', 'Email', 'Estado', 'Señal pagada', 'Resto pagado'];
+  const headers = ['Fecha', 'Hora inicio', 'Hora fin', 'Pista', 'Usuario', 'Email', 'Estado', 'Depósito pagado', 'Resto pagado'];
   const rows = (bookings ?? []).map((b: Record<string, unknown>) => {
     const p = b.profiles;
     const name = Array.isArray(p) ? (p[0] as { full_name?: string | null } | undefined)?.full_name : (p as { full_name?: string | null } | null)?.full_name;

@@ -48,7 +48,7 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
         <AdminPageHeader
           breadcrumbs={[{ label: 'Inicio', href: '/admin' }, { label: 'Reservas' }]}
           title="Reservas"
-          subtitle="Consulta y gestiona todas las reservas. Crea reservas sin cobrar señal."
+          subtitle="Consulta y gestiona todas las reservas. Crea reservas sin cobrar depósito."
         />
         <AdminCreateBookingTrigger courts={courtsList} users={usersList} />
       </div>

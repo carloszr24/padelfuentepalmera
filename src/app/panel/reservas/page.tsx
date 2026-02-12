@@ -37,7 +37,7 @@ export default async function PanelReservasPage() {
         <AdminPageHeader
           breadcrumbs={[{ label: 'Inicio', href: '/panel' }, { label: 'Reservas' }]}
           title="Mis reservas"
-          subtitle="Todas tus reservas. La señal (4,50 €) se descuenta del monedero."
+          subtitle="Todas tus reservas. El depósito (4,50 €) se descuenta del monedero."
         />
         <div className="flex flex-wrap items-center gap-2">
           <BookingModal courts={courtList} triggerLabel="Nueva reserva" />
@@ -108,7 +108,7 @@ export default async function PanelReservasPage() {
                             {b.status === 'confirmed' ? 'Confirmada' : b.status === 'completed' ? 'Completada' : 'Cancelada'}
                           </span>
                           {b.deposit_paid && (
-                            <span className="text-[11px] font-medium leading-none text-emerald-600">Señal pagada</span>
+                            <span className="text-[11px] font-medium leading-none text-emerald-600">Depósito pagado</span>
                           )}
                         </div>
                       </td>

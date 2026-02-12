@@ -76,7 +76,7 @@ export function CancelBookingButton({
       ) : (
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs font-medium text-stone-600">
-            {depositPaid ? 'Se reembolsará la señal. ¿Continuar?' : '¿Cancelar?'}
+            {depositPaid ? 'Se reembolsará el depósito. ¿Continuar?' : '¿Cancelar?'}
           </span>
           <button
             type="button"

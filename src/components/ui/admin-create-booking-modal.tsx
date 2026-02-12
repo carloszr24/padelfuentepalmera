@@ -124,7 +124,7 @@ export function AdminCreateBookingModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <div className="w-full max-w-lg rounded-3xl border border-stone-200 bg-white p-6 shadow-2xl">
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-stone-900">Crear reserva (admin, sin señal)</h2>
+          <h2 className="text-lg font-bold text-stone-900">Crear reserva (admin, sin depósito)</h2>
           <button type="button" onClick={onClose} className="rounded-full p-2 text-stone-500 hover:bg-stone-100 hover:text-stone-900">
             <span className="sr-only">Cerrar</span>
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>

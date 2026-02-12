@@ -15,7 +15,7 @@ function getTransactionLabel(type: string): string {
   const map: Record<string, string> = {
     recharge: 'Recarga monedero',
     admin_recharge: 'Recarga admin',
-    booking_deposit: 'Señal reserva',
+    booking_deposit: 'Depósito reserva',
     refund: 'Reembolso',
   };
   return map[type] ?? type;

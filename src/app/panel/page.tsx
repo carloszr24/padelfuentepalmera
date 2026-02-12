@@ -48,7 +48,7 @@ export default async function PanelPage() {
           </Link>
         </div>
         <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm transition hover:border-stone-300 hover:bg-white col-span-2 lg:col-span-1">
-          <p className="text-xs font-bold uppercase tracking-wider text-stone-500">Señal por reserva</p>
+          <p className="text-xs font-bold uppercase tracking-wider text-stone-500">Depósito por reserva</p>
           <p className="mt-3 text-2xl font-bold text-stone-900">4,50 €</p>
           <p className="mt-1.5 text-[11px] font-medium text-stone-500">Resto se paga en el club</p>
         </div>

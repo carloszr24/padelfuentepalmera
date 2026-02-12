@@ -6,7 +6,7 @@ import { useState } from 'react';
 const NAV_LINKS = [
   { href: '#que-te-ofrecemos', label: 'Qué te ofrecemos' },
   { href: '#novedades', label: 'Novedades' },
-  { href: '#resenas', label: 'Reseñas' },
+  { href: '#cta', label: 'Reservar' },
   { href: '#contacto', label: 'Contacto' },
 ];
 
@@ -60,7 +60,7 @@ export function LandingHeader({ isLoggedIn = false }: LandingHeaderProps) {
         <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-shrink-0">
           <a
             href="/"
-            className="relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-stone-100 transition hover:opacity-90 sm:h-24 sm:w-24"
+            className="relative flex h-20 w-20 items-center justify-center transition hover:opacity-90 sm:h-24 sm:w-24"
             aria-label="Fuente Palmera Pádel - Inicio"
           >
             <Image

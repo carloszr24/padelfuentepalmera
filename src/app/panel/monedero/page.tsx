@@ -11,7 +11,7 @@ type PageProps = {
 const typeLabel: Record<string, string> = {
   recharge: 'Recarga monedero',
   admin_recharge: 'Recarga admin',
-  booking_deposit: 'Señal reserva',
+  booking_deposit: 'Depósito reserva',
   refund: 'Reembolso',
 };
 
@@ -52,7 +52,7 @@ export default async function PanelMonederoPage({ searchParams }: PageProps) {
         <AdminPageHeader
           breadcrumbs={[{ label: 'Inicio', href: '/panel' }, { label: 'Monedero' }]}
           title="Monedero"
-          subtitle="Recarga mínima 10 €. Usa el saldo para pagar la señal de tus reservas."
+          subtitle="Recarga mínima 10 €. Usa el saldo para pagar el depósito de tus reservas."
         />
         <Link
           href="/panel"

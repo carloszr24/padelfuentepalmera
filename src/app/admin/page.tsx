@@ -323,9 +323,9 @@ function getTransactionLabel(
     case 'admin_recharge':
       return 'Recarga admin';
     case 'booking_deposit':
-      return 'Señal reserva';
+      return 'Depósito reserva';
     case 'refund':
-      return 'Reembolso señal';
+      return 'Reembolso depósito';
     default:
       return 'Transacción';
   }

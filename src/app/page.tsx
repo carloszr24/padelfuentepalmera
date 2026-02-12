@@ -28,6 +28,12 @@ const NOVEDADES_SLIDER = [
     image: 'https://images.unsplash.com/photo-1646649851780-d9701b7c3c04?w=600&q=80',
     instagramUrl: 'https://instagram.com',
   },
+  {
+    title: 'Nuestro club',
+    category: 'Instalaciones',
+    image: 'https://images.unsplash.com/photo-1622163642998-1ea32b0bbc67?w=600&q=80',
+    instagramUrl: 'https://instagram.com',
+  },
 ];
 
 export default async function Home() {
@@ -61,7 +67,7 @@ export default async function Home() {
               <span className="text-[#93c5fd]">Reserva en un clic.</span>
             </h1>
             <p className="mt-4 max-w-md text-base leading-relaxed text-white/90 sm:text-lg">
-              Reserva online, paga la señal con el monedero y preocúpate solo de jugar.
+              Reserva online, paga el depósito con el monedero y preocúpate solo de jugar.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
               <a
@@ -84,7 +90,7 @@ export default async function Home() {
               </span>
               <span className="flex items-center gap-2">
                 <span className="font-semibold text-white">4,50 €</span>
-                Señal
+                Depósito
               </span>
               <span>Reserva 24/7</span>
             </div>
@@ -113,7 +119,7 @@ export default async function Home() {
               <FeatureCard
                 icon="💳"
                 title="Monedero digital"
-                description="Recarga online, paga la señal (4,50 €) y el resto en el club."
+                description="Recarga online, paga el depósito (4,50 €) y el resto en el club."
               />
               <FeatureCard
                 icon="🏐"
@@ -157,20 +163,8 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* Reseñas: una fila horizontal en móvil */}
-        <section id="resenas" className="mt-16 space-y-4 sm:mt-20">
-          <h2 className="text-xl font-bold text-stone-900 sm:text-2xl">
-            Lo que dicen los jugadores
-          </h2>
-          <div className="no-scrollbar flex gap-4 overflow-x-auto pb-2">
-            <ReviewCard name="Carlos" text="Reservar es comodísimo y el monedero evita estar pagando cada vez." />
-            <ReviewCard name="Marta" text="Horarios perfectos después del trabajo. Siempre hay nivel." />
-            <ReviewCard name="Álvaro" text="Pistas en muy buen estado y el sistema de reservas va genial." />
-          </div>
-        </section>
-
         {/* CTA final */}
-        <section className="mt-16 rounded-2xl bg-stone-900 px-6 py-10 text-white sm:mt-20 sm:px-10 sm:py-12">
+        <section className="mt-16 rounded-2xl bg-stone-900 px-6 py-10 text-white sm:mt-20 sm:px-10 sm:py-12" id="cta">
           <h2 className="text-xl font-bold sm:text-2xl">
             ¿Listo? Crea tu cuenta y reserva tu primera pista.
           </h2>
@@ -274,16 +268,3 @@ function NewsSliderCard({ image, title, category, instagramUrl }: NewsSliderCard
   );
 }
 
-type ReviewCardProps = {
-  name: string;
-  text: string;
-};
-
-function ReviewCard({ name, text }: ReviewCardProps) {
-  return (
-    <figure className="min-w-[260px] max-w-[280px] snap-start rounded-xl border border-stone-200 bg-white p-5">
-      <p className="text-sm leading-relaxed text-stone-700">“{text}”</p>
-      <figcaption className="mt-3 text-xs font-semibold text-stone-500">— {name}</figcaption>
-    </figure>
-  );
-}

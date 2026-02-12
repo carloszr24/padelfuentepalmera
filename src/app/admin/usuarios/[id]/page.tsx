@@ -53,7 +53,7 @@ export default async function AdminUsuarioPage({ params }: PageProps) {
 
   const totalRecargado =
     recharges?.reduce((s, t) => s + Number(t.amount), 0) ?? 0;
-  const totalSeñales =
+  const totalDepositos =
     deposits?.reduce((s, t) => s + Math.abs(Number(t.amount)), 0) ?? 0;
 
   return (
@@ -88,9 +88,9 @@ export default async function AdminUsuarioPage({ params }: PageProps) {
           </p>
         </div>
         <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-wider text-stone-500">Total señales reservas</p>
+          <p className="text-xs font-bold uppercase tracking-wider text-stone-500">Total depósitos reservas</p>
           <p className="mt-1 text-xl font-bold text-amber-600">
-            −{totalSeñales.toFixed(2)} €
+            −{totalDepositos.toFixed(2)} €
           </p>
         </div>
         <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm">
