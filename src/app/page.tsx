@@ -39,139 +39,112 @@ export default async function Home() {
     // Si falla auth (env vars, Supabase, etc.) mostramos la landing sin usuario
   }
   return (
-    <div className="min-h-screen bg-stone-100 text-stone-900">
+    <div className="min-h-screen bg-[#faf8f5] text-stone-900">
       <LandingHeader isLoggedIn={!!user} />
 
-      {/* Hero a pantalla completa: ancho total + altura viewport */}
-      <section className="relative min-h-screen min-h-[100dvh] overflow-hidden">
-        <div
-          className="absolute inset-0 bg-stone-900/15"
-          aria-hidden
-        />
+      {/* Hero: limpio, impacto en móvil */}
+      <section className="relative min-h-[85dvh] overflow-hidden sm:min-h-[90dvh]">
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: 'url(/hero-pista.png)',
-            filter: 'blur(2px)',
-            transform: 'scale(1.03)',
-          }}
+          style={{ backgroundImage: 'url(/hero-pista.png)' }}
           aria-hidden
         />
-        <div className="absolute inset-0 bg-white/75 backdrop-blur-[1px]" aria-hidden />
-
-        <div className="relative z-10 mx-auto flex min-h-screen min-h-[100dvh] max-w-7xl flex-col justify-center px-4 py-24 sm:px-6 md:px-8 md:py-28 xl:px-10">
-          <div className="max-w-2xl hero-entrance">
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#1d4ed8]">
-              Fuente Palmera Padel Club
+        <div className="absolute inset-0 bg-stone-900/50" aria-hidden />
+        <div className="relative z-10 mx-auto flex min-h-[85dvh] max-w-5xl flex-col justify-end px-5 pb-16 pt-28 sm:min-h-[90dvh] sm:justify-center sm:pb-24 sm:pt-32 sm:px-8">
+          <div className="hero-entrance">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/90">
+              Fuente Palmera · Córdoba
             </p>
-            <h1 className="mt-2 text-balance text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl md:text-5xl lg:text-6xl">
-              Reserva tu pista. Juega.
+            <h1 className="mt-2 text-balance text-3xl font-extrabold leading-tight tracking-tight text-white drop-shadow sm:text-4xl md:text-5xl">
+              Pista cuando quieras.
+              <br />
+              <span className="text-[#93c5fd]">Reserva en un clic.</span>
             </h1>
-            <p className="mt-4 max-w-xl text-sm text-stone-600 sm:text-base">
-              Reserva tu pista en segundos, gestiona tu monedero digital y
-              disfruta de unas instalaciones pensadas para que solo te
-              preocupes de ganar el partido.
+            <p className="mt-4 max-w-md text-base leading-relaxed text-white/90 sm:text-lg">
+              Reserva online, paga la señal con el monedero y preocúpate solo de jugar.
             </p>
-
-            <div className="mt-8 flex flex-wrap items-center gap-4">
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
               <a
                 href={user ? '/panel/reservas' : '/registro'}
-                className="rounded-full bg-[#1d4ed8] px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-[#1d4ed8]/30 transition hover:scale-[1.02] hover:bg-[#1e40af] hover:shadow-[#1d4ed8]/40 active:scale-[0.98]"
+                className="inline-flex justify-center rounded-2xl bg-white px-8 py-4 text-base font-bold text-stone-900 shadow-xl transition hover:bg-stone-100 active:scale-[0.98]"
               >
-                Reserva tu pista
+                {user ? 'Reservar pista' : 'Crear cuenta y reservar'}
               </a>
               <a
-                href="/registro"
-                className="rounded-full border border-stone-300 bg-white/90 px-6 py-3 text-sm font-medium text-stone-700 transition hover:border-stone-400 hover:bg-white"
+                href="#que-te-ofrecemos"
+                className="inline-flex justify-center rounded-2xl border-2 border-white/80 bg-white/10 px-8 py-4 text-base font-semibold text-white backdrop-blur-sm transition hover:bg-white/20"
               >
-                Crea tu cuenta
+                Ver cómo funciona
               </a>
             </div>
-
-            {/* Solo info genérica del club, sin datos de usuarios */}
-            <div className="mt-10 grid gap-4 text-sm sm:grid-cols-3 sm:text-xs md:text-sm">
-              <div className="rounded-2xl border border-stone-200/80 bg-white/90 p-5 shadow-sm backdrop-blur-sm transition hover:border-stone-300 hover:bg-white">
-                <p className="text-xs text-stone-500">Horarios</p>
-                <p className="mt-1 text-lg font-semibold text-stone-900">09:00 - 21:30</p>
-                <p className="mt-1 text-xs text-stone-500">Partidos de 1,5 horas</p>
-              </div>
-              <div className="rounded-2xl border border-stone-200/80 bg-white/90 p-5 shadow-sm backdrop-blur-sm transition hover:border-stone-300 hover:bg-white">
-                <p className="text-xs text-stone-500">Reserva online</p>
-                <p className="mt-1 text-lg font-semibold text-stone-900">24/7</p>
-                <p className="mt-1 text-xs text-stone-500">Desde cualquier dispositivo</p>
-              </div>
-              <div className="rounded-2xl border border-stone-200/80 bg-white/90 p-5 shadow-sm backdrop-blur-sm transition hover:border-stone-300 hover:bg-white">
-                <p className="text-xs text-stone-500">Señal</p>
-                <p className="mt-1 text-lg font-semibold text-stone-900">4,50 €</p>
-                <p className="mt-1 text-xs text-stone-500">Resto en el club</p>
-              </div>
+            <div className="mt-10 flex flex-wrap gap-6 text-sm text-white/80">
+              <span className="flex items-center gap-2">
+                <span className="font-semibold text-white">09:00 – 21:30</span>
+                Horario
+              </span>
+              <span className="flex items-center gap-2">
+                <span className="font-semibold text-white">4,50 €</span>
+                Señal
+              </span>
+              <span>Reserva 24/7</span>
             </div>
           </div>
         </div>
       </section>
 
-      <main className="mx-auto flex max-w-7xl flex-col gap-28 px-4 pb-20 pt-16 sm:px-6 lg:px-8 lg:gap-32 lg:pb-36 xl:px-10">
-        {/* Qué te ofrecemos */}
-        <section id="que-te-ofrecemos" className="space-y-10">
-          <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-            <div>
-              <h2 className="text-2xl font-bold tracking-tight text-stone-900 md:text-3xl lg:text-4xl">
-                Qué te ofrecemos
-              </h2>
-              <p className="mt-2 max-w-xl text-sm text-stone-600">
-                Una experiencia completa para que gestionar tus partidos sea tan
-                sencillo como disfrutar de ellos.
-              </p>
-            </div>
+      <main className="mx-auto max-w-5xl px-5 pb-24 pt-14 sm:px-8 sm:pb-32 sm:pt-20">
+        {/* Qué te ofrecemos: zona cálida y clara */}
+        <section id="que-te-ofrecemos" className="space-y-6">
+          <div>
+            <h2 className="text-2xl font-bold text-stone-900 sm:text-3xl">
+              Qué te ofrecemos
+            </h2>
+            <p className="mt-2 text-stone-600">
+              Lo que necesitas para reservar y jugar sin complicaciones.
+            </p>
           </div>
-
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            <FeatureCard
-              title="Reserva online"
-              description="Elige pista, día y hora en segundos desde tu móvil o portátil."
-            />
-            <FeatureCard
-              title="Monedero digital"
-              description="Recarga con Stripe y paga solo la señal. El resto en el club."
-            />
-            <FeatureCard
-              title="100% seguro"
-              description="Pagos cifrados, control de saldo con RLS y seguridad avanzada."
-            />
-            <FeatureCard
-              title="Pistas premium"
-              description="Superficie cuidada, iluminación LED y horarios amplios."
-            />
+          <div className="rounded-3xl bg-gradient-to-br from-amber-50 via-orange-50/30 to-amber-50/50 p-5 sm:p-6">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <FeatureCard
+                icon="📅"
+                title="Reserva en un clic"
+                description="Elige pista, día y hora desde el móvil. Sin llamadas."
+              />
+              <FeatureCard
+                icon="💳"
+                title="Monedero digital"
+                description="Recarga online, paga la señal (4,50 €) y el resto en el club."
+              />
+              <FeatureCard
+                icon="🏐"
+                title="Pistas en condiciones"
+                description="Superficie e iluminación cuidadas. Horario 09:00 – 21:30."
+              />
+              <FeatureCard
+                icon="✓"
+                title="Seguro y sencillo"
+                description="Pagos con tarjeta, datos protegidos. Solo te preocupas de jugar."
+              />
+            </div>
           </div>
         </section>
 
-        {/* Novedades / Slider con foto de fondo → Instagram */}
-        <section id="novedades" className="space-y-6">
-          <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-stone-500">
-                Síguenos en Instagram
-              </p>
-              <h2 className="mt-1 text-2xl font-bold tracking-tight text-stone-900 md:text-3xl">
-                Novedades del <span className="text-[#1d4ed8]">club</span>
-              </h2>
-              <p className="mt-2 max-w-xl text-sm text-stone-600">
-                Torneos, instalaciones y el día a día. Pulsa en cada carta para
-                ver la publicación en Instagram.
-              </p>
-            </div>
+        {/* Instagram: slider más compacto en móvil */}
+        <section id="novedades" className="mt-16 space-y-4 sm:mt-20">
+          <div className="flex items-center justify-between gap-4">
+            <h2 className="text-xl font-bold text-stone-900 sm:text-2xl">
+              Novedades
+            </h2>
             <a
               href="https://instagram.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-sm font-medium text-[#1d4ed8] hover:text-[#1e40af]"
+              className="text-sm font-semibold text-[#1d4ed8] hover:underline"
             >
-              @fuentepalmerapadel
-              <span aria-hidden>↗</span>
+              @fuentepalmerapadel ↗
             </a>
           </div>
-
-          <div className="no-scrollbar flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2">
+          <div className="no-scrollbar flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1">
             {NOVEDADES_SLIDER.map((item) => (
               <NewsSliderCard
                 key={item.title}
@@ -184,144 +157,91 @@ export default async function Home() {
           </div>
         </section>
 
-        {/* Reseñas */}
-        <section id="resenas" className="space-y-6">
-          <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-            <div>
-              <h2 className="text-2xl font-semibold tracking-tight text-stone-900 md:text-3xl">
-                Lo que dicen nuestros jugadores
-              </h2>
-              <p className="mt-2 max-w-xl text-sm text-stone-600">
-                Opiniones reales de jugadores que ya disfrutan del club.
-              </p>
-            </div>
-          </div>
-
+        {/* Reseñas: una fila horizontal en móvil */}
+        <section id="resenas" className="mt-16 space-y-4 sm:mt-20">
+          <h2 className="text-xl font-bold text-stone-900 sm:text-2xl">
+            Lo que dicen los jugadores
+          </h2>
           <div className="no-scrollbar flex gap-4 overflow-x-auto pb-2">
-            <ReviewCard
-              name="Carlos"
-              text="Reservar pista es comodísimo y el monedero evita estar pagando cada vez. Instalaciones muy cuidadas."
-            />
-            <ReviewCard
-              name="Marta"
-              text="Los horarios son perfectos para después del trabajo y siempre encuentro nivel similar para jugar."
-            />
-            <ReviewCard
-              name="Álvaro"
-              text="La iluminación y el estado de las pistas es top. El sistema de reservas funciona perfecto."
-            />
-            <ReviewCard
-              name="Lucía"
-              text="El club se implica mucho con la comunidad. Torneos, ranking y buen ambiente siempre."
-            />
+            <ReviewCard name="Carlos" text="Reservar es comodísimo y el monedero evita estar pagando cada vez." />
+            <ReviewCard name="Marta" text="Horarios perfectos después del trabajo. Siempre hay nivel." />
+            <ReviewCard name="Álvaro" text="Pistas en muy buen estado y el sistema de reservas va genial." />
           </div>
         </section>
 
         {/* CTA final */}
-        <section className="rounded-3xl border border-stone-200 bg-white px-8 py-12 shadow-lg shadow-stone-200/60 md:px-12 md:py-14">
-          <div className="flex flex-col items-start justify-between gap-8 md:flex-row md:items-center">
-            <div>
-              <h2 className="text-balance text-2xl font-bold tracking-tight text-stone-900 md:text-3xl lg:text-4xl">
-                ¿Listo para reservar y jugar?
-              </h2>
-              <p className="mt-4 max-w-xl text-sm leading-relaxed text-stone-600">
-                Crea tu cuenta en segundos, recarga tu monedero y reserva tu
-                primera pista hoy mismo.
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-4">
-              <a
-                href="/registro"
-                className="rounded-full bg-[#1d4ed8] px-7 py-3 text-sm font-semibold text-white shadow-lg shadow-[#1d4ed8]/30 transition hover:scale-[1.02] hover:bg-[#1e40af] hover:shadow-[#1d4ed8]/40 active:scale-[0.98]"
-              >
-                Crear cuenta
-              </a>
-              <a
-                href={user ? '/panel/reservas' : '/registro'}
-                className="rounded-full border border-stone-300 px-7 py-3 text-sm font-medium text-stone-700 transition hover:border-stone-400 hover:bg-stone-50"
-              >
-                Ver disponibilidad
-              </a>
-            </div>
+        <section className="mt-16 rounded-2xl bg-stone-900 px-6 py-10 text-white sm:mt-20 sm:px-10 sm:py-12">
+          <h2 className="text-xl font-bold sm:text-2xl">
+            ¿Listo? Crea tu cuenta y reserva tu primera pista.
+          </h2>
+          <p className="mt-2 text-sm text-stone-300">
+            Registro en segundos. Recarga el monedero y a jugar.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <a
+              href="/registro"
+              className="inline-flex rounded-xl bg-white px-6 py-3 text-sm font-bold text-stone-900 transition hover:bg-stone-100"
+            >
+              Crear cuenta
+            </a>
+            <a
+              href={user ? '/panel/reservas' : '/registro'}
+              className="inline-flex rounded-xl border border-stone-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-stone-800"
+            >
+              Ver disponibilidad
+            </a>
           </div>
         </section>
       </main>
 
-      {/* Footer */}
-      <footer
-        id="contacto"
-        className="border-t border-stone-200 bg-white py-8 text-sm text-stone-600"
-      >
-        <div className="mx-auto flex max-w-7xl flex-col gap-8 px-4 md:flex-row md:items-start md:justify-between md:px-6 lg:px-8 xl:px-10">
-          <div className="space-y-2">
-            <p className="text-sm font-semibold text-stone-900">
-              Fuente Palmera Padel Club
-            </p>
-            <p>
-              Dirección del club · 14120 Fuente Palmera (Córdoba)
+      <footer id="contacto" className="border-t border-stone-200 bg-white py-10 text-sm text-stone-600">
+        <div className="mx-auto flex max-w-5xl flex-col gap-8 px-5 sm:flex-row sm:items-start sm:justify-between sm:px-8">
+          <div>
+            <p className="font-semibold text-stone-900">Fuente Palmera Padel Club</p>
+            <p className="mt-1">
+              14120 Fuente Palmera (Córdoba)
               <br />
-              Tel: <a href="tel:+34600000000" className="underline-offset-2 hover:text-stone-900 hover:underline">600 000 000</a>
+              <a href="tel:+34600000000" className="hover:text-stone-900 hover:underline">600 000 000</a>
               {' · '}
-              Email: <a href="mailto:info@fpadelclub.com" className="underline-offset-2 hover:text-stone-900 hover:underline">info@fpadelclub.com</a>
+              <a href="mailto:info@fpadelclub.com" className="hover:text-stone-900 hover:underline">info@fpadelclub.com</a>
             </p>
           </div>
-
-          <div className="flex flex-wrap gap-10">
-            <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-widest text-stone-500">
-                Legal
-              </p>
-              <div className="flex flex-col gap-1">
-                <Link href="/aviso-legal" className="hover:text-stone-900">
-                  Aviso legal
-                </Link>
-                <Link href="/privacidad" className="hover:text-stone-900">
-                  Política de privacidad
-                </Link>
-                <Link href="/cookies" className="hover:text-stone-900">
-                  Política de cookies
-                </Link>
-              </div>
+          <div className="flex gap-8">
+            <div className="flex flex-col gap-2">
+              <Link href="/aviso-legal" className="hover:text-stone-900">Aviso legal</Link>
+              <Link href="/privacidad" className="hover:text-stone-900">Privacidad</Link>
+              <Link href="/cookies" className="hover:text-stone-900">Cookies</Link>
             </div>
-            <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-widest text-stone-500">
-                Redes
-              </p>
-              <div className="flex flex-col gap-1">
-                <a
-                  href="https://instagram.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="hover:text-stone-900"
-                >
-                  Instagram
-                </a>
-                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-stone-900">
-                  Facebook
-                </a>
-              </div>
+            <div className="flex flex-col gap-2">
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-stone-900">Instagram</a>
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-stone-900">Facebook</a>
             </div>
           </div>
         </div>
-        <div className="mt-6 text-center text-xs text-stone-400">
-          © {new Date().getFullYear()} Fuente Palmera Padel Club. Todos los
-          derechos reservados.
-        </div>
+        <p className="mx-auto mt-8 max-w-5xl px-5 text-center text-xs text-stone-400 sm:px-8">
+          © {new Date().getFullYear()} Fuente Palmera Padel Club
+        </p>
       </footer>
     </div>
   );
 }
 
 type FeatureCardProps = {
+  icon: string;
   title: string;
   description: string;
 };
 
-function FeatureCard({ title, description }: FeatureCardProps) {
+function FeatureCard({ icon, title, description }: FeatureCardProps) {
   return (
-    <div className="flex h-full flex-col rounded-2xl border border-stone-200 bg-white p-6 shadow-lg shadow-stone-200/50 transition hover:border-[#1d4ed8]/40 hover:shadow-xl hover:shadow-stone-200/60">
-      <h3 className="text-base font-semibold text-stone-900">{title}</h3>
-      <p className="mt-2 text-sm leading-relaxed text-stone-600">{description}</p>
+    <div className="flex gap-4 rounded-2xl bg-white/90 p-5 shadow-sm ring-1 ring-amber-200/50 transition hover:bg-white hover:shadow-md hover:ring-amber-300/60">
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-2xl">
+        {icon}
+      </div>
+      <div className="min-w-0">
+        <h3 className="font-bold text-stone-900">{title}</h3>
+        <p className="mt-1.5 text-sm leading-relaxed text-stone-600">{description}</p>
+      </div>
     </div>
   );
 }
@@ -339,24 +259,16 @@ function NewsSliderCard({ image, title, category, instagramUrl }: NewsSliderCard
       href={instagramUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="relative flex w-[200px] flex-shrink-0 snap-start overflow-hidden rounded-2xl border border-stone-200 shadow-lg shadow-stone-200/50 transition hover:scale-[1.02] hover:border-[#1d4ed8]/50 hover:shadow-xl sm:w-[220px] md:w-[240px]"
+      className="relative flex w-[160px] flex-shrink-0 snap-start overflow-hidden rounded-xl border border-stone-200 transition hover:opacity-95 sm:w-[180px]"
       style={{ aspectRatio: '9/16' }}
     >
-      <span className="absolute inset-0 z-0 bg-stone-900/20" aria-hidden />
-      <img
-        src={image}
-        alt=""
-        className="absolute inset-0 z-0 h-full w-full object-cover object-center"
-      />
-      <div className="absolute inset-0 z-10 bg-gradient-to-t from-stone-900/90 via-transparent to-transparent" />
-      <div className="relative z-20 mt-auto flex flex-col justify-end p-4 pb-5">
-        <span className="mb-2 inline-flex w-fit rounded-full bg-[#1d4ed8] px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
+      <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+      <div className="absolute inset-0 bg-gradient-to-t from-stone-900/85 to-transparent" />
+      <div className="relative z-10 mt-auto p-3">
+        <span className="rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-semibold text-white">
           {category}
         </span>
-        <h3 className="text-sm font-bold uppercase leading-tight text-white sm:text-base md:text-lg">
-          {title}
-        </h3>
-        <p className="mt-1.5 text-[11px] font-medium text-white/90">Ver en Instagram ↗</p>
+        <p className="mt-2 line-clamp-2 text-xs font-bold leading-tight text-white">{title}</p>
       </div>
     </a>
   );
@@ -369,11 +281,9 @@ type ReviewCardProps = {
 
 function ReviewCard({ name, text }: ReviewCardProps) {
   return (
-    <figure className="min-w-[280px] max-w-sm snap-start rounded-2xl border border-stone-200 bg-white p-6 shadow-lg shadow-stone-200/50 transition hover:border-stone-300 hover:shadow-xl">
+    <figure className="min-w-[260px] max-w-[280px] snap-start rounded-xl border border-stone-200 bg-white p-5">
       <p className="text-sm leading-relaxed text-stone-700">“{text}”</p>
-      <figcaption className="mt-4 text-xs font-semibold text-stone-600">
-        — {name}
-      </figcaption>
+      <figcaption className="mt-3 text-xs font-semibold text-stone-500">— {name}</figcaption>
     </figure>
   );
 }

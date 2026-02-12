@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getCachedAuth } from '@/lib/auth-server';
 import { LogoutButton } from '@/components/ui/logout-button';
+import { PanelMobileNav } from '@/components/ui/panel-mobile-nav';
 
 type PanelLayoutProps = {
   children: ReactNode;
@@ -77,33 +78,37 @@ export default async function PanelLayout({ children }: PanelLayoutProps) {
           </div>
         </aside>
 
-        {/* Contenido principal — mismo formato que admin */}
-        <main className="min-w-0 flex-1 rounded-2xl border border-stone-200 bg-white p-6 shadow-lg shadow-stone-200/80 md:p-8 lg:p-10">
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-3 md:hidden">
-            <div className="flex items-center gap-3">
+        {/* Contenido principal — padding abajo en móvil para la barra inferior */}
+        <main className="min-w-0 flex-1 rounded-2xl border border-stone-200 bg-white p-4 shadow-lg shadow-stone-200/80 pb-24 md:pb-8 md:p-8 lg:p-10">
+          <div className="mb-4 flex flex-col gap-3 md:hidden">
+            <div className="flex items-center justify-between gap-2">
               <Link
                 href="/"
-                className="text-xs font-semibold text-stone-600 hover:text-stone-900"
+                className="rounded-lg px-3 py-2 text-sm font-semibold text-stone-600 transition hover:bg-stone-100 hover:text-stone-900"
               >
                 ← Web
               </Link>
               {isAdmin && (
                 <Link
                   href="/admin"
-                  className="rounded-full border border-emerald-300 bg-emerald-50 px-2.5 py-1 text-[11px] font-bold text-emerald-700"
+                  className="rounded-full border border-emerald-300 bg-emerald-50 px-2.5 py-1.5 text-[11px] font-bold text-emerald-700"
                 >
                   Admin
                 </Link>
               )}
-              <p className="text-sm font-bold text-stone-900">{displayName}</p>
             </div>
-            <p className="text-xs text-stone-600">
-              Saldo: <span className="font-bold text-stone-900">{Number(balance).toFixed(2)} €</span>
-            </p>
+            <div className="flex items-center justify-between rounded-xl bg-stone-50 px-4 py-3">
+              <p className="truncate text-sm font-bold text-stone-900 pr-2">{displayName}</p>
+              <p className="shrink-0 text-sm font-bold tabular-nums text-stone-900">
+                {Number(balance).toFixed(2)} €
+              </p>
+            </div>
           </div>
           {children}
         </main>
       </div>
+
+      <PanelMobileNav />
     </div>
   );
 }
