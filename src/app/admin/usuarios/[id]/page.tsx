@@ -118,7 +118,7 @@ export default async function AdminUsuarioPage({ params }: PageProps) {
                 >
                   <div>
                     <p className="font-bold text-stone-900">
-                      {b.courts?.name ?? 'Pista'}
+                      {(Array.isArray(b.courts) ? b.courts[0]?.name : (b.courts as { name?: string } | null)?.name) ?? 'Pista'}
                     </p>
                     <p className="text-xs font-medium text-stone-600">
                       {formatDate(b.booking_date)} · {b.start_time.slice(0, 5)} -{' '}

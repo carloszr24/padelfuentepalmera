@@ -71,10 +71,12 @@ export default async function PanelPage() {
         ) : (
           <div className="overflow-hidden rounded-xl border border-stone-200 bg-white">
             <ul className="divide-y divide-stone-200 text-sm">
-              {bookings.map((b: { id: string; booking_date: string; start_time: string; end_time: string; status: string; courts: { name: string } | null }) => (
+              {bookings.map((b: { id: string; booking_date: string; start_time: string; end_time: string; status: string; courts: { name: string } | { name: string }[] | null }) => {
+                const courtName = Array.isArray(b.courts) ? b.courts[0]?.name : (b.courts as { name?: string } | null)?.name;
+                return (
                 <li key={b.id} className="flex items-center justify-between gap-4 px-4 py-3.5 transition hover:bg-stone-50">
                   <div>
-                    <p className="font-bold text-stone-900">{displayName} · {b.courts?.name ?? 'Pista'}</p>
+                    <p className="font-bold text-stone-900">{displayName} · {courtName ?? 'Pista'}</p>
                     <p className="text-[11px] font-medium text-stone-600">
                       {new Date(b.booking_date).toLocaleDateString('es-ES', { weekday: 'short', day: '2-digit', month: 'short' })}{' '}
                       · {b.start_time.slice(0, 5)} - {b.end_time.slice(0, 5)}
@@ -82,7 +84,8 @@ export default async function PanelPage() {
                   </div>
                   <span className="rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-bold text-emerald-700">Confirmada</span>
                 </li>
-              ))}
+                );
+              })}
             </ul>
           </div>
         )}

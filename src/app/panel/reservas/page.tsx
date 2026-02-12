@@ -80,11 +80,13 @@ export default async function PanelReservasPage() {
                     end_time: string;
                     status: string;
                     deposit_paid: boolean;
-                    courts: { name: string } | null;
-                  }) => (
+                    courts: { name: string } | { name: string }[] | null;
+                  }) => {
+                    const courtName = Array.isArray(b.courts) ? b.courts[0]?.name : (b.courts as { name?: string } | null)?.name;
+                    return (
                     <tr key={b.id} className="border-b border-stone-100 transition hover:bg-stone-50">
                       <td className="px-4 py-3.5 align-middle font-bold text-stone-900">
-                        {b.courts?.name ?? 'Pista'}
+                        {courtName ?? 'Pista'}
                       </td>
                       <td className="px-4 py-3.5 align-middle font-medium text-stone-800">
                         <p className="leading-tight">{formatDate(b.booking_date)}</p>
@@ -120,8 +122,8 @@ export default async function PanelReservasPage() {
                         />
                       </td>
                     </tr>
-                  )
-                )
+                    );
+                  })
               )}
             </tbody>
           </table>

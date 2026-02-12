@@ -43,30 +43,22 @@ export async function GET(request: Request) {
   const { data: bookings } = await query;
 
   const headers = ['Fecha', 'Hora inicio', 'Hora fin', 'Pista', 'Usuario', 'Email', 'Estado', 'Señal pagada', 'Resto pagado'];
-  const rows = (bookings ?? []).map((b: {
-    booking_date: string;
-    start_time: string;
-    end_time: string;
-    status: string;
-    deposit_paid: boolean;
-    remaining_paid_at: string | null;
-    profiles: { full_name: string | null; email: string | null } | null;
-    courts: { name: string } | null;
-  }) => {
+  const rows = (bookings ?? []).map((b: Record<string, unknown>) => {
     const p = b.profiles;
-    const name = p && typeof p === 'object' && 'full_name' in p ? p.full_name : '';
-    const email = p && typeof p === 'object' && 'email' in p ? p.email : '';
+    const name = Array.isArray(p) ? (p[0] as { full_name?: string | null } | undefined)?.full_name : (p as { full_name?: string | null } | null)?.full_name;
+    const email = Array.isArray(p) ? (p[0] as { email?: string | null } | undefined)?.email : (p as { email?: string | null } | null)?.email;
+    const courtName = Array.isArray(b.courts) ? (b.courts[0] as { name?: string } | undefined)?.name : (b.courts as { name?: string } | null)?.name;
     return [
       b.booking_date,
       String(b.start_time).slice(0, 5),
       String(b.end_time).slice(0, 5),
-      b.courts?.name ?? '',
+      courtName ?? '',
       name ?? '',
       email ?? '',
       b.status,
-      b.deposit_paid ? 'Sí' : 'No',
-      b.remaining_paid_at ? 'Sí' : 'No',
-    ].map(escapeCsv).join(';');
+      (b.deposit_paid as boolean) ? 'Sí' : 'No',
+      (b.remaining_paid_at as string | null) ? 'Sí' : 'No',
+    ].map((v) => escapeCsv(v as string | number | null | undefined)).join(';');
   });
   const csv = '\uFEFF' + [headers.join(';'), ...rows].join('\n');
 

@@ -46,23 +46,17 @@ export async function GET() {
     .limit(2000);
 
   const headers = ['Fecha', 'Usuario', 'Email', 'Tipo', 'Descripción', 'Importe (€)'];
-  const rows = (transactions ?? []).map((tx: {
-    created_at: string;
-    amount: number;
-    type: string;
-    description: string | null;
-    profiles: { full_name: string | null; email: string | null } | null;
-  }) => {
+  const rows = (transactions ?? []).map((tx: Record<string, unknown>) => {
     const p = tx.profiles;
-    const name = p && typeof p === 'object' && 'full_name' in p ? p.full_name : '';
-    const email = p && typeof p === 'object' && 'email' in p ? p.email : '';
-    const date = new Date(tx.created_at).toLocaleString('es-ES');
+    const name = Array.isArray(p) ? (p[0] as { full_name?: string | null } | undefined)?.full_name : (p as { full_name?: string | null } | null)?.full_name;
+    const email = Array.isArray(p) ? (p[0] as { email?: string | null } | undefined)?.email : (p as { email?: string | null } | null)?.email;
+    const date = new Date(tx.created_at as string).toLocaleString('es-ES');
     return [
       date,
       name ?? '',
       email ?? '',
-      getTransactionLabel(tx.type),
-      tx.description ?? '',
+      getTransactionLabel(tx.type as string),
+      (tx.description as string | null) ?? '',
       Number(tx.amount).toFixed(2),
     ].map(escapeCsv).join(';');
   });
