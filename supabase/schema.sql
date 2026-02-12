@@ -162,6 +162,10 @@ CREATE OR REPLACE FUNCTION public.wallet_recharge(
 )
 RETURNS VOID LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 BEGIN
+  -- Idempotente: si ya acreditamos esta sesión (webhook + confirm al volver), no hacer nada
+  IF p_stripe_session_id IS NOT NULL AND EXISTS (SELECT 1 FROM public.transactions WHERE stripe_session_id = p_stripe_session_id) THEN
+    RETURN;
+  END IF;
   IF p_amount <= 0 THEN RAISE EXCEPTION 'Amount must be positive'; END IF;
   UPDATE public.profiles SET wallet_balance = wallet_balance + p_amount WHERE id = p_user_id;
   IF NOT FOUND THEN

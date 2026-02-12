@@ -1,10 +1,11 @@
 import Link from 'next/link';
 import { getCachedAuth } from '@/lib/auth-server';
 import { AdminPageHeader } from '@/components/ui/admin-page-header';
+import { StripeSuccessCredit } from '@/components/ui/stripe-success-credit';
 import { WalletRechargeButton } from '@/components/ui/wallet-recharge-button';
 
 type PageProps = {
-  searchParams: Promise<{ success?: string; cancel?: string }> | { success?: string; cancel?: string };
+  searchParams: Promise<{ success?: string; cancel?: string; session_id?: string }> | { success?: string; cancel?: string; session_id?: string };
 };
 
 const typeLabel: Record<string, string> = {
@@ -16,8 +17,8 @@ const typeLabel: Record<string, string> = {
 
 export default async function PanelMonederoPage({ searchParams }: PageProps) {
   const params = typeof (searchParams as Promise<unknown>).then === 'function'
-    ? await (searchParams as Promise<{ success?: string; cancel?: string }>)
-    : (searchParams as { success?: string; cancel?: string });
+    ? await (searchParams as Promise<{ success?: string; cancel?: string; session_id?: string }>)
+    : (searchParams as { success?: string; cancel?: string; session_id?: string });
 
   const { user, profile, supabase } = await getCachedAuth();
 
@@ -34,7 +35,10 @@ export default async function PanelMonederoPage({ searchParams }: PageProps) {
 
   return (
     <div className="space-y-8">
-      {params?.success === '1' && (
+      {params?.success === '1' && params?.session_id && (
+        <StripeSuccessCredit success={true} sessionId={params.session_id} />
+      )}
+      {params?.success === '1' && !params?.session_id && (
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">
           Pago completado. Si no ves el saldo actualizado, refresca la página.
         </div>

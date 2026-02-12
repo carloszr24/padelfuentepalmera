@@ -36,7 +36,8 @@ Para que el saldo se actualice al completar el pago, Stripe tiene que llamar a t
    `https://tu-dominio.com/api/stripe/webhook`
 4. **Eventos:** selecciona **checkout.session.completed** (o “Checkout session completed”).
 5. Guarda. En la ficha del endpoint verás **Signing secret** (empieza por `whsec_...`).  
-   Copia ese valor a `STRIPE_WEBHOOK_SECRET` en tu servidor.
+   **Copia ese valor** y ponlo en Vercel como **STRIPE_WEBHOOK_SECRET** (Settings → Environment Variables).  
+   **Importante:** en producción usa **siempre** el secret del endpoint de producción que acabas de crear, **no** el que te da `stripe listen` en local. Si en Vercel tienes el secret de local, el webhook fallará (firma inválida) y el saldo no se actualizará.
 
 ### En local (Stripe CLI)
 
@@ -95,6 +96,11 @@ Pasos: inicia sesión → **Panel** → **Monedero** → **Recargar monedero** �
 ---
 
 ## 6. Si el saldo no se actualiza tras recargar
+
+0. **Diagnóstico rápido (admin)**  
+   Inicia sesión como **admin** y abre en el navegador:  
+   `https://tu-dominio.com/api/admin/debug-wallet`  
+   Verás si Stripe/Supabase están configurados y si la función **wallet_recharge** existe en Supabase. Sigue el **hint** que salga.
 
 1. **Comprobar que la URL del webhook responde con JSON**  
    Abre en el navegador: `https://tu-dominio.com/api/stripe/webhook`  
