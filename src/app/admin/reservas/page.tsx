@@ -119,13 +119,16 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
                   </td>
                 </tr>
               ) : (
-                bookings?.map((b) => (
+                bookings?.map((b) => {
+                  const courtName = Array.isArray(b.courts) ? b.courts[0]?.name : (b.courts as { name?: string } | null)?.name;
+                  const profileName = Array.isArray(b.profiles) ? b.profiles[0]?.full_name : (b.profiles as { full_name?: string } | null)?.full_name;
+                  return (
                   <tr key={b.id} className="border-b border-stone-100 transition hover:bg-stone-50">
                     <td className="px-4 py-3.5 align-middle font-bold text-stone-900">
-                      {b.courts?.name ?? 'Pista'}
+                      {courtName ?? 'Pista'}
                     </td>
                     <td className="px-4 py-3.5 align-middle font-medium text-stone-800">
-                      {b.profiles?.full_name ?? 'Usuario'}
+                      {profileName ?? 'Usuario'}
                     </td>
                     <td className="px-4 py-3.5 align-middle font-medium text-stone-800">
                       <p className="leading-tight">{formatDate(b.booking_date)}</p>
@@ -162,7 +165,8 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
                       )}
                     </td>
                   </tr>
-                ))
+                  );
+                })
               )}
             </tbody>
           </table>
