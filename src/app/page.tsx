@@ -31,7 +31,13 @@ const NOVEDADES_SLIDER = [
 ];
 
 export default async function Home() {
-  const { user } = await getCachedAuth();
+  let user: Awaited<ReturnType<typeof getCachedAuth>>['user'] = null;
+  try {
+    const auth = await getCachedAuth();
+    user = auth.user;
+  } catch {
+    // Si falla auth (env vars, Supabase, etc.) mostramos la landing sin usuario
+  }
   return (
     <div className="min-h-screen bg-stone-100 text-stone-900">
       <LandingHeader isLoggedIn={!!user} />

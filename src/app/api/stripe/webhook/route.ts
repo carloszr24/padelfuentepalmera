@@ -7,6 +7,14 @@ const stripe = process.env.STRIPE_SECRET_KEY
   : null;
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
+/** GET: comprobar que la ruta del webhook responde (no que Stripe esté enviando aquí). */
+export async function GET() {
+  return NextResponse.json({
+    ok: true,
+    message: 'Webhook endpoint. Stripe debe enviar POST con stripe-signature.',
+  });
+}
+
 export async function POST(request: Request) {
   if (!stripe || !webhookSecret) {
     console.error('STRIPE_SECRET_KEY o STRIPE_WEBHOOK_SECRET no configurados');
@@ -44,21 +52,42 @@ export async function POST(request: Request) {
     return NextResponse.json({ received: true });
   }
 
-  const session = event.data.object as Stripe.Checkout.Session;
-  const userId = session.metadata?.userId;
-  const amountStr = session.metadata?.amount;
+  let session = event.data.object as Stripe.Checkout.Session;
 
-  if (!userId || !amountStr) {
-    console.error('Webhook: metadata sin userId o amount', session.metadata);
+  // En algunos entornos la metadata no viene en el evento; recuperar la sesión completa.
+  const needsMetadata =
+    !session.metadata?.userId || session.metadata?.amount == null || session.metadata?.amount === '';
+  if (needsMetadata && session.id) {
+    try {
+      const full = await stripe.checkout.sessions.retrieve(session.id);
+      session = full;
+    } catch (retrieveErr) {
+      console.error('Webhook: error al recuperar sesión', session.id, retrieveErr);
+    }
+  }
+
+  const userId =
+    (session.metadata?.userId as string | undefined) ?? session.client_reference_id ?? null;
+  const amountStr = session.metadata?.amount as string | undefined;
+  const amountFromTotal =
+    session.amount_total != null ? Number((session.amount_total / 100).toFixed(2)) : NaN;
+
+  const amount = amountStr != null && amountStr !== '' ? Number(amountStr) : amountFromTotal;
+
+  if (!userId) {
+    console.error('Webhook: no userId (metadata.userId ni client_reference_id)', {
+      sessionId: session.id,
+      metadata: session.metadata,
+      client_reference_id: session.client_reference_id,
+    });
     return NextResponse.json(
-      { error: 'Metadata incompleta' },
+      { error: 'No se pudo identificar al usuario (userId)' },
       { status: 400 }
     );
   }
 
-  const amount = Number(amountStr);
   if (!Number.isFinite(amount) || amount <= 0) {
-    console.error('Webhook: amount inválido', amountStr);
+    console.error('Webhook: amount inválido', { amountStr, amountFromTotal, amount });
     return NextResponse.json({ error: 'Amount inválido' }, { status: 400 });
   }
 
@@ -72,13 +101,14 @@ export async function POST(request: Request) {
     });
 
     if (error) {
-      console.error('wallet_recharge error:', error);
+      console.error('wallet_recharge error:', error.message, error.details, { userId, amount });
       return NextResponse.json(
-        { error: 'Error al acreditar el monedero' },
+        { error: 'Error al acreditar el monedero', detail: error.message },
         { status: 500 }
       );
     }
 
+    console.info('Webhook: wallet_recharge OK', { userId, amount, sessionId: session.id });
     return NextResponse.json({ received: true });
   } catch (e) {
     console.error('Webhook exception:', e);

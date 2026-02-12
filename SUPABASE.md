@@ -71,3 +71,21 @@ Si en tu proyecto los nombres de las restricciones FK son otros (por ejemplo si 
    WHERE conrelid = 'public.bookings'::regclass AND contype = 'f';
    ```
 3. Verás algo como `bookings_user_id_fkey`, `bookings_court_id_fkey`, `bookings_created_by_fkey`. Si el de `user_id` se llama distinto (p. ej. `bookings_profiles_user_id_fkey`), hay que usar ese nombre en el código o avisar para ajustar la query.
+
+---
+
+## Si el saldo del monedero no se actualiza tras recargar con Stripe
+
+1. **Comprobar en Supabase que la función existe**  
+   En **SQL Editor** ejecuta el archivo **`supabase/verificar-monedero.sql`** de este repo. Ese script recrea la función `wallet_recharge` por si tenías una versión antigua y comprueba que exista.
+
+2. **Comprobar variables de entorno en Vercel**  
+   El webhook usa **`SUPABASE_SERVICE_ROLE_KEY`** (no la anon key). En el proyecto de Vercel → **Settings** → **Environment Variables** debe estar definida. Sin ella, el webhook falla al llamar a Supabase.
+
+3. **Comprobar que el webhook recibe la petición**  
+   En Stripe → **Developers** → **Webhooks** → tu endpoint: revisa los intentos recientes. Si el estado es "Failed" o la respuesta es HTML en lugar de JSON, el proxy o la URL pueden estar mal. La URL debe ser `https://tu-dominio.com/api/stripe/webhook` y las rutas `/api/` no deben redirigir a la landing.
+
+4. **Comprobar en Supabase después de una recarga de prueba**  
+   - **Table Editor** → **profiles**: busca el usuario que recargó y mira si **wallet_balance** ha aumentado.  
+   - **Table Editor** → **transactions**: ordena por **created_at** descendente y comprueba si hay una fila nueva con **type** = `recharge` y el **user_id** correcto.  
+   Si no hay fila nueva ni cambio de saldo, el webhook no está llamando bien a la función o la función no está en tu proyecto (vuelve al paso 1).

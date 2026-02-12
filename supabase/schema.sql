@@ -153,7 +153,7 @@ RETURNS BOOLEAN LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS
   );
 $$;
 
--- Recarga monedero (Stripe webhook)
+-- Recarga monedero (Stripe webhook). created_by = quien ejecuta o el propio usuario si es webhook (sin auth)
 CREATE OR REPLACE FUNCTION public.wallet_recharge(
   p_user_id UUID,
   p_amount NUMERIC,
@@ -164,8 +164,11 @@ RETURNS VOID LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 BEGIN
   IF p_amount <= 0 THEN RAISE EXCEPTION 'Amount must be positive'; END IF;
   UPDATE public.profiles SET wallet_balance = wallet_balance + p_amount WHERE id = p_user_id;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'Profile not found for user %', p_user_id;
+  END IF;
   INSERT INTO public.transactions (user_id, type, amount, description, stripe_session_id, created_by)
-  VALUES (p_user_id, 'recharge', p_amount, COALESCE(p_description, 'Recarga monedero'), p_stripe_session_id, auth.uid());
+  VALUES (p_user_id, 'recharge', p_amount, COALESCE(p_description, 'Recarga monedero'), p_stripe_session_id, COALESCE(auth.uid(), p_user_id));
 END;
 $$;
 
