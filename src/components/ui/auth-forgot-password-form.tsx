@@ -18,11 +18,11 @@ export function AuthForgotPasswordForm() {
       setLoading(true);
       const supabase = getBrowserSupabaseClient();
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/nueva-contrasena`,
+        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://padelfuentepalmera-112d-carloszr24s-projects.vercel.app'}/auth/callback`,
       });
 
       if (resetError) {
-        setError(resetError.message);
+        setError(resetError.message || 'Error enviando el email. Revisa la configuración SMTP en Supabase.');
         return;
       }
 

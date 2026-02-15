@@ -19,17 +19,23 @@ Para que la **verificación de email** y la **recuperación de contraseña** fun
    ```
    https://padelfuentepalmera-112d-carloszr24s-projects.vercel.app
    ```
-3. **Redirect URLs**: añade estas URLs (una por línea):
+3. **Redirect URLs**: añade estas URLs (una por línea) con tu dominio de Vercel:
    ```
+   https://padelfuentepalmera-112d-carloszr24s-projects.vercel.app/auth/callback
+   https://padelfuentepalmera-112d-carloszr24s-projects.vercel.app/auth/callback?next=/nueva-contrasena
+   https://padelfuentepalmera-112d-carloszr24s-projects.vercel.app/auth/callback?next=/panel
    https://padelfuentepalmera-112d-carloszr24s-projects.vercel.app/panel
    https://padelfuentepalmera-112d-carloszr24s-projects.vercel.app/verificar-email
    https://padelfuentepalmera-112d-carloszr24s-projects.vercel.app/nueva-contrasena
+   http://localhost:3000/auth/callback
+   http://localhost:3000/auth/callback?next=/nueva-contrasena
+   http://localhost:3000/auth/callback?next=/panel
    http://localhost:3000/panel
    http://localhost:3000/verificar-email
    http://localhost:3000/nueva-contrasena
    ```
    - Tras **confirmar el email**, Supabase redirige a la primera (o a la que tengas como Site URL + path por defecto; si hace falta, en la plantilla de email puedes usar `{{ .ConfirmationURL }}` que Supabase reemplaza).
-   - El enlace de **recuperar contraseña** debe llevar a `/nueva-contrasena` (ya configurado en la app).
+   - El enlace de **recuperar contraseña** y el de **confirmar email** redirigen a `/auth/callback`, que intercambia el código por sesión y envía a `/nueva-contrasena` (recovery) o `/panel` (signup). Añade `/auth/callback` a Redirect URLs.
 
 ---
 
@@ -41,10 +47,11 @@ Para que la **verificación de email** y la **recuperación de contraseña** fun
 ### Confirm signup (Confirmar registro)
 - **Subject**: `Confirma tu cuenta - Fuente Palmera Pádel`
 - **Body**: texto en español indicando que debe hacer clic en el enlace para activar la cuenta. Usa `{{ .ConfirmationURL }}` como enlace.
+- Para que tras confirmar vaya al panel, en **URL Configuration** añade como Redirect URL: `https://padelfuentepalmera-112d-carloszr24s-projects.vercel.app/auth/callback?next=/panel` (y la equivalente en localhost si aplica). Así el enlace de confirmación redirigirá a `/auth/callback`, que creará la sesión y enviará al usuario a `/panel`.
 
 ### Reset password (Recuperar contraseña)
 - **Subject**: `Restablece tu contraseña - Fuente Palmera Pádel`
-- **Body**: texto en español indicando que ha solicitado cambiar la contraseña y que debe hacer clic en el enlace. Usa `{{ .ConfirmationURL }}` (o el equivalente que ofrezca la plantilla) como enlace; ese enlace debe apuntar a tu dominio y path `/nueva-contrasena` si Supabase lo permite configurar).
+- **Body**: texto en español indicando que ha solicitado cambiar la contraseña y que debe hacer clic en el enlace. Usa `{{ .ConfirmationURL }}` (o el equivalente que ofrezca la plantilla) como enlace. El enlace redirige a `https://padelfuentepalmera-112d-carloszr24s-projects.vercel.app/auth/callback?next=/nueva-contrasena`.
 
 Si en la plantilla solo aparece una URL genérica, asegúrate de que en **Redirect URLs** esté `https://padelfuentepalmera-112d-carloszr24s-projects.vercel.app/nueva-contrasena` para que el enlace de “reset password” abra esa ruta.
 

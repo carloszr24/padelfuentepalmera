@@ -42,6 +42,26 @@ Añade estos registros en el panel DNS de donde esté gestionado **padelfuentepa
 
 ---
 
+### 5. SPF – Autorizar a SendGrid a enviar (reduce spam)
+
+Solo puede existir **un** registro SPF por dominio. Si ya tienes uno (p. ej. de IONOS para el correo normal), **edítalo** para añadir SendGrid; no crees otro.
+
+**Si ya tienes un SPF** (en IONOS suele ser un TXT con valor `v=spf1 include:_spf-eu.ionos.com ...`):
+- Edita ese registro TXT y **añade** `include:sendgrid.net` antes de `~all` o `-all`.
+- Ejemplo si ahora tienes:  
+  `v=spf1 include:_spf-eu.ionos.com ~all`  
+  déjalo así:  
+  `v=spf1 include:_spf-eu.ionos.com include:sendgrid.net ~all`
+
+**Si no tienes ningún SPF**, crea un TXT:
+| Tipo | Nombre / Host | Valor |
+|------|----------------|-------|
+| TXT | `@` (o vacío, o `padelfuentepalmera.com` según IONOS) | `v=spf1 include:sendgrid.net ~all` |
+
+Así los proveedores (Gmail, Outlook, etc.) reconocen que SendGrid puede enviar por tu dominio y es menos probable que marquen el correo como spam.
+
+---
+
 ## Pasos genéricos en cualquier panel DNS
 
 1. Entra donde gestionas el DNS de **padelfuentepalmera.com** (registrador o Cloudflare, etc.).
@@ -69,6 +89,8 @@ Añade estos registros en el panel DNS de donde esté gestionado **padelfuentepa
 | 2 | CNAME | `s1._domainkey` | `s1.domainkey.u59898151.wl152.sendgrid.net` |
 | 3 | CNAME | `s2._domainkey` | `s2.domainkey.u59898151.wl152.sendgrid.net` |
 | 4 | TXT | `_dmarc` | `v=DMARC1; p=none;` |
+
+5. **SPF (evitar spam):** En IONOS busca el registro **TXT** que tenga en el valor `v=spf1` (suele ser el del dominio raíz). **Edítalo** y dentro del valor añade `include:sendgrid.net` antes de `~all` o `-all`. Ejemplo: de `v=spf1 include:_spf-eu.ionos.com ~all` a `v=spf1 include:_spf-eu.ionos.com include:sendgrid.net ~all`. Si no tienes SPF, crea un TXT con nombre `@` (o el que use IONOS para el dominio) y valor `v=spf1 include:sendgrid.net ~all`.
 
 - **CNAME:** elige tipo **CNAME**, en *Host name* / *Hostname* pon solo el subdominio (ej. `em5338`), en *Point to* / *Destino* el valor de la tabla. Sin `https://`.
 - **TXT:** elige tipo **TXT**, en *Host name* pon `_dmarc`, en *Value* / *Contenido* pon `v=DMARC1; p=none;`.

@@ -54,9 +54,11 @@ export default async function ForgotPasswordPage({ searchParams }: PageProps) {
           </div>
 
           <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5">
-            {params?.error === 'invalid-token' && (
+            {(params?.error === 'invalid-token' || params?.error === 'link_expired') && (
               <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs font-medium text-amber-800">
-                El enlace de recuperación no es válido o ha expirado. Solicita uno nuevo.
+                {params?.error === 'link_expired'
+                  ? 'Este enlace ha caducado (suelen ser válidos 1 hora). Solicita uno nuevo abajo.'
+                  : 'El enlace de recuperación no es válido o ha expirado. Solicita uno nuevo.'}
               </div>
             )}
             <AuthForgotPasswordForm />
