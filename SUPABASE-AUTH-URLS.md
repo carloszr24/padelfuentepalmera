@@ -46,8 +46,12 @@ Para que la **verificación de email** y la **recuperación de contraseña** fun
 
 ### Confirm signup (Confirmar registro)
 - **Subject**: `Confirma tu cuenta - Fuente Palmera Pádel`
-- **Body**: texto en español indicando que debe hacer clic en el enlace para activar la cuenta. Usa `{{ .ConfirmationURL }}` como enlace.
-- Para que tras confirmar vaya al panel, en **URL Configuration** añade como Redirect URL: `https://padelfuentepalmera-112d-carloszr24s-projects.vercel.app/auth/callback?next=/panel` (y la equivalente en localhost si aplica). Así el enlace de confirmación redirigirá a `/auth/callback`, que creará la sesión y enviará al usuario a `/panel`.
+- **Body**: texto en español indicando que debe hacer clic en el enlace para activar la cuenta.
+- **Enlace en la plantilla (importante)**: no uses `{{ .ConfirmationURL }}`. Usa esta URL para que el callback de la app cree la sesión y redirija a `/panel`:
+  ```
+  {{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=signup
+  ```
+  Así el usuario llega a `/auth/callback` con `type=signup`, la app hace `verifyOtp` y redirige a `/panel`.
 
 ### Reset password (Recuperar contraseña)
 - **Subject**: `Restablece tu contraseña - Fuente Palmera Pádel`
