@@ -39,7 +39,7 @@ export default async function PanelLayout({ children }: PanelLayoutProps) {
         <aside className="hidden w-64 flex-shrink-0 flex-col rounded-3xl border border-stone-200 bg-white p-5 shadow-lg shadow-stone-200/80 md:flex">
           <Link href="/" className="mb-6 flex items-center gap-3 rounded-xl transition hover:opacity-90">
             <div className="relative flex h-10 w-10 flex-shrink-0 overflow-hidden">
-              <Image src="/logo.png" alt="Fuente Palmera" width={40} height={40} className="size-full object-contain" />
+              <Image src="/logo.png" alt="Fuente Palmera" width={40} height={40} className="size-full object-contain mix-blend-multiply" />
             </div>
             <div className="flex flex-col">
               <span className="text-xs font-bold uppercase tracking-[0.18em] text-stone-500">

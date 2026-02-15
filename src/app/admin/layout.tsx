@@ -35,7 +35,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
           <div className="mb-6 flex items-center justify-between gap-2">
             <div className="flex items-center gap-3">
               <div className="relative flex h-10 w-10 flex-shrink-0 overflow-hidden">
-                <Image src="/logo.png" alt="Fuente Palmera" width={40} height={40} className="size-full object-contain" />
+                <Image src="/logo.png" alt="Fuente Palmera" width={40} height={40} className="size-full object-contain mix-blend-multiply" />
               </div>
               <div className="flex flex-col">
                 <span className="text-xs font-bold uppercase tracking-[0.18em] text-stone-500">
