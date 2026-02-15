@@ -37,9 +37,9 @@ export default async function PanelLayout({ children }: PanelLayoutProps) {
       <div className="mx-auto flex max-w-6xl gap-6 px-4 py-6 md:px-6 lg:px-8">
         {/* Sidebar */}
         <aside className="hidden w-64 flex-shrink-0 flex-col rounded-3xl border border-stone-200 bg-white p-5 shadow-lg shadow-stone-200/80 md:flex">
-          <Link href="/" className="mb-6 flex items-center gap-3 rounded-xl transition hover:opacity-90">
-            <div className="relative flex h-10 w-10 flex-shrink-0 overflow-hidden">
-              <Image src="/logo.png" alt="Fuente Palmera" width={40} height={40} className="size-full object-contain mix-blend-multiply" />
+          <Link href="/" className="mb-6 flex items-center gap-3 transition hover:opacity-90 outline-none">
+            <div className="flex h-10 w-10 flex-shrink-0 border-0 bg-transparent shadow-none outline-none ring-0">
+              <Image src="/logo.png" alt="Fuente Palmera" width={40} height={40} className="size-full object-contain mix-blend-multiply border-0 shadow-none outline-none ring-0" />
             </div>
             <div className="flex flex-col">
               <span className="text-xs font-bold uppercase tracking-[0.18em] text-stone-500">
