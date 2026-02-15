@@ -17,6 +17,12 @@ export default async function PanelLayout({ children }: PanelLayoutProps) {
     redirect('/login');
   }
 
+  // Si Supabase tiene confirmación de email activada, no permitir acceso hasta verificar.
+  const emailConfirmed = (user as { email_confirmed_at?: string | null }).email_confirmed_at;
+  if (!emailConfirmed) {
+    redirect('/verificar-email');
+  }
+
   const isAdmin = profile?.role === 'admin';
 
   const displayName =

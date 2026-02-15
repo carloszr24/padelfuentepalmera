@@ -4,10 +4,9 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getBrowserSupabaseClient } from '@/lib/supabase/client';
 
-export function AuthRegisterForm() {
-  const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState('');
+export function AuthResetPasswordForm() {
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -17,30 +16,32 @@ export function AuthRegisterForm() {
     e.preventDefault();
     setError(null);
 
+    if (password !== confirmPassword) {
+      setError('Las contraseñas no coinciden');
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('La contraseña debe tener al menos 6 caracteres');
+      return;
+    }
+
     try {
       setLoading(true);
       const supabase = getBrowserSupabaseClient();
-
-      const { error: signUpError } = await supabase.auth.signUp({
-        email,
+      const { error: updateError } = await supabase.auth.updateUser({
         password,
-        options: {
-          data: {
-            full_name: fullName,
-          },
-        },
       });
 
-      if (signUpError) {
-        setError(signUpError.message);
+      if (updateError) {
+        setError(updateError.message);
         return;
       }
 
-      // Con confirmación de email activada en Supabase, el usuario debe verificar antes de entrar al panel.
-      router.push('/verificar-email');
+      router.push('/login?password-reset=success');
       router.refresh();
     } catch {
-      setError('No se ha podido completar el registro. Inténtalo de nuevo.');
+      setError('No se ha podido actualizar la contraseña. Inténtalo de nuevo.');
     } finally {
       setLoading(false);
     }
@@ -50,49 +51,13 @@ export function AuthRegisterForm() {
     <form onSubmit={handleSubmit} className="space-y-4 text-sm">
       <div className="space-y-1">
         <label
-          htmlFor="fullName"
+          htmlFor="reset-password"
           className="text-xs font-bold text-stone-700"
         >
-          Nombre completo
+          Nueva contraseña
         </label>
         <input
-          id="fullName"
-          type="text"
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
-          required
-          className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
-          placeholder="Tu nombre y apellidos"
-        />
-      </div>
-
-      <div className="space-y-1">
-        <label
-          htmlFor="email"
-          className="text-xs font-bold text-stone-700"
-        >
-          Email
-        </label>
-        <input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
-          placeholder="tu@email.com"
-        />
-      </div>
-
-      <div className="space-y-1">
-        <label
-          htmlFor="password"
-          className="text-xs font-bold text-stone-700"
-        >
-          Contraseña
-        </label>
-        <input
-          id="password"
+          id="reset-password"
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -100,6 +65,25 @@ export function AuthRegisterForm() {
           minLength={6}
           className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
           placeholder="Mínimo 6 caracteres"
+        />
+      </div>
+
+      <div className="space-y-1">
+        <label
+          htmlFor="reset-confirm"
+          className="text-xs font-bold text-stone-700"
+        >
+          Confirmar contraseña
+        </label>
+        <input
+          id="reset-confirm"
+          type="password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          required
+          minLength={6}
+          className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
+          placeholder="Repite la contraseña"
         />
       </div>
 
@@ -112,9 +96,8 @@ export function AuthRegisterForm() {
         disabled={loading}
         className="mt-2 w-full rounded-full bg-[#1d4ed8] px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-[#1d4ed8]/30 hover:bg-[#2563eb] disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {loading ? 'Creando cuenta...' : 'Crear cuenta'}
+        {loading ? 'Actualizando...' : 'Cambiar contraseña'}
       </button>
     </form>
   );
 }
-
