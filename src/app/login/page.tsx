@@ -8,7 +8,9 @@ export const metadata = {
   description: 'Accede a tu cuenta de Fuente Palmera Pádel para gestionar reservas y monedero.',
 };
 
-export default async function LoginPage() {
+type Props = { searchParams: Promise<{ verified?: string }> };
+
+export default async function LoginPage({ searchParams }: Props) {
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },
@@ -18,10 +20,18 @@ export default async function LoginPage() {
     redirect('/panel');
   }
 
+  const params = await searchParams;
+  const showVerifiedBanner = params.verified === 'true';
+
   return (
     <div className="min-h-screen bg-stone-100 text-stone-900">
-      <div className="mx-auto flex min-h-screen max-w-6xl items-center justify-center px-4 md:px-6 lg:px-8">
-        <div className="grid w-full gap-10 rounded-3xl border border-stone-200 bg-white p-6 shadow-xl shadow-stone-200/80 md:grid-cols-[1.1fr,1fr] md:p-10">
+      <div className="mx-auto flex min-h-screen max-w-6xl flex-col items-center justify-center px-4 md:px-6 lg:px-8">
+        {showVerifiedBanner ? (
+          <div className="mb-4 w-full max-w-2xl rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-center text-sm font-medium text-green-800">
+            Tu cuenta ha sido verificada. Ya puedes iniciar sesión.
+          </div>
+        ) : null}
+        <div className="grid w-full max-w-6xl gap-10 rounded-3xl border border-stone-200 bg-white p-6 shadow-xl shadow-stone-200/80 md:grid-cols-[1.1fr,1fr] md:p-10">
           <div className="space-y-4">
             <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#1d4ed8]">
               Fuente Palmera Padel Club

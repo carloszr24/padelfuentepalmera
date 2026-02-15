@@ -1,17 +1,21 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { getBrowserSupabaseClient } from '@/lib/supabase/client';
 
 export function AuthRegisterForm() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [registeredEmail, setRegisteredEmail] = useState<string | null>(null);
 
-  const router = useRouter();
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendSent, setResendSent] = useState(false);
+  const [resendError, setResendError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,6 +31,7 @@ export function AuthRegisterForm() {
         options: {
           data: {
             full_name: fullName,
+            phone: phone || undefined,
           },
         },
       });
@@ -36,15 +41,77 @@ export function AuthRegisterForm() {
         return;
       }
 
-      // Con confirmación de email activada en Supabase, el usuario debe verificar antes de entrar al panel.
-      router.push('/verificar-email');
-      router.refresh();
+      setRegisteredEmail(email);
     } catch {
       setError('No se ha podido completar el registro. Inténtalo de nuevo.');
     } finally {
       setLoading(false);
     }
   };
+
+  const handleResend = async () => {
+    if (!registeredEmail) return;
+    setResendError(null);
+    try {
+      setResendLoading(true);
+      const supabase = getBrowserSupabaseClient();
+      const { error: resendError } = await supabase.auth.resend({
+        type: 'signup',
+        email: registeredEmail,
+      });
+      if (resendError) {
+        setResendError(resendError.message);
+        return;
+      }
+      setResendSent(true);
+    } catch {
+      setResendError('No se ha podido reenviar. Inténtalo más tarde.');
+    } finally {
+      setResendLoading(false);
+    }
+  };
+
+  if (registeredEmail) {
+    return (
+      <div className="space-y-5 text-sm">
+        <div className="flex justify-center">
+          <div className="flex size-16 items-center justify-center rounded-full bg-green-100 text-green-600">
+            <svg className="size-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </div>
+        </div>
+        <h2 className="text-center text-xl font-bold text-stone-900">
+          ¡Revisa tu correo!
+        </h2>
+        <p className="text-center text-stone-600">
+          Hemos enviado un email de verificación a <strong>{registeredEmail}</strong>. Haz clic en el enlace del correo para activar tu cuenta.
+        </p>
+        <p className="text-center text-xs text-stone-500">
+          Si no lo encuentras, revisa la carpeta de spam.
+        </p>
+        <div className="space-y-2">
+          <button
+            type="button"
+            onClick={handleResend}
+            disabled={resendLoading || resendSent}
+            className="w-full rounded-full border border-stone-300 bg-white px-4 py-2.5 text-sm font-semibold text-stone-700 transition hover:bg-stone-50 disabled:opacity-60"
+          >
+            {resendLoading ? 'Enviando...' : resendSent ? 'Email reenviado' : 'Reenviar email de verificación'}
+          </button>
+          {resendError && <p className="text-center text-xs text-red-600">{resendError}</p>}
+        </div>
+        <p className="text-center">
+          <Link
+            href="/login"
+            className="text-sm font-semibold text-[#1d4ed8] hover:text-[#1e40af]"
+          >
+            Volver a iniciar sesión
+          </Link>
+        </p>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 text-sm">
@@ -86,6 +153,23 @@ export function AuthRegisterForm() {
 
       <div className="space-y-1">
         <label
+          htmlFor="phone"
+          className="text-xs font-bold text-stone-700"
+        >
+          Teléfono
+        </label>
+        <input
+          id="phone"
+          type="tel"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
+          placeholder="Ej. 600 000 000"
+        />
+      </div>
+
+      <div className="space-y-1">
+        <label
           htmlFor="password"
           className="text-xs font-bold text-stone-700"
         >
@@ -117,4 +201,3 @@ export function AuthRegisterForm() {
     </form>
   );
 }
-

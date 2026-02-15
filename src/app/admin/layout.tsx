@@ -18,7 +18,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
 
   const emailConfirmed = (user as { email_confirmed_at?: string | null }).email_confirmed_at;
   if (!emailConfirmed) {
-    redirect('/verificar-email');
+    redirect('/login');
   }
 
   if (profile?.role !== 'admin') {

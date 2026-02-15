@@ -14,7 +14,8 @@ export default async function RegistroPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (user) {
+  const emailConfirmed = user ? (user as { email_confirmed_at?: string | null }).email_confirmed_at : null;
+  if (user && emailConfirmed) {
     redirect('/panel');
   }
 

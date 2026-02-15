@@ -17,7 +17,7 @@ export async function GET(request: Request) {
   const redirectPath =
     type === 'recovery'
       ? '/nueva-contrasena'
-      : '/panel';
+      : '/login?verified=true';
 
   const redirectUrl = `${origin}${redirectPath}`;
   const response = NextResponse.redirect(redirectUrl);

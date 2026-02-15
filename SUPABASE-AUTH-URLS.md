@@ -25,13 +25,11 @@ Para que la **verificación de email** y la **recuperación de contraseña** fun
    https://padelfuentepalmera-112d-carloszr24s-projects.vercel.app/auth/callback?next=/nueva-contrasena
    https://padelfuentepalmera-112d-carloszr24s-projects.vercel.app/auth/callback?next=/panel
    https://padelfuentepalmera-112d-carloszr24s-projects.vercel.app/panel
-   https://padelfuentepalmera-112d-carloszr24s-projects.vercel.app/verificar-email
    https://padelfuentepalmera-112d-carloszr24s-projects.vercel.app/nueva-contrasena
    http://localhost:3000/auth/callback
    http://localhost:3000/auth/callback?next=/nueva-contrasena
    http://localhost:3000/auth/callback?next=/panel
    http://localhost:3000/panel
-   http://localhost:3000/verificar-email
    http://localhost:3000/nueva-contrasena
    ```
    - Tras **confirmar el email**, Supabase redirige a la primera (o a la que tengas como Site URL + path por defecto; si hace falta, en la plantilla de email puedes usar `{{ .ConfirmationURL }}` que Supabase reemplaza).
@@ -47,11 +45,11 @@ Para que la **verificación de email** y la **recuperación de contraseña** fun
 ### Confirm signup (Confirmar registro)
 - **Subject**: `Confirma tu cuenta - Fuente Palmera Pádel`
 - **Body**: texto en español indicando que debe hacer clic en el enlace para activar la cuenta.
-- **Enlace en la plantilla (importante)**: no uses `{{ .ConfirmationURL }}`. Usa esta URL para que el callback de la app cree la sesión y redirija a `/panel`:
+- **Enlace en la plantilla (importante)**: no uses `{{ .ConfirmationURL }}`. Usa esta URL para que el callback cree la sesión y redirija a login con mensaje de éxito:
   ```
   {{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=signup
   ```
-  Así el usuario llega a `/auth/callback` con `type=signup`, la app hace `verifyOtp` y redirige a `/panel`.
+  Así el usuario llega a `/auth/callback` con `type=signup`, la app hace `verifyOtp` y redirige a `/login?verified=true`.
 
 ### Reset password (Recuperar contraseña)
 - **Subject**: `Restablece tu contraseña - Fuente Palmera Pádel`
@@ -65,9 +63,8 @@ Si en la plantilla solo aparece una URL genérica, asegúrate de que en **Redire
 
 | Ruta | Uso |
 |------|-----|
-| `/registro` | Alta; tras registrarse → redirige a `/verificar-email` |
-| `/verificar-email` | Mensaje “Revisa tu bandeja y haz clic en el enlace”; sin email confirmado no se puede entrar al panel |
-| `/login` | Enlace “¿Olvidaste tu contraseña?” → `/recuperar-contrasena` |
+| `/registro` | Alta; tras registrarse se muestra en la misma página “Revisa tu correo” (sin redirigir). Usuario con email no confirmado no puede entrar al panel. |
+| `/login` | Inicio de sesión. Si llega con `?verified=true` se muestra banner “Tu cuenta ha sido verificada”. Enlace “¿Olvidaste tu contraseña?” → `/recuperar-contrasena` |
 | `/recuperar-contrasena` | Formulario con email; Supabase envía correo con enlace |
 | `/nueva-contrasena` | Formulario nueva contraseña (enlace del email); tras guardar → `/login?password-reset=success` |
 
