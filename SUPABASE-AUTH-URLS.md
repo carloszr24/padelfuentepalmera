@@ -56,8 +56,8 @@ Si en la plantilla solo aparece una URL genérica, asegúrate de que en **Redire
 |------|-----|
 | `/registro` | Alta; tras registrarse → redirige a `/verificar-email` |
 | `/verificar-email` | Mensaje “Revisa tu bandeja y haz clic en el enlace”; sin email confirmado no se puede entrar al panel |
-| `/login` | Enlace “¿Olvidaste tu contraseña?” → `/recuperar-contraseña` |
-| `/recuperar-contraseña` | Formulario con email; Supabase envía correo con enlace |
+| `/login` | Enlace “¿Olvidaste tu contraseña?” → `/recuperar-contrasena` |
+| `/recuperar-contrasena` | Formulario con email; Supabase envía correo con enlace |
 | `/nueva-contrasena` | Formulario nueva contraseña (enlace del email); tras guardar → `/login?password-reset=success` |
 
 ---

@@ -80,7 +80,7 @@ export function AuthLoginForm() {
             Contraseña
           </label>
           <Link
-            href="/recuperar-contraseña"
+            href="/recuperar-contrasena"
             className="text-xs font-semibold text-[#1d4ed8] hover:text-[#1e40af] hover:underline"
           >
             ¿Olvidaste tu contraseña?

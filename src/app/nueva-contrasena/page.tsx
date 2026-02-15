@@ -15,7 +15,7 @@ export default async function NuevaContrasenaPage() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect('/recuperar-contraseña?error=invalid-token');
+    redirect('/recuperar-contrasena?error=invalid-token');
   }
 
   return (
