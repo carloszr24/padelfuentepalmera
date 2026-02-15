@@ -75,9 +75,9 @@ export function AuthResetPasswordForm() {
 
   if (success) {
     return (
-      <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-6 text-center">
-        <p className="text-sm font-bold text-emerald-400">Contraseña actualizada</p>
-        <p className="mt-2 text-xs text-stone-300">
+      <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-5 text-center">
+        <p className="text-sm font-bold text-emerald-900">Contraseña actualizada</p>
+        <p className="mt-2 text-xs text-emerald-800">
           Redirigiendo al inicio de sesión...
         </p>
       </div>
@@ -89,7 +89,7 @@ export function AuthResetPasswordForm() {
       <div className="space-y-1">
         <label
           htmlFor="reset-password"
-          className="text-xs font-bold text-stone-300"
+          className="text-xs font-bold text-stone-700"
         >
           Nueva contraseña
         </label>
@@ -101,13 +101,13 @@ export function AuthResetPasswordForm() {
             onChange={(e) => setPassword(e.target.value)}
             required
             minLength={6}
-            className="w-full rounded-xl border border-stone-600 bg-stone-800/50 py-2.5 pl-3 pr-10 text-sm text-white outline-none placeholder:text-stone-500 focus:border-[#B5235D] focus:ring-2 focus:ring-[#B5235D]/30"
+            className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 pr-10 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
             placeholder="Mínimo 6 caracteres"
           />
           <button
             type="button"
             onClick={() => setShowPassword((s) => !s)}
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-200"
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"
             aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
           >
             {showPassword ? <EyeOffIcon /> : <EyeIcon />}
@@ -118,7 +118,7 @@ export function AuthResetPasswordForm() {
       <div className="space-y-1">
         <label
           htmlFor="reset-confirm"
-          className="text-xs font-bold text-stone-300"
+          className="text-xs font-bold text-stone-700"
         >
           Confirmar contraseña
         </label>
@@ -130,13 +130,13 @@ export function AuthResetPasswordForm() {
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
             minLength={6}
-            className="w-full rounded-xl border border-stone-600 bg-stone-800/50 py-2.5 pl-3 pr-10 text-sm text-white outline-none placeholder:text-stone-500 focus:border-[#B5235D] focus:ring-2 focus:ring-[#B5235D]/30"
+            className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 pr-10 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
             placeholder="Repite la contraseña"
           />
           <button
             type="button"
             onClick={() => setShowConfirm((s) => !s)}
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-200"
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600"
             aria-label={showConfirm ? 'Ocultar contraseña' : 'Mostrar contraseña'}
           >
             {showConfirm ? <EyeOffIcon /> : <EyeIcon />}
@@ -145,13 +145,13 @@ export function AuthResetPasswordForm() {
       </div>
 
       {error ? (
-        <p className="text-xs font-medium text-red-400">{error}</p>
+        <p className="text-xs font-medium text-red-600">{error}</p>
       ) : null}
 
       <button
         type="submit"
         disabled={loading}
-        className="mt-2 w-full rounded-full bg-[#B5235D] px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-[#B5235D]/30 hover:bg-[#9a1e4e] disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-2 w-full rounded-full bg-[#1d4ed8] px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-[#1d4ed8]/30 hover:bg-[#2563eb] disabled:cursor-not-allowed disabled:opacity-60"
       >
         {loading ? 'Guardando...' : 'Guardar nueva contraseña'}
       </button>

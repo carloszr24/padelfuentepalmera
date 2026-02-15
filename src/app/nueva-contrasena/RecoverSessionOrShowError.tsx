@@ -48,7 +48,7 @@ export function RecoverSessionOrShowError() {
 
   if (status === 'checking') {
     return (
-      <p className="text-center text-sm text-stone-400">
+      <p className="text-center text-sm text-stone-600">
         Comprobando enlace...
       </p>
     );
@@ -56,20 +56,20 @@ export function RecoverSessionOrShowError() {
 
   if (status === 'recovered') {
     return (
-      <p className="text-center text-sm text-stone-400">
+      <p className="text-center text-sm text-stone-600">
         Redirigiendo...
       </p>
     );
   }
 
   return (
-    <div className="space-y-4 rounded-2xl border border-stone-700 bg-stone-800/50 p-6 text-center">
-      <p className="text-sm font-medium text-red-400">
+    <div className="space-y-4 rounded-xl border border-amber-200 bg-amber-50 p-5 text-center">
+      <p className="text-sm font-medium text-amber-800">
         El enlace de recuperación no es válido o ha expirado. Solicita uno nuevo.
       </p>
       <Link
         href="/recuperar-contrasena"
-        className="inline-block rounded-full bg-[#B5235D] px-4 py-2 text-sm font-bold text-white hover:bg-[#9a1e4e]"
+        className="inline-block rounded-full bg-[#1d4ed8] px-4 py-2.5 text-sm font-bold text-white shadow-[#1d4ed8]/30 hover:bg-[#2563eb]"
       >
         Solicitar nuevo enlace
       </Link>
