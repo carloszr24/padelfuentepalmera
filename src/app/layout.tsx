@@ -24,6 +24,7 @@ export const metadata: Metadata = {
     description: "Reserva tu pista en segundos, monedero digital e instalaciones premium.",
   },
   robots: { index: true, follow: true },
+  icons: { icon: "/logo.png" },
 };
 
 export default function RootLayout({

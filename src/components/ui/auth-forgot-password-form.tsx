@@ -18,7 +18,7 @@ export function AuthForgotPasswordForm() {
       setLoading(true);
       const supabase = getBrowserSupabaseClient();
       const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL ?? 'https://padelfuentepalmera-112d-carloszr24s-projects.vercel.app'}/auth/callback`,
+        redirectTo: `${process.env.NEXT_PUBLIC_URL ?? (typeof window !== 'undefined' ? window.location.origin : '')}/auth/callback`,
       });
 
       if (resetError) {

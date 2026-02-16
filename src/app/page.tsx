@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { getCachedAuth } from '@/lib/auth-server';
 import { LandingHeader } from '@/components/ui/landing-header';
@@ -190,7 +191,10 @@ export default async function Home() {
 
       <footer id="contacto" className="border-t border-stone-200 bg-white py-10 text-sm text-stone-600">
         <div className="mx-auto flex max-w-5xl flex-col gap-8 px-5 sm:flex-row sm:items-start sm:justify-between sm:px-8">
-          <div>
+          <div className="flex flex-col gap-4">
+            <Link href="/" className="inline-flex w-fit">
+              <Image src="/logo.png" alt="Fuente Palmera Padel Club" width={120} height={120} className="h-14 w-14 object-contain object-left sm:h-16 sm:w-16" unoptimized />
+            </Link>
             <p className="font-semibold text-stone-900">Fuente Palmera Padel Club</p>
             <p className="mt-1">
               14120 Fuente Palmera (Córdoba)
