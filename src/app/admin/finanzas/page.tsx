@@ -180,7 +180,7 @@ export default function AdminFinanzasPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                 <XAxis dataKey="name" tick={{ fontSize: 12 }} />
                 <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `${v}€`} />
-                <Tooltip formatter={(v: number) => formatEur(v)} />
+                <Tooltip formatter={(v) => formatEur(Number(v ?? 0))} />
                 <Legend />
                 <Bar dataKey="Ingresos" fill="#059669" radius={[4, 4, 0, 0]} name="Ingresos" />
                 <Bar dataKey="Comisiones" fill="#dc2626" radius={[4, 4, 0, 0]} name="Comisiones Stripe" />
@@ -202,8 +202,8 @@ export default function AdminFinanzasPage() {
                 <XAxis dataKey="date" tickFormatter={formatDay} tick={{ fontSize: 11 }} />
                 <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `${v}€`} />
                 <Tooltip
-                  labelFormatter={(label) => formatDay(label)}
-                  formatter={(v: number) => formatEur(v)}
+                  labelFormatter={(label) => formatDay(String(label ?? ''))}
+                  formatter={(v) => formatEur(Number(v ?? 0))}
                 />
                 <Legend />
                 <Area type="monotone" dataKey="income" stackId="1" stroke="#059669" fill="#059669" fillOpacity={0.4} name="Ingresos" />
