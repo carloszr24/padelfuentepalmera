@@ -104,13 +104,14 @@ export async function GET(request: Request) {
       );
     }
 
-    const list = (dayRows ?? []) as {
+    type Row = {
       id: string;
       type: string;
       amount: number;
       created_at: string;
-      profiles: { full_name: string | null } | null;
-    }[];
+      profiles: { full_name: string | null } | { full_name: string | null }[] | null;
+    };
+    const list: Row[] = (dayRows ?? []) as unknown as Row[];
     let totalIncome = 0;
     let totalFees = 0;
     const transactions = list.map((tx) => {
@@ -119,7 +120,7 @@ export async function GET(request: Request) {
       totalIncome += amount;
       totalFees += fee;
       const profile = tx.profiles;
-      const full_name = Array.isArray(profile) ? profile[0]?.full_name : (profile as { full_name?: string | null } | null)?.full_name ?? null;
+      const full_name = Array.isArray(profile) ? profile[0]?.full_name ?? null : (profile?.full_name ?? null);
       return {
         created_at: tx.created_at,
         full_name: full_name ?? null,
