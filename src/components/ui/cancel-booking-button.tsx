@@ -93,17 +93,15 @@ export function CancelBookingButton({
               Se te devolverán {DEPOSIT_EUR.toFixed(2).replace('.', ',')}€ a tu monedero. ¿Confirmar cancelación?
             </p>
           ) : isLateCancellation ? (
-            <>
-              {!hasEnoughForPenalty ? (
-                <p className="text-xs font-semibold text-amber-700">
-                  No tienes saldo suficiente para la penalización. Recarga tu monedero primero.
-                </p>
-              ) : (
-                <p className="text-xs font-medium text-stone-600">
-                  Cancelación tardía: no se devuelve la señal ({DEPOSIT_EUR.toFixed(2).replace('.', ',')}€) y se cobrará el resto de la reserva ({REST_EUR.toFixed(2).replace('.', ',')}€) de tu monedero. ¿Confirmar cancelación?
-                </p>
+            <p className="text-xs font-medium text-stone-600">
+              Cancelación tardía: no se devuelve la señal ({DEPOSIT_EUR.toFixed(2).replace('.', ',')}€) y se cobrará el resto ({REST_EUR.toFixed(2).replace('.', ',')}€) de tu monedero.
+              {!hasEnoughForPenalty && (
+                <span className="mt-1 block font-semibold text-amber-700">
+                  No tienes saldo suficiente: quedará como deuda y deberás recargar antes de poder reservar de nuevo.
+                </span>
               )}
-            </>
+              {' '}¿Confirmar cancelación?
+            </p>
           ) : (
             <p className="text-xs font-medium text-stone-600">¿Cancelar?</p>
           )}
@@ -111,7 +109,7 @@ export function CancelBookingButton({
             <button
               type="button"
               onClick={handleCancel}
-              disabled={loading || (isLateCancellation && !hasEnoughForPenalty)}
+              disabled={loading}
               className="rounded-full bg-red-600 px-3 py-1 text-[11px] font-bold text-white hover:bg-red-700 disabled:opacity-60"
             >
               {loading ? '...' : 'Sí, cancelar'}

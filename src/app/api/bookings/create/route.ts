@@ -30,6 +30,22 @@ export async function POST(request: Request) {
     );
   }
 
+  const startNorm = String(startTime).slice(0, 5);
+  const now = new Date();
+  const todayMadrid = now.toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' });
+  const timeMadrid = now.toLocaleTimeString('en-GB', {
+    timeZone: 'Europe/Madrid',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+  if (bookingDate < todayMadrid || (bookingDate === todayMadrid && startNorm <= timeMadrid)) {
+    return NextResponse.json(
+      { message: 'No se puede reservar una hora que ya ha pasado' },
+      { status: 400 }
+    );
+  }
+
   const { error } = await supabase.rpc('booking_pay_deposit', {
     p_user_id: user.id,
     p_court_id: courtId,

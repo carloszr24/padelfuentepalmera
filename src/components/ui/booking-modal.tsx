@@ -37,15 +37,17 @@ type BookingModalProps = {
 
 function buildDateStrip(count: number): { date: string; label: string; dayShort: string }[] {
   const out: { date: string; label: string; dayShort: string }[] = [];
-  const today = new Date();
+  const now = new Date();
   const dayNames = ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB'];
   for (let i = 0; i < count; i++) {
-    const d = new Date(today);
-    d.setDate(today.getDate() + i);
-    const dateStr = d.toISOString().slice(0, 10);
-    const dayShort = dayNames[d.getDay()];
-    const num = d.getDate();
-    out.push({ date: dateStr, label: `${dayShort} ${num}`, dayShort: dayShort });
+    const d = new Date(now.getTime() + i * 24 * 60 * 60 * 1000);
+    const dateStr = d.toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' });
+    const fmt = new Intl.DateTimeFormat('es-ES', { timeZone: 'Europe/Madrid', weekday: 'short', day: 'numeric' });
+    const parts = fmt.formatToParts(d);
+    const dayShort = parts.find((p) => p.type === 'weekday')?.value?.toUpperCase().slice(0, 3) ?? dayNames[d.getDay()];
+    const num = parts.find((p) => p.type === 'day')?.value ?? String(d.getDate());
+    const label = i === 0 ? `Hoy ${num}` : `${dayShort} ${num}`;
+    out.push({ date: dateStr, label, dayShort });
   }
   return out;
 }
@@ -66,6 +68,22 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva' }: Booking
 
   const courtName = courts.find((c) => String(c.id) === String(courtId))?.name ?? '';
   const endTime = selectedSlot ? slotEnd(selectedSlot) : '';
+
+  const now = new Date();
+  const todayMadrid = now.toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' });
+  const timeMadrid = now.toLocaleTimeString('en-GB', {
+    timeZone: 'Europe/Madrid',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+  const isTodayMadrid = date === todayMadrid;
+  const slotsToShow =
+    isTodayMadrid ? availableSlots.filter((slot) => slot > timeMadrid) : availableSlots;
+  const noSlotsMessage =
+    isTodayMadrid && slotsToShow.length === 0
+      ? 'No quedan horas disponibles para hoy. Selecciona otro día.'
+      : 'No hay huecos disponibles ese día. Elige otra fecha o pista.';
 
   useEffect(() => {
     if (!open) {
@@ -262,13 +280,13 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva' }: Booking
                       })}
                   </p>
 
-                  {availableSlots.length === 0 ? (
+                  {slotsToShow.length === 0 ? (
                     <p className="rounded-xl bg-amber-50 py-10 text-center text-base font-semibold text-amber-800">
-                      No hay huecos disponibles ese día. Elige otra fecha o pista.
+                      {noSlotsMessage}
                     </p>
                   ) : (
                     <div className="grid grid-cols-3 gap-4 sm:grid-cols-4 lg:grid-cols-5">
-                      {availableSlots.map((slot) => (
+                      {slotsToShow.map((slot) => (
                         <button
                           key={slot}
                           type="button"

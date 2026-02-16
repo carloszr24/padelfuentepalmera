@@ -74,6 +74,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
             <AdminNavLink href="/admin/pistas" label="Pistas" />
             <AdminNavLink href="/admin/monederos" label="Monederos" />
             <AdminNavLink href="/admin/transacciones" label="Transacciones" />
+            <AdminNavLink href="/admin/finanzas" label="Finanzas" />
           </nav>
 
           <div className="mt-6 border-t border-stone-200 pt-4">

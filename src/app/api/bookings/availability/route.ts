@@ -86,7 +86,17 @@ export async function GET(request: Request) {
     });
   }
 
+  const now = new Date();
+  const todayMadrid = now.toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' });
+  const timeMadrid = now.toLocaleTimeString('en-GB', {
+    timeZone: 'Europe/Madrid',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+
   const available = SLOT_STARTS.filter((slotStart) => {
+    if (date === todayMadrid && slotStart <= timeMadrid) return false;
     const end = slotEnd(slotStart);
     const overlaps = occupied.some((o) =>
       timesOverlap(slotStart, end, o.start, o.end)

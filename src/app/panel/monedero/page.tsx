@@ -13,6 +13,9 @@ const typeLabel: Record<string, string> = {
   admin_recharge: 'Recarga admin',
   booking_deposit: 'Depósito reserva',
   refund: 'Reembolso',
+  late_cancellation: 'Penalización cancelación tardía',
+  no_show_penalty: 'Penalización no-show',
+  debt_payment: 'Pago de deuda',
 };
 
 export default async function PanelMonederoPage({ searchParams }: PageProps) {
@@ -65,7 +68,13 @@ export default async function PanelMonederoPage({ searchParams }: PageProps) {
       <div className="grid gap-6 md:grid-cols-[1fr,1.2fr]">
         <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm">
           <p className="text-xs font-bold uppercase tracking-wider text-stone-500">Saldo actual</p>
-          <p className="mt-3 text-2xl font-bold text-stone-900">{Number(balance).toFixed(2)} €</p>
+          <p className={`mt-3 text-2xl font-bold ${balance < 0 ? 'text-amber-700' : 'text-stone-900'}`}>
+            {balance < 0 ? '-' : ''}{Math.abs(Number(balance)).toFixed(2)} €
+            {balance < 0 && <span className="ml-2 text-base font-semibold text-amber-700">(deuda)</span>}
+          </p>
+          {balance < 0 && (
+            <p className="mt-1.5 text-sm font-medium text-amber-700">Recarga para saldar la deuda y poder reservar de nuevo.</p>
+          )}
           <p className="mt-1.5 text-[11px] font-medium text-stone-500">Recarga con tarjeta (Stripe). Mínimo 10 €.</p>
           <div className="mt-4">
             <WalletRechargeButton />

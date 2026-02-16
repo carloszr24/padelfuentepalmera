@@ -210,6 +210,10 @@ BEGIN
   SELECT deposit INTO v_deposit FROM public.courts WHERE id = p_court_id AND is_active = true;
   IF v_deposit IS NULL THEN RAISE EXCEPTION 'Court not found or inactive'; END IF;
 
+  IF ((p_booking_date + p_start_time) AT TIME ZONE 'Europe/Madrid') <= now() THEN
+    RAISE EXCEPTION 'No se puede reservar en una hora que ya ha pasado';
+  END IF;
+
   SELECT wallet_balance INTO v_balance FROM public.profiles WHERE id = p_user_id FOR UPDATE;
   IF v_balance < v_deposit THEN RAISE EXCEPTION 'Insufficient wallet balance for deposit'; END IF;
 

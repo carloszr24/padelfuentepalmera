@@ -4,6 +4,7 @@ import { AdminCreateBookingModal } from '@/components/ui/admin-create-booking-mo
 import { AdminCreateBookingTrigger } from '@/components/ui/admin-create-booking-trigger';
 import { AdminMarkRemainingPaidButton } from '@/components/ui/admin-mark-remaining-paid-button';
 import { AdminCancelBookingButton } from '@/components/ui/admin-cancel-booking-button';
+import { AdminNoshowButton } from '@/components/ui/admin-noshow-button';
 
 type PageProps = {
   searchParams: Promise<{ desde?: string; hasta?: string }> | { desde?: string; hasta?: string };
@@ -121,9 +122,16 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
                   </td>
                 </tr>
               ) : (
-                bookings?.map((b) => {
+                (() => {
+                  const now = new Date();
+                  const todayMadrid = now.toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' });
+                  const timeMadrid = now.toLocaleTimeString('en-GB', { timeZone: 'Europe/Madrid', hour: '2-digit', minute: '2-digit', hour12: false });
+                  return bookings?.map((b) => {
                   const courtName = Array.isArray(b.courts) ? b.courts[0]?.name : (b.courts as { name?: string } | null)?.name;
                   const profileName = Array.isArray(b.profiles) ? b.profiles[0]?.full_name : (b.profiles as { full_name?: string } | null)?.full_name;
+                  const startTimeStr = String(b.start_time).slice(0, 5);
+                  const isPast = b.booking_date < todayMadrid || (b.booking_date === todayMadrid && startTimeStr <= timeMadrid);
+                  const showNoshow = b.status === 'confirmed' && isPast;
                   return (
                   <tr key={b.id} className="border-b border-stone-100 transition hover:bg-stone-50">
                     <td className="px-4 py-3.5 align-middle font-bold text-stone-900">
@@ -146,10 +154,12 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
                               ? 'bg-emerald-100 text-emerald-700'
                               : b.status === 'completed'
                                 ? 'bg-sky-100 text-sky-700'
-                                : 'bg-red-100 text-red-700'
+                                : b.status === 'no_show'
+                                  ? 'bg-amber-100 text-amber-700'
+                                  : 'bg-red-100 text-red-700'
                           }`}
                         >
-                          {b.status === 'confirmed' ? 'Confirmada' : b.status === 'completed' ? 'Completada' : 'Cancelada'}
+                          {b.status === 'confirmed' ? 'Confirmada' : b.status === 'completed' ? 'Completada' : b.status === 'no_show' ? 'No-show' : 'Cancelada'}
                         </span>
                         {b.deposit_paid ? (
                           <span className="text-[11px] font-medium leading-none text-emerald-600">Depósito pagado</span>
@@ -168,12 +178,20 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
                     </td>
                     <td className="px-4 py-3.5 align-middle">
                       {b.status === 'confirmed' && (
-                        <AdminCancelBookingButton bookingId={b.id} />
+                        <>
+                          <AdminCancelBookingButton bookingId={b.id} />
+                          {showNoshow && (
+                            <span className="ml-2 inline-block">
+                              <AdminNoshowButton bookingId={b.id} />
+                            </span>
+                          )}
+                        </>
                       )}
                     </td>
                   </tr>
                   );
-                })
+                });
+                })()
               )}
             </tbody>
           </table>

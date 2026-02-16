@@ -69,7 +69,14 @@ export default async function PanelLayout({ children }: PanelLayoutProps) {
             <p className="text-xs font-semibold text-stone-500">Bienvenido/a</p>
             <p className="mt-1 font-bold text-stone-900">{displayName}</p>
             <p className="mt-2 text-xs text-stone-600">
-              Saldo: <span className="font-bold text-stone-900">{Number(balance).toFixed(2)} €</span>
+              {balance < 0 ? (
+                <>
+                  Deuda: <span className="font-bold text-amber-700">{Math.abs(Number(balance)).toFixed(2)} €</span>
+                  <span className="mt-1 block text-amber-700">Recarga para poder reservar</span>
+                </>
+              ) : (
+                <>Saldo: <span className="font-bold text-stone-900">{Number(balance).toFixed(2)} €</span></>
+              )}
             </p>
           </div>
 

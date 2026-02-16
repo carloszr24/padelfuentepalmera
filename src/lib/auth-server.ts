@@ -5,6 +5,8 @@ type Profile = {
   full_name: string | null;
   wallet_balance: number | null;
   role: string | null;
+  has_debt?: boolean | null;
+  debt_amount?: number | null;
 } | null;
 
 /**
@@ -31,7 +33,7 @@ export const getCachedAuth = cache(async () => {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('full_name, wallet_balance, role')
+    .select('full_name, wallet_balance, role, has_debt, debt_amount')
     .eq('id', user.id)
     .single();
 

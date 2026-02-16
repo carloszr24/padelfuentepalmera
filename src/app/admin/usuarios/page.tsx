@@ -20,7 +20,7 @@ export default async function AdminUsuariosPage({
 
   const query = supabase
     .from('profiles')
-    .select('id, full_name, email, phone, wallet_balance')
+    .select('id, full_name, email, phone, wallet_balance, has_debt, debt_amount')
     .order('full_name', { ascending: true });
 
   if (q) {
@@ -99,8 +99,15 @@ export default async function AdminUsuariosPage({
                 <p className="max-w-[180px] truncate leading-tight">{p.email || '-'}</p>
                 <p className="mt-0.5 text-[11px] leading-tight text-stone-500">{p.phone || '-'}</p>
               </td>
-              <td className="px-4 py-3.5 align-middle font-bold tabular-nums text-emerald-600">
-                {Number(p.wallet_balance ?? 0).toFixed(2)} €
+              <td className="px-4 py-3.5 align-middle">
+                <span className="font-bold tabular-nums text-emerald-600">
+                  {Number(p.wallet_balance ?? 0).toFixed(2)} €
+                </span>
+                {(p as { has_debt?: boolean }).has_debt && (
+                  <span className="ml-2 inline-block rounded bg-red-100 px-2 py-0.5 text-[11px] font-bold text-red-700">
+                    Deuda: {Number((p as { debt_amount?: number }).debt_amount ?? 0).toFixed(2).replace('.', ',')} €
+                  </span>
+                )}
               </td>
               <td className="px-4 py-3.5 align-middle font-medium text-stone-600">
                 —

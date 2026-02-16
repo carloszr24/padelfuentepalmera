@@ -31,8 +31,19 @@ export default async function PanelReservasPage() {
 
   const courtList = courts.map((c) => ({ id: String(c.id), name: c.name }));
 
+  const balance = Number(profile?.wallet_balance ?? 0);
+  const hasDebt = profile?.has_debt === true;
+  const debtAmount = Number(profile?.debt_amount ?? 0);
+  const isBlocked = hasDebt || balance < 0;
+  const displayDebtAmount = hasDebt ? debtAmount : (balance < 0 ? Math.abs(balance) : 0);
+
   return (
     <div className="space-y-8">
+      {isBlocked && (
+        <div className="rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-semibold text-red-800">
+          Tienes una deuda pendiente de {displayDebtAmount.toFixed(2).replace('.', ',')}€. Recarga tu monedero para poder reservar.
+        </div>
+      )}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <AdminPageHeader
           breadcrumbs={[{ label: 'Inicio', href: '/panel' }, { label: 'Reservas' }]}
@@ -40,7 +51,13 @@ export default async function PanelReservasPage() {
           subtitle="Todas tus reservas. El depósito (4,50 €) se descuenta del monedero."
         />
         <div className="flex flex-wrap items-center gap-2">
-          <BookingModal courts={courtList} triggerLabel="Nueva reserva" />
+          {isBlocked ? (
+            <span className="cursor-not-allowed rounded-full border border-stone-300 bg-stone-200 px-4 py-2 text-sm font-bold text-stone-500">
+              Nueva reserva
+            </span>
+          ) : (
+            <BookingModal courts={courtList} triggerLabel="Nueva reserva" />
+          )}
           <Link
             href="/panel"
             className="rounded-xl border border-stone-300 px-4 py-2 text-sm font-bold text-stone-700 transition hover:bg-stone-100"
