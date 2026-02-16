@@ -17,9 +17,10 @@ import {
   Area,
 } from 'recharts';
 
-type PeriodKey = '1m' | '3m' | '6m' | '1y' | 'all';
+type PeriodKey = '7d' | '1m' | '3m' | '6m' | '1y' | 'all';
 
 const PERIOD_OPTIONS: { value: PeriodKey; label: string }[] = [
+  { value: '7d', label: 'Últimos 7 días' },
   { value: '1m', label: 'Último mes' },
   { value: '3m', label: 'Últimos 3 meses' },
   { value: '6m', label: 'Últimos 6 meses' },
@@ -43,6 +44,14 @@ type DailyRow = {
   net: number;
 };
 
+type DayTransaction = {
+  created_at: string;
+  full_name: string | null;
+  type: string;
+  amount: number;
+  fee: number;
+};
+
 type Stats = {
   months: MonthRow[];
   daily: DailyRow[];
@@ -52,6 +61,8 @@ type Stats = {
     totalNet: number;
     txCount: number;
   };
+  date?: string | null;
+  transactions?: DayTransaction[] | null;
 };
 
 function formatEur(n: number): string {
@@ -68,16 +79,25 @@ function formatDay(key: string): string {
   return new Date(key).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
 }
 
+function formatTime(iso: string): string {
+  return new Date(iso).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+
 export default function AdminFinanzasPage() {
   const [period, setPeriod] = useState<PeriodKey>('1y');
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [data, setData] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const query = selectedDate
+    ? `date=${encodeURIComponent(selectedDate)}`
+    : `period=${period}`;
+
   useEffect(() => {
     setLoading(true);
     setError(null);
-    fetch(`/api/admin/stats?period=${period}`)
+    fetch(`/api/admin/stats?${query}`)
       .then((res) => {
         if (!res.ok) throw new Error('Error al cargar');
         return res.json();
@@ -85,7 +105,7 @@ export default function AdminFinanzasPage() {
       .then(setData)
       .catch(() => setError('No se pudieron cargar las estadísticas'))
       .finally(() => setLoading(false));
-  }, [period]);
+  }, [query]);
 
   if (loading && !data) {
     return (
@@ -114,7 +134,8 @@ export default function AdminFinanzasPage() {
   }
 
   const stats = data!;
-  const { totals, months, daily } = stats;
+  const { totals, months, daily, date: filterDate, transactions: dayTransactions } = stats;
+  const isDayView = Boolean(filterDate && dayTransactions);
 
   const barData = months.map((m) => ({
     name: formatMonth(m.month),
@@ -131,22 +152,46 @@ export default function AdminFinanzasPage() {
           title="Dashboard financiero"
           subtitle="Ingresos, comisiones Stripe y beneficio neto."
         />
-        <div className="flex items-center gap-2">
-          <label htmlFor="period" className="text-sm font-semibold text-stone-600">
-            Período:
-          </label>
-          <select
-            id="period"
-            value={period}
-            onChange={(e) => setPeriod(e.target.value as PeriodKey)}
-            className="rounded-xl border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-900 outline-none focus:border-[#1d4ed8] focus:ring-1 focus:ring-[#1d4ed8]"
-          >
-            {PERIOD_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2">
+            <label htmlFor="period" className="text-sm font-semibold text-stone-600">
+              Período:
+            </label>
+            <select
+              id="period"
+              value={period}
+              onChange={(e) => setPeriod(e.target.value as PeriodKey)}
+              disabled={!!selectedDate}
+              className="rounded-xl border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-900 outline-none focus:border-[#1d4ed8] focus:ring-1 focus:ring-[#1d4ed8] disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {PERIOD_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="flex items-center gap-2">
+            <label htmlFor="day" className="text-sm font-semibold text-stone-600">
+              Día concreto:
+            </label>
+            <input
+              id="day"
+              type="date"
+              value={selectedDate ?? ''}
+              onChange={(e) => setSelectedDate(e.target.value || null)}
+              className="rounded-xl border border-stone-300 bg-white px-4 py-2 text-sm text-stone-900 outline-none focus:border-[#1d4ed8] focus:ring-1 focus:ring-[#1d4ed8]"
+            />
+          </div>
+          {selectedDate && (
+            <button
+              type="button"
+              onClick={() => setSelectedDate(null)}
+              className="rounded-xl border border-stone-300 bg-stone-100 px-4 py-2 text-sm font-bold text-stone-700 hover:bg-stone-200"
+            >
+              Limpiar filtro
+            </button>
+          )}
         </div>
       </div>
 
@@ -170,8 +215,49 @@ export default function AdminFinanzasPage() {
         </div>
       </div>
 
-      {/* Gráfico barras mensual */}
-      {barData.length > 0 && (
+      {/* Vista día concreto: tabla de transacciones */}
+      {isDayView && (
+        <div className="rounded-2xl border border-stone-200 bg-white shadow-sm">
+          <h2 className="border-b border-stone-200 px-5 py-4 text-base font-bold text-stone-900">
+            Transacciones del {filterDate ? formatDay(filterDate) : ''}
+          </h2>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="border-b border-stone-200 bg-stone-50 text-xs font-bold uppercase tracking-wider text-stone-500">
+                  <th className="px-4 py-3 align-middle">Hora</th>
+                  <th className="px-4 py-3 align-middle">Usuario</th>
+                  <th className="px-4 py-3 align-middle">Tipo</th>
+                  <th className="px-4 py-3 align-middle text-right">Importe</th>
+                  <th className="px-4 py-3 align-middle text-right">Comisión</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(dayTransactions ?? []).length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="px-4 py-12 text-center text-stone-500">
+                      No hay transacciones ese día.
+                    </td>
+                  </tr>
+                ) : (
+                  (dayTransactions ?? []).map((tx, i) => (
+                    <tr key={i} className="border-b border-stone-100 hover:bg-stone-50">
+                      <td className="px-4 py-3.5 tabular-nums text-stone-700">{formatTime(tx.created_at)}</td>
+                      <td className="px-4 py-3.5 font-medium text-stone-900">{tx.full_name ?? '—'}</td>
+                      <td className="px-4 py-3.5 text-stone-700">{tx.type}</td>
+                      <td className="px-4 py-3.5 text-right tabular-nums text-emerald-700">{formatEur(tx.amount)}</td>
+                      <td className="px-4 py-3.5 text-right tabular-nums text-red-700">{formatEur(tx.fee)}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Gráfico barras mensual (solo cuando no es vista por día) */}
+      {!isDayView && barData.length > 0 && (
         <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
           <h2 className="mb-4 text-base font-bold text-stone-900">Ingresos y comisiones por mes</h2>
           <div className="h-80">
@@ -191,8 +277,8 @@ export default function AdminFinanzasPage() {
         </div>
       )}
 
-      {/* Gráfico evolución diaria (último mes) */}
-      {daily.length > 0 && (
+      {/* Gráfico evolución diaria (último mes) (solo cuando no es vista por día) */}
+      {!isDayView && daily.length > 0 && (
         <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
           <h2 className="mb-4 text-base font-bold text-stone-900">Evolución diaria (últimos 30 días)</h2>
           <div className="h-72">
@@ -215,7 +301,8 @@ export default function AdminFinanzasPage() {
         </div>
       )}
 
-      {/* Tabla desglose mensual */}
+      {/* Tabla desglose mensual (solo cuando no es vista por día) */}
+      {!isDayView && (
       <div className="rounded-2xl border border-stone-200 bg-white shadow-sm">
         <h2 className="border-b border-stone-200 px-5 py-4 text-base font-bold text-stone-900">
           Desglose por mes
@@ -253,6 +340,7 @@ export default function AdminFinanzasPage() {
           </table>
         </div>
       </div>
+      )}
     </div>
   );
 }

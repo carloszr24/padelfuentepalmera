@@ -10,12 +10,15 @@ function stripeFee(amount: number): number {
   return amount * STRIPE_FEE_RATE + STRIPE_FEE_FIXED;
 }
 
-type PeriodKey = '1m' | '3m' | '6m' | '1y' | 'all';
+type PeriodKey = '7d' | '1m' | '3m' | '6m' | '1y' | 'all';
 
 function sinceDate(period: PeriodKey): Date | null {
   const now = new Date();
   const d = new Date(now);
   switch (period) {
+    case '7d':
+      d.setDate(d.getDate() - 7);
+      return d;
     case '1m':
       d.setMonth(d.getMonth() - 1);
       return d;
@@ -34,6 +37,14 @@ function sinceDate(period: PeriodKey): Date | null {
       d.setMonth(d.getMonth() - 1);
       return d;
   }
+}
+
+const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+
+function isValidDateParam(value: string): boolean {
+  if (!DATE_REGEX.test(value)) return false;
+  const d = new Date(value);
+  return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === value;
 }
 
 export async function GET(request: Request) {
@@ -63,9 +74,76 @@ export async function GET(request: Request) {
 
   const { searchParams } = new URL(request.url);
   const period = (searchParams.get('period') ?? '1y') as PeriodKey;
-  const since = sinceDate(period);
+  const dateParam = searchParams.get('date')?.trim() ?? null;
+
+  if (dateParam !== null && dateParam !== '' && !isValidDateParam(dateParam)) {
+    return NextResponse.json(
+      { message: 'Parámetro date debe ser una fecha válida en formato YYYY-MM-DD' },
+      { status: 400 }
+    );
+  }
 
   const supabase = createSupabaseServiceClient();
+
+  if (dateParam) {
+    const dateStart = `${dateParam}T00:00:00.000Z`;
+    const dateEnd = `${dateParam}T23:59:59.999Z`;
+    const { data: dayRows, error: dayError } = await supabase
+      .from('transactions')
+      .select('id, type, amount, created_at, user_id, profiles!transactions_user_id_fkey(full_name)')
+      .in('type', ['recharge', 'admin_recharge'])
+      .gt('amount', 0)
+      .gte('created_at', dateStart)
+      .lte('created_at', dateEnd)
+      .order('created_at', { ascending: true });
+
+    if (dayError) {
+      return NextResponse.json(
+        { message: dayError.message ?? 'Error al cargar estadísticas' },
+        { status: 500 }
+      );
+    }
+
+    const list = (dayRows ?? []) as {
+      id: string;
+      type: string;
+      amount: number;
+      created_at: string;
+      profiles: { full_name: string | null } | null;
+    }[];
+    let totalIncome = 0;
+    let totalFees = 0;
+    const transactions = list.map((tx) => {
+      const amount = Number(tx.amount);
+      const fee = tx.type === 'recharge' ? stripeFee(amount) : 0;
+      totalIncome += amount;
+      totalFees += fee;
+      const profile = tx.profiles;
+      const full_name = Array.isArray(profile) ? profile[0]?.full_name : (profile as { full_name?: string | null } | null)?.full_name ?? null;
+      return {
+        created_at: tx.created_at,
+        full_name: full_name ?? null,
+        type: tx.type === 'recharge' ? 'Stripe' : 'Admin',
+        amount: Math.round(amount * 100) / 100,
+        fee: Math.round(fee * 100) / 100,
+      };
+    });
+
+    return NextResponse.json({
+      months: [],
+      daily: [],
+      totals: {
+        totalIncome: Math.round(totalIncome * 100) / 100,
+        totalStripeFees: Math.round(totalFees * 100) / 100,
+        totalNet: Math.round((totalIncome - totalFees) * 100) / 100,
+        txCount: list.length,
+      },
+      date: dateParam,
+      transactions,
+    });
+  }
+
+  const since = sinceDate(period);
   let query = supabase
     .from('transactions')
     .select('id, type, amount, created_at')
@@ -178,5 +256,7 @@ export async function GET(request: Request) {
       totalNet: totals.totalNet,
       txCount: totals.txCount,
     },
+    date: null,
+    transactions: null,
   });
 }
