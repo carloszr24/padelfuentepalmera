@@ -9,31 +9,31 @@ const NOVEDADES_SLIDER = [
     title: 'Pistas panorámicas',
     category: 'Instalaciones',
     image: 'https://images.unsplash.com/photo-1646649853703-7645147474ba?w=600&q=80',
-    instagramUrl: 'https://instagram.com',
+    instagramUrl: 'https://www.instagram.com/fuentepalmerapadel/?hl=es',
   },
   {
     title: 'Ranking social',
     category: 'Comunidad',
     image: 'https://images.unsplash.com/photo-1658723826297-fe4d1b1e6600?w=600&q=80',
-    instagramUrl: 'https://instagram.com',
+    instagramUrl: 'https://www.instagram.com/fuentepalmerapadel/?hl=es',
   },
   {
     title: 'III Torneo Fuente Palmera',
     category: 'Evento destacado',
     image: 'https://images.unsplash.com/photo-1646651105426-e8c8ee9badde?w=600&q=80',
-    instagramUrl: 'https://instagram.com',
+    instagramUrl: 'https://www.instagram.com/fuentepalmerapadel/?hl=es',
   },
   {
     title: 'Clases para todos los niveles',
     category: 'Escuela',
     image: 'https://images.unsplash.com/photo-1646649851780-d9701b7c3c04?w=600&q=80',
-    instagramUrl: 'https://instagram.com',
+    instagramUrl: 'https://www.instagram.com/fuentepalmerapadel/?hl=es',
   },
   {
     title: 'Nuestro club',
     category: 'Instalaciones',
     image: 'https://images.unsplash.com/photo-1622163642998-1ea32b0bbc67?w=600&q=80',
-    instagramUrl: 'https://instagram.com',
+    instagramUrl: 'https://www.instagram.com/fuentepalmerapadel/?hl=es',
   },
 ];
 
@@ -143,7 +143,7 @@ export default async function Home() {
               Novedades
             </h2>
             <a
-              href="https://instagram.com"
+              href="https://www.instagram.com/fuentepalmerapadel/?hl=es"
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm font-semibold text-[#1d4ed8] hover:underline"
@@ -212,7 +212,7 @@ export default async function Home() {
               <Link href="/cookies" className="hover:text-stone-900">Cookies</Link>
             </div>
             <div className="flex flex-col gap-2">
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-stone-900">Instagram</a>
+              <a href="https://www.instagram.com/fuentepalmerapadel/?hl=es" target="_blank" rel="noopener noreferrer" className="hover:text-stone-900">Instagram</a>
               <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-stone-900">Facebook</a>
             </div>
           </div>
