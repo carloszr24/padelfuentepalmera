@@ -24,14 +24,6 @@ export const metadata: Metadata = {
     description: "Reserva tu pista en segundos, monedero digital e instalaciones premium.",
   },
   robots: { index: true, follow: true },
-  icons: {
-    icon: [
-      { url: "/favicon.ico?v=2", sizes: "any" },
-      { url: "/favicon-16x16.png?v=2", sizes: "16x16", type: "image/png" },
-      { url: "/favicon-32x32.png?v=2", sizes: "32x32", type: "image/png" },
-    ],
-    apple: "/apple-touch-icon.png?v=2",
-  },
 };
 
 export default function RootLayout({
@@ -41,10 +33,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <head>
-        <link rel="icon" href="/favicon.ico?v=2" type="image/x-icon" sizes="32x32" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" sizes="180x180" />
-      </head>
       <body
         className={`${plusJakarta.variable} font-sans antialiased`}
         style={{ fontFamily: "var(--font-plus-jakarta), system-ui, sans-serif" }}

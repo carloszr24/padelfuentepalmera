@@ -39,23 +39,23 @@ async function logoWithTransparentBg() {
 
 async function main() {
   const base = await logoWithTransparentBg();
-  const sizes = [
-    { size: 16, name: 'favicon-16x16.png' },
-    { size: 32, name: 'favicon-32x32.png' },
-    { size: 180, name: 'apple-touch-icon.png' },
-  ];
-
-  for (const { size, name } of sizes) {
-    const buf = await base.clone().resize(size, size).toBuffer();
-    writeFileSync(join(publicDir, name), buf);
-    console.log('Created', name);
-  }
+  const appDir = join(root, 'src', 'app');
 
   const png16 = await base.clone().resize(16, 16).toBuffer();
   const png32 = await base.clone().resize(32, 32).toBuffer();
   const ico = await toIco([png16, png32]);
+  const apple180 = await base.clone().resize(180, 180).toBuffer();
+
+  writeFileSync(join(appDir, 'icon.ico'), ico);
+  writeFileSync(join(appDir, 'apple-icon.png'), apple180);
+  console.log('Created src/app/icon.ico (favicon 32x32)');
+  console.log('Created src/app/apple-icon.png (180x180)');
+
   writeFileSync(join(publicDir, 'favicon.ico'), ico);
-  console.log('Created favicon.ico');
+  writeFileSync(join(publicDir, 'favicon-16x16.png'), png16);
+  writeFileSync(join(publicDir, 'favicon-32x32.png'), png32);
+  writeFileSync(join(publicDir, 'apple-touch-icon.png'), apple180);
+  console.log('Updated public/favicon.ico, favicon-16x16.png, favicon-32x32.png, apple-touch-icon.png');
 }
 
 main().catch((e) => {
