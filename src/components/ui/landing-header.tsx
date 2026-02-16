@@ -57,10 +57,10 @@ export function LandingHeader({ isLoggedIn = false }: LandingHeaderProps) {
         </div>
 
         {/* Centro: logo solo, sin borde ni fondo */}
-        <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-shrink-0 border-0 bg-transparent shadow-none outline-none ring-0">
+        <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-shrink-0 overflow-hidden rounded-lg bg-transparent [&_img]:!border-0 [&_img]:!shadow-none [&_img]:!outline-none [&_img]:!ring-0">
           <a
             href="/"
-            className="block h-14 w-14 border-0 bg-transparent shadow-none outline-none ring-0 transition hover:opacity-90 sm:h-16 sm:w-16"
+            className="block h-14 w-14 transition hover:opacity-90 sm:h-16 sm:w-16"
             aria-label="Fuente Palmera Pádel - Inicio"
           >
             <Image
@@ -68,7 +68,7 @@ export function LandingHeader({ isLoggedIn = false }: LandingHeaderProps) {
               alt="Fuente Palmera Pádel"
               width={64}
               height={64}
-              className="h-full w-full object-contain object-center mix-blend-multiply border-0 shadow-none outline-none ring-0"
+              className="h-full w-full object-contain object-center mix-blend-multiply"
               unoptimized
               priority
             />

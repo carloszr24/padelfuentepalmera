@@ -1,3 +1,4 @@
+import { createClient } from '@supabase/supabase-js';
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
@@ -6,6 +7,7 @@ export async function middleware(request: NextRequest) {
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !anonKey) return response;
 
   const pathname = request.nextUrl.pathname;
@@ -32,8 +34,13 @@ export async function middleware(request: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (isPanelOrAdmin && user) {
-      const emailConfirmed = (user as { email_confirmed_at?: string | null }).email_confirmed_at;
+    if (isPanelOrAdmin && user && serviceKey) {
+      const adminClient = createClient(url, serviceKey);
+      const {
+        data: { user: fullUser },
+      } = await adminClient.auth.admin.getUserById(user.id);
+      const emailConfirmed = fullUser?.email_confirmed_at ?? null;
+
       if (!emailConfirmed) {
         await supabase.auth.signOut();
         const redirectRes = NextResponse.redirect(new URL('/login', request.url));

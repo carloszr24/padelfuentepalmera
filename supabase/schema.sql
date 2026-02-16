@@ -36,11 +36,12 @@ CREATE TABLE IF NOT EXISTS public.profiles (
 
 CREATE INDEX IF NOT EXISTS idx_profiles_email ON public.profiles(email);
 
--- Función updated_at
+-- Función updated_at: search_path inmutable y referencias cualificadas (evita Function Search Path Mutable)
 CREATE OR REPLACE FUNCTION public.set_current_timestamp_updated_at()
-RETURNS TRIGGER LANGUAGE plpgsql AS $$
+RETURNS TRIGGER LANGUAGE plpgsql SET search_path = 'public, pg_catalog'
+AS $$
 BEGIN
-  NEW.updated_at := timezone('utc', now());
+  NEW.updated_at := pg_catalog.timezone('utc', pg_catalog.now());
   RETURN NEW;
 END;
 $$;

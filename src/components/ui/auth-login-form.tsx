@@ -33,7 +33,15 @@ export function AuthLoginForm() {
       });
 
       if (signInError) {
-        setError(signInError.message);
+        const msg = signInError.message?.toLowerCase() ?? '';
+        const isUnconfirmed =
+          msg.includes('email not confirmed') ||
+          (msg.includes('email') && (msg.includes('confirm') || msg.includes('verif')));
+        setError(
+          isUnconfirmed
+            ? 'Debes confirmar tu email antes de iniciar sesión. Revisa tu bandeja de entrada (y la carpeta de spam).'
+            : signInError.message
+        );
         return;
       }
 

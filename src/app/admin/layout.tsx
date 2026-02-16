@@ -34,8 +34,8 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
         <aside className="w-64 flex-shrink-0 rounded-3xl border border-stone-200 bg-white p-5 shadow-lg shadow-stone-200/80">
           <div className="mb-6 flex items-center justify-between gap-2">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 flex-shrink-0 border-0 bg-transparent shadow-none outline-none ring-0">
-                <Image src="/logo.png" alt="Fuente Palmera" width={40} height={40} className="size-full object-contain mix-blend-multiply border-0 shadow-none outline-none ring-0" />
+              <div className="flex h-10 w-10 flex-shrink-0 overflow-hidden rounded-lg bg-transparent [&_img]:!border-0 [&_img]:!shadow-none [&_img]:!outline-none [&_img]:!ring-0">
+                <Image src="/logo.png" alt="Fuente Palmera" width={40} height={40} className="size-full object-contain object-center mix-blend-multiply" unoptimized />
               </div>
               <div className="flex flex-col">
                 <span className="text-xs font-bold uppercase tracking-[0.18em] text-stone-500">

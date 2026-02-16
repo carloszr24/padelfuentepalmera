@@ -8,7 +8,16 @@ Para que la **verificación de email** y la **recuperación de contraseña** fun
 
 1. **Authentication** → **Providers** → **Email**.
 2. Activa **"Confirm email"**.
-3. Así, al registrarse Supabase envía un correo de verificación y el usuario no puede entrar al panel hasta confirmar.
+3. **Importante:** desactiva **"Allow unverified email sign in"** (o equivalente) si aparece. Así Supabase rechazará el inicio de sesión hasta que el usuario haya hecho clic en el enlace del correo.
+4. Así al registrarse Supabase envía un correo de verificación y el usuario no puede iniciar sesión hasta confirmar.
+
+---
+
+## 1.1. Protección contra contraseñas filtradas (HIBP)
+
+1. **Authentication** → **Settings** (o **Security**).
+2. Activa **"Leaked password protection"** / **"HaveIBeenPwned"**.
+3. Supabase rechazará contraseñas que aparezcan en filtraciones públicas. La app ya muestra un mensaje claro al usuario: *"Esta contraseña ha aparecido en una filtración de datos. Elige otra más segura..."* (registro y nueva contraseña).
 
 ---
 

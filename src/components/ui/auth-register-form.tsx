@@ -37,10 +37,23 @@ export function AuthRegisterForm() {
       });
 
       if (signUpError) {
-        setError(signUpError.message);
+        const msg = (signUpError.message ?? '').toLowerCase();
+        const isLeakedPassword =
+          msg.includes('breach') ||
+          msg.includes('pwned') ||
+          msg.includes('compromised') ||
+          msg.includes('leaked') ||
+          msg.includes('data breach');
+        setError(
+          isLeakedPassword
+            ? 'Esta contraseña ha aparecido en una filtración de datos. Elige otra más segura (por ejemplo una frase larga o generada por un gestor de contraseñas).'
+            : signUpError.message
+        );
         return;
       }
 
+      // Cerrar sesión para que no quede logueado hasta que verifique el email.
+      await supabase.auth.signOut();
       setRegisteredEmail(email);
     } catch {
       setError('No se ha podido completar el registro. Inténtalo de nuevo.');

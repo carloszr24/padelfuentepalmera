@@ -57,7 +57,18 @@ export function AuthResetPasswordForm() {
       });
 
       if (updateError) {
-        setError(updateError.message);
+        const msg = (updateError.message ?? '').toLowerCase();
+        const isLeakedPassword =
+          msg.includes('breach') ||
+          msg.includes('pwned') ||
+          msg.includes('compromised') ||
+          msg.includes('leaked') ||
+          msg.includes('data breach');
+        setError(
+          isLeakedPassword
+            ? 'Esta contraseña ha aparecido en una filtración de datos. Elige otra más segura (por ejemplo una frase larga o generada por un gestor de contraseñas).'
+            : updateError.message
+        );
         return;
       }
 
