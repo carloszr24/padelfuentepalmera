@@ -3,6 +3,7 @@ import { AdminPageHeader } from '@/components/ui/admin-page-header';
 import { AdminCreateBookingModal } from '@/components/ui/admin-create-booking-modal';
 import { AdminCreateBookingTrigger } from '@/components/ui/admin-create-booking-trigger';
 import { AdminMarkRemainingPaidButton } from '@/components/ui/admin-mark-remaining-paid-button';
+import { AdminCancelBookingButton } from '@/components/ui/admin-cancel-booking-button';
 
 type PageProps = {
   searchParams: Promise<{ desde?: string; hasta?: string }> | { desde?: string; hasta?: string };
@@ -109,12 +110,13 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
                 <th className="px-4 py-3 align-middle">Fecha y hora</th>
                 <th className="px-4 py-3 align-middle">Estado</th>
                 <th className="px-4 py-3 align-middle">Resto pagado</th>
+                <th className="px-4 py-3 align-middle">Acciones</th>
               </tr>
             </thead>
             <tbody>
               {bookings?.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-12 text-center text-sm font-medium text-stone-500">
+                  <td colSpan={6} className="px-4 py-12 text-center text-sm font-medium text-stone-500">
                     No hay reservas registradas todavía.
                   </td>
                 </tr>
@@ -162,6 +164,11 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
                           bookingId={b.id}
                           alreadyPaid={!!(b as { remaining_paid_at?: string | null }).remaining_paid_at}
                         />
+                      )}
+                    </td>
+                    <td className="px-4 py-3.5 align-middle">
+                      {b.status === 'confirmed' && (
+                        <AdminCancelBookingButton bookingId={b.id} />
                       )}
                     </td>
                   </tr>

@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { checkRateLimit } from '@/lib/rate-limit';
+import { isValidUUID } from '@/lib/utils';
 
 export async function POST(request: Request) {
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? request.headers.get('x-real-ip') ?? 'unknown';
+  if (!checkRateLimit('admin', ip)) {
+    return NextResponse.json({ message: 'Too Many Requests' }, { status: 429 });
+  }
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },
@@ -26,6 +32,12 @@ export async function POST(request: Request) {
   if (!body.bookingId) {
     return NextResponse.json(
       { message: 'Falta bookingId' },
+      { status: 400 }
+    );
+  }
+  if (!isValidUUID(body.bookingId)) {
+    return NextResponse.json(
+      { message: 'bookingId no válido' },
       { status: 400 }
     );
   }

@@ -204,6 +204,7 @@ export default async function Home() {
             <div className="flex flex-col gap-2">
               <Link href="/aviso-legal" className="hover:text-stone-900">Aviso legal</Link>
               <Link href="/privacidad" className="hover:text-stone-900">Privacidad</Link>
+              <Link href="/politica-cancelacion" className="hover:text-stone-900">Política de cancelación</Link>
               <Link href="/cookies" className="hover:text-stone-900">Cookies</Link>
             </div>
             <div className="flex flex-col gap-2">

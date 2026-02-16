@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { checkRateLimit } from '@/lib/rate-limit';
+import { isValidUUID } from '@/lib/utils';
 
 export async function POST(request: Request) {
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? request.headers.get('x-real-ip') ?? 'unknown';
+  if (!checkRateLimit('admin', ip)) {
+    return NextResponse.json({ message: 'Too Many Requests' }, { status: 429 });
+  }
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },
@@ -34,6 +40,12 @@ export async function POST(request: Request) {
       { status: 400 }
     );
   }
+  if (!isValidUUID(courtId)) {
+    return NextResponse.json(
+      { message: 'courtId no válido' },
+      { status: 400 }
+    );
+  }
 
   const startNormalized = startTime.length === 5 ? `${startTime}:00` : startTime;
   const endNormalized = endTime.length === 5 ? `${endTime}:00` : endTime;
@@ -57,6 +69,10 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? request.headers.get('x-real-ip') ?? 'unknown';
+  if (!checkRateLimit('admin', ip)) {
+    return NextResponse.json({ message: 'Too Many Requests' }, { status: 429 });
+  }
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },
@@ -78,6 +94,9 @@ export async function DELETE(request: Request) {
   const id = searchParams.get('id');
   if (!id) {
     return NextResponse.json({ message: 'Falta el id del bloque' }, { status: 400 });
+  }
+  if (!isValidUUID(id)) {
+    return NextResponse.json({ message: 'id no válido' }, { status: 400 });
   }
 
   const { error } = await supabase.from('court_schedules').delete().eq('id', id);

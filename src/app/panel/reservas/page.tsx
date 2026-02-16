@@ -119,6 +119,7 @@ export default async function PanelReservasPage() {
                           status={b.status}
                           bookingDate={b.booking_date}
                           startTime={b.start_time}
+                          walletBalance={profile?.wallet_balance ?? 0}
                         />
                       </td>
                     </tr>

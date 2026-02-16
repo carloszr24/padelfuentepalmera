@@ -49,9 +49,23 @@ export async function proxy(request: NextRequest) {
         });
         return redirectRes;
       }
+
+      if (pathname.startsWith('/admin')) {
+        const { data: prof } = await adminClient
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+        if (prof?.role !== 'admin') {
+          return NextResponse.redirect(new URL('/panel', request.url));
+        }
+      }
     }
-  } catch {
-    // Si falla (red, token inválido, etc.), dejamos pasar la request.
+  } catch (error) {
+    console.error('Middleware auth error:', error);
+    if (isPanelOrAdmin) {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
   }
 
   return response;

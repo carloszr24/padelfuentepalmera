@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/server';
+import { checkRateLimit } from '@/lib/rate-limit';
 
 function escapeCsv(value: string | number | null | undefined): string {
   if (value == null) return '';
@@ -12,6 +13,10 @@ function escapeCsv(value: string | number | null | undefined): string {
 }
 
 export async function GET(request: Request) {
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? request.headers.get('x-real-ip') ?? 'unknown';
+  if (!checkRateLimit('admin', ip)) {
+    return NextResponse.json({ error: 'Too Many Requests' }, { status: 429 });
+  }
   const supabaseAuth = await createServerSupabaseClient();
   const {
     data: { user },

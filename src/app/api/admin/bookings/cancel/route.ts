@@ -4,21 +4,19 @@ import { checkRateLimit } from '@/lib/rate-limit';
 import { isValidUUID } from '@/lib/utils';
 
 export async function POST(request: Request) {
-  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? request.headers.get('x-real-ip') ?? 'unknown';
+  const ip =
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    request.headers.get('x-real-ip') ??
+    'unknown';
   if (!checkRateLimit('admin', ip)) {
     return NextResponse.json({ message: 'Too Many Requests' }, { status: 429 });
   }
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },
-    error: userError,
   } = await supabase.auth.getUser();
-
-  if (userError || !user) {
-    return NextResponse.json(
-      { message: 'No autenticado' },
-      { status: 401 }
-    );
+  if (!user) {
+    return NextResponse.json({ message: 'No autenticado' }, { status: 401 });
   }
 
   const { data: profile } = await supabase
@@ -26,44 +24,40 @@ export async function POST(request: Request) {
     .select('role')
     .eq('id', user.id)
     .single();
-
   if (profile?.role !== 'admin') {
-    return NextResponse.json(
-      { message: 'Solo administradores pueden gestionar pistas' },
-      { status: 403 }
-    );
+    return NextResponse.json({ message: 'Solo administradores' }, { status: 403 });
   }
 
-  const { courtId, isActive } = (await request.json()) as {
-    courtId?: string;
-    isActive?: boolean;
+  const body = (await request.json().catch(() => ({}))) as {
+    bookingId?: string;
+    refundDeposit?: boolean;
   };
-
-  if (!courtId || typeof isActive !== 'boolean') {
+  if (!body.bookingId) {
     return NextResponse.json(
-      { message: 'Datos no válidos' },
+      { message: 'Falta bookingId' },
       { status: 400 }
     );
   }
-  if (!isValidUUID(courtId)) {
+  if (!isValidUUID(body.bookingId)) {
     return NextResponse.json(
-      { message: 'courtId no válido' },
+      { message: 'bookingId no válido' },
       { status: 400 }
     );
   }
 
-  const { error } = await supabase
-    .from('courts')
-    .update({ is_active: isActive })
-    .eq('id', courtId);
+  const refundDeposit = body.refundDeposit !== false;
+
+  const { error } = await supabase.rpc('admin_cancel_booking', {
+    p_booking_id: body.bookingId,
+    p_refund_deposit: refundDeposit,
+  });
 
   if (error) {
     return NextResponse.json(
-      { message: error.message ?? 'Error al actualizar pista' },
-      { status: 500 }
+      { message: error.message ?? 'Error al cancelar' },
+      { status: 400 }
     );
   }
 
   return NextResponse.json({ ok: true });
 }
-

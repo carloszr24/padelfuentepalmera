@@ -97,24 +97,18 @@ Pasos: inicia sesión → **Panel** → **Monedero** → **Recargar monedero** �
 
 ## 6. Si el saldo no se actualiza tras recargar
 
-0. **Diagnóstico rápido (admin)**  
-   Inicia sesión como **admin** y abre en el navegador:  
-   `https://tu-dominio.com/api/admin/debug-wallet`  
-   Verás si Stripe/Supabase están configurados y si la función **wallet_recharge** existe en Supabase. Sigue el **hint** que salga.
+0. **Comprobar variables de entorno**  
+   En Vercel (o tu hosting): `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `SUPABASE_SERVICE_ROLE_KEY`.  
+   En Supabase SQL Editor, verifica que existe la función **wallet_recharge** (ver `supabase/verificar-monedero.sql`).
 
-1. **Comprobar que la URL del webhook responde con JSON**  
-   Abre en el navegador: `https://tu-dominio.com/api/stripe/webhook`  
-   Debe verse algo como: `{"ok":true,"message":"Webhook endpoint. Stripe debe enviar POST con stripe-signature."}`  
-   Si ves la landing (HTML), la petición no está llegando al API: revisa proxy/rewrites o que el deploy sea el correcto.
-
-2. **Stripe Dashboard → Developers → Webhooks**  
+1. **Stripe Dashboard → Developers → Webhooks**  
    Entra en tu endpoint y mira los **eventos recientes**. Si el estado es "Failed" o la respuesta no es 200 con JSON, Stripe está recibiendo error o HTML. Revisa los logs en Vercel (o tu hosting) para ese momento.
 
-3. **Logs del webhook**  
+2. **Logs del webhook**  
    En Vercel → proyecto → **Logs** (o **Functions**), filtra por la función del webhook. Busca:
    - `Webhook: wallet_recharge OK` → el webhook y Supabase han ido bien; si aun así no ves saldo, el problema es caché o que estás mirando otro usuario.
    - `Webhook: no userId` o `Metadata incompleta` → la sesión no trae `userId`/`amount`; el código ahora intenta recuperar la sesión y usar `client_reference_id` y `amount_total` como respaldo.
    - `wallet_recharge error:` → fallo en Supabase (función no existe, RLS, etc.). Revisa `SUPABASE.md` y ejecuta `supabase/verificar-monedero.sql`.
 
-4. **Supabase**  
+3. **Supabase**  
    Tras una recarga de prueba, en **Table Editor** mira la tabla **profiles** (campo `wallet_balance` del usuario) y **transactions** (última fila `type = recharge`). Si no hay fila nueva, el webhook no está llamando a `wallet_recharge` o está fallando antes.

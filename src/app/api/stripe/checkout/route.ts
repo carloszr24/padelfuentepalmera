@@ -1,4 +1,5 @@
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { checkRateLimit } from '@/lib/rate-limit';
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
@@ -9,7 +10,43 @@ const stripe = process.env.STRIPE_SECRET_KEY
 const MIN_AMOUNT_EUR = 10;
 const MAX_AMOUNT_EUR = 500;
 
+const baseUrl =
+  process.env.NEXT_PUBLIC_URL?.replace(/\/$/, '') || 'http://localhost:3000';
+
+function isAllowedOrigin(origin: string | null, referer: string | null): boolean {
+  if (!origin && !referer) return true;
+  const allowed = new URL(baseUrl).origin;
+  if (origin && new URL(origin).origin === allowed) return true;
+  if (referer) {
+    try {
+      if (new URL(referer).origin === allowed) return true;
+    } catch {
+      // invalid referer
+    }
+  }
+  return false;
+}
+
 export async function POST(request: Request) {
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? request.headers.get('x-real-ip') ?? 'unknown';
+  if (!checkRateLimit('checkout', ip)) {
+    return NextResponse.json({ error: 'Too Many Requests' }, { status: 429 });
+  }
+
+  const contentType = request.headers.get('content-type') ?? '';
+  if (!contentType.includes('application/json')) {
+    return NextResponse.json(
+      { error: 'Content-Type debe ser application/json' },
+      { status: 415 }
+    );
+  }
+
+  const origin = request.headers.get('origin');
+  const referer = request.headers.get('referer');
+  if (!isAllowedOrigin(origin, referer)) {
+    return NextResponse.json({ error: 'Origen no permitido' }, { status: 403 });
+  }
+
   try {
     if (!stripe) {
       return NextResponse.json(
@@ -25,7 +62,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
     }
 
-    const body = await request.json();
+    let body: { amount?: unknown };
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json(
+        { error: 'Cuerpo JSON inválido' },
+        { status: 400 }
+      );
+    }
     const amountEur = Number(body?.amount);
     if (
       !Number.isFinite(amountEur) ||
@@ -37,9 +82,6 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-
-    const baseUrl =
-      process.env.NEXT_PUBLIC_URL?.replace(/\/$/, '') || 'http://localhost:3000';
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',

@@ -29,7 +29,7 @@ export async function POST(request: Request) {
   if (error) {
     const message =
       error.message?.includes('permission') || error.message?.includes('function')
-        ? 'Error de configuración: ejecuta el SQL de cancelación en Supabase (user-cancel-booking.sql) y el GRANT para authenticated.'
+        ? 'Error de configuración: ejecuta el SQL de cancelación en Supabase (cancel-booking-policy.sql) y el GRANT para authenticated.'
         : (error.message ?? 'Error al cancelar la reserva');
     return NextResponse.json(
       { message },
