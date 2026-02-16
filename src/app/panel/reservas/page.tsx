@@ -71,8 +71,8 @@ export default async function PanelReservasPage() {
         <div className="mb-4 flex flex-wrap items-center gap-3">
           <p className="text-xs font-semibold text-stone-500">{bookings?.length ?? 0} reservas en total</p>
         </div>
-        <div className="overflow-hidden rounded-xl border border-stone-200 bg-white">
-          <table className="w-full text-left text-sm">
+        <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white">
+          <table className="w-full min-w-[480px] text-left text-sm">
             <thead>
               <tr className="border-b border-stone-200 bg-stone-50 text-xs font-bold uppercase tracking-wider text-stone-500">
                 <th className="px-4 py-3 align-middle">Pista</th>
@@ -129,7 +129,7 @@ export default async function PanelReservasPage() {
                           )}
                         </div>
                       </td>
-                      <td className="px-4 py-3.5 align-middle">
+                      <td className="min-w-[140px] px-4 py-3.5 align-middle">
                         <CancelBookingButton
                           bookingId={b.id}
                           depositPaid={b.deposit_paid}

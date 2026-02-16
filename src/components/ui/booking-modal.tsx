@@ -156,7 +156,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva' }: Booking
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="rounded-full bg-[#1d4ed8] px-4 py-2 text-sm font-bold text-white shadow-lg shadow-[#1d4ed8]/30 transition hover:scale-[1.02] hover:bg-[#2563eb] active:scale-[0.98]"
+        className="min-h-[44px] min-w-[44px] rounded-full bg-[#1d4ed8] px-4 py-2 text-sm font-bold text-white shadow-lg shadow-[#1d4ed8]/30 transition hover:scale-[1.02] hover:bg-[#2563eb] active:scale-[0.98]"
       >
         {triggerLabel}
       </button>
@@ -166,19 +166,19 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva' }: Booking
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
           onClick={(e) => e.target === e.currentTarget && setOpen(false)}
         >
-          <div
-            className="w-full max-w-4xl rounded-3xl border border-stone-200 bg-white shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
+<div
+          className="w-full max-w-[calc(100vw-32px)] max-w-4xl rounded-3xl border border-stone-200 bg-white shadow-2xl"
+          onClick={(e) => e.stopPropagation()}
+        >
             {/* Header */}
-            <div className="relative border-b border-stone-200 px-8 pt-8 pb-6">
+            <div className="relative border-b border-stone-200 px-4 pt-6 pb-4 sm:px-8 sm:pt-8 sm:pb-6">
               <span
                 className="inline-block rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-white"
                 style={{ backgroundColor: ACCENT }}
               >
                 Sistema de reservas
               </span>
-              <h2 className="mt-4 text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl">
+              <h2 className="mt-4 text-2xl font-bold tracking-tight text-stone-900 sm:text-3xl md:text-4xl">
                 Reserva tu <span style={{ color: ACCENT }}>pista</span>
               </h2>
               <p className="mt-2 text-base font-medium text-stone-600">
@@ -187,7 +187,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva' }: Booking
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="absolute right-6 top-6 rounded-full p-2.5 text-stone-500 transition hover:bg-stone-100 hover:text-stone-900"
+                className="absolute right-4 top-4 min-h-[44px] min-w-[44px] rounded-full p-2.5 text-stone-500 transition hover:bg-stone-100 hover:text-stone-900 sm:right-6 sm:top-6"
                 aria-label="Cerrar"
               >
                 <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -196,7 +196,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva' }: Booking
               </button>
             </div>
 
-            <div className="p-8">
+            <div className="p-4 sm:p-8">
               {step === 'choose' && (
                 <div className="space-y-8">
                   {courts.length === 0 ? (
@@ -236,7 +236,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva' }: Booking
                               key={String(c.id)}
                               type="button"
                               onClick={() => setCourtId(String(c.id))}
-                              className={`rounded-xl border px-6 py-3 text-base font-bold transition ${courtId === String(c.id) ? 'border-[#1d4ed8] bg-[#1d4ed8] text-white' : 'border-stone-300 bg-stone-50 text-stone-700 hover:bg-stone-100'}`}
+                              className={`min-h-[44px] rounded-xl border px-6 py-3 text-base font-bold transition ${courtId === String(c.id) ? 'border-[#1d4ed8] bg-[#1d4ed8] text-white' : 'border-stone-300 bg-stone-50 text-stone-700 hover:bg-stone-100'}`}
                             >
                               {c.name}
                             </button>
@@ -245,7 +245,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva' }: Booking
                       </div>
 
                       {/* Horarios (preview o ir a ver slots) */}
-                      <div className="flex items-center justify-between gap-6 pt-2">
+                      <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
                         <p className="text-sm font-medium text-stone-600">
                           {courtId && date
                             ? loadingSlots
@@ -257,7 +257,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva' }: Booking
                           type="button"
                           onClick={showSlots}
                           disabled={!courtId || !date || loadingSlots}
-                          className={`rounded-xl px-6 py-3 text-base font-bold text-white transition disabled:opacity-50 disabled:pointer-events-none ${date && courtId ? 'bg-[#1d4ed8] hover:bg-[#2563eb]' : 'bg-stone-300'}`}
+                          className={`min-h-[44px] w-full rounded-xl px-6 py-3 text-base font-bold text-white transition disabled:opacity-50 disabled:pointer-events-none sm:w-auto ${date && courtId ? 'bg-[#1d4ed8] hover:bg-[#2563eb]' : 'bg-stone-300'}`}
                         >
                           Ver horarios disponibles
                         </button>
@@ -291,7 +291,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva' }: Booking
                           key={slot}
                           type="button"
                           onClick={() => setSelectedSlot(slot)}
-                          className={`flex flex-col items-center justify-center rounded-xl border py-5 font-bold transition ${selectedSlot === slot ? 'border-[#1d4ed8] bg-[#1d4ed8] text-white' : 'border-stone-300 bg-stone-50 text-stone-700 hover:bg-stone-100'}`}
+                          className={`flex min-h-[44px] flex-col items-center justify-center rounded-xl border py-5 font-bold transition ${selectedSlot === slot ? 'border-[#1d4ed8] bg-[#1d4ed8] text-white' : 'border-stone-300 bg-stone-50 text-stone-700 hover:bg-stone-100'}`}
                         >
                           <span className="text-xl font-bold">{slot}</span>
                           <span className="mt-1.5 text-xs font-medium opacity-90">
@@ -302,11 +302,11 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva' }: Booking
                     </div>
                   )}
 
-                  <div className="flex gap-3 pt-4">
+                  <div className="flex min-h-[44px] flex-col gap-2 pt-4 sm:flex-row sm:gap-3">
                     <button
                       type="button"
                       onClick={() => setStep('choose')}
-                      className="rounded-xl border border-stone-300 px-5 py-2.5 text-base font-bold text-stone-700 hover:bg-stone-100"
+                      className="min-h-[44px] w-full rounded-xl border border-stone-300 px-5 py-2.5 text-base font-bold text-stone-700 hover:bg-stone-100 sm:w-auto"
                     >
                       Atrás
                     </button>
@@ -314,7 +314,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva' }: Booking
                       type="button"
                       onClick={() => selectedSlot && setStep('confirm')}
                       disabled={!selectedSlot}
-                      className={`ml-auto rounded-xl px-6 py-3 text-base font-bold text-white transition disabled:opacity-50 disabled:pointer-events-none ${selectedSlot ? 'bg-[#1d4ed8] hover:bg-[#2563eb]' : 'bg-stone-300'}`}
+                      className={`min-h-[44px] w-full rounded-xl px-6 py-3 text-base font-bold text-white transition disabled:opacity-50 disabled:pointer-events-none sm:ml-auto sm:w-auto ${selectedSlot ? 'bg-[#1d4ed8] hover:bg-[#2563eb]' : 'bg-stone-300'}`}
                     >
                       Siguiente
                     </button>
@@ -342,18 +342,18 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva' }: Booking
                     </p>
                   </div>
                   {error && <p className="text-base font-medium text-red-600">{error}</p>}
-                  <div className="flex gap-3">
+                  <div className="flex min-h-[44px] flex-col gap-2 sm:flex-row sm:gap-3">
                     <button
                       type="button"
                       onClick={() => setStep('slots')}
-                      className="rounded-xl border border-stone-300 px-5 py-2.5 text-base font-bold text-stone-700 hover:bg-stone-100"
+                      className="min-h-[44px] w-full rounded-xl border border-stone-300 px-5 py-2.5 text-base font-bold text-stone-700 hover:bg-stone-100 sm:w-auto"
                     >
                       Atrás
                     </button>
                     <button
                       type="submit"
                       disabled={loading}
-                      className="ml-auto rounded-xl bg-[#1d4ed8] px-6 py-3 text-base font-bold text-white shadow-lg shadow-[#1d4ed8]/30 hover:bg-[#2563eb] disabled:opacity-60"
+                      className="min-h-[44px] w-full rounded-xl bg-[#1d4ed8] px-6 py-3 text-base font-bold text-white shadow-lg shadow-[#1d4ed8]/30 hover:bg-[#2563eb] disabled:opacity-60 sm:ml-auto sm:w-auto"
                     >
                       {loading ? 'Creando...' : 'Confirmar reserva'}
                     </button>

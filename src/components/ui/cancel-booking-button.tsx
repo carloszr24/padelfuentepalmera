@@ -82,12 +82,12 @@ export function CancelBookingButton({
         <button
           type="button"
           onClick={handleCancel}
-          className="rounded-full border border-red-300 bg-red-50 px-3 py-1 text-[11px] font-bold text-red-700 hover:bg-red-100"
+          className="min-h-[44px] min-w-[44px] rounded-xl border border-red-300 bg-red-50 px-4 py-2 text-sm font-bold text-red-700 hover:bg-red-100 sm:rounded-full sm:px-3 sm:py-1 sm:text-[11px]"
         >
           Cancelar reserva
         </button>
       ) : (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-3">
           {atLeast24h ? (
             <p className="text-xs font-medium text-stone-600">
               Se te devolverán {DEPOSIT_EUR.toFixed(2).replace('.', ',')}€ a tu monedero. ¿Confirmar cancelación?
@@ -105,12 +105,12 @@ export function CancelBookingButton({
           ) : (
             <p className="text-xs font-medium text-stone-600">¿Cancelar?</p>
           )}
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
             <button
               type="button"
               onClick={handleCancel}
               disabled={loading}
-              className="rounded-full bg-red-600 px-3 py-1 text-[11px] font-bold text-white hover:bg-red-700 disabled:opacity-60"
+              className="min-h-[44px] w-full rounded-xl bg-red-600 px-4 py-2 text-sm font-bold text-white hover:bg-red-700 disabled:opacity-60 sm:w-auto sm:rounded-full sm:px-3 sm:py-1 sm:text-[11px]"
             >
               {loading ? '...' : 'Sí, cancelar'}
             </button>
@@ -118,7 +118,7 @@ export function CancelBookingButton({
               type="button"
               onClick={() => setConfirm(false)}
               disabled={loading}
-              className="rounded-full border border-stone-300 px-3 py-1 text-[11px] font-bold text-stone-700 hover:bg-stone-100"
+              className="min-h-[44px] w-full rounded-xl border border-stone-300 px-4 py-2 text-sm font-bold text-stone-700 hover:bg-stone-100 sm:w-auto sm:rounded-full sm:px-3 sm:py-1 sm:text-[11px]"
             >
               No
             </button>
