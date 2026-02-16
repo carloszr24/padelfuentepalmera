@@ -122,10 +122,10 @@ export function AdminCreateBookingModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-lg rounded-3xl border border-stone-200 bg-white p-6 shadow-2xl">
-        <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-stone-900">Crear reserva (admin, sin depósito)</h2>
-          <button type="button" onClick={onClose} className="rounded-full p-2 text-stone-500 hover:bg-stone-100 hover:text-stone-900">
+      <div className="w-full max-w-[calc(100vw-32px)] max-w-lg rounded-3xl border border-stone-200 bg-white p-4 shadow-2xl md:p-6">
+        <div className="mb-4 flex items-center justify-between md:mb-6">
+          <h2 className="text-base font-bold text-stone-900 md:text-lg">Crear reserva (admin, sin depósito)</h2>
+          <button type="button" onClick={onClose} className="min-h-[44px] min-w-[44px] rounded-full p-2 text-stone-500 hover:bg-stone-100 hover:text-stone-900">
             <span className="sr-only">Cerrar</span>
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
           </button>
@@ -162,9 +162,9 @@ export function AdminCreateBookingModal({
               </div>
             </div>
             {error && <p className="text-xs font-medium text-red-600">{error}</p>}
-            <div className="flex justify-end gap-2 pt-2">
-              <button type="button" onClick={onClose} className="rounded-xl border border-stone-300 px-4 py-2 text-sm font-bold text-stone-700 hover:bg-stone-100">Cancelar</button>
-              <button type="button" onClick={goToSlots} disabled={!canShowSlots || loadingSlots} className="rounded-xl bg-[#1d4ed8] px-4 py-2 text-sm font-bold text-white disabled:opacity-50">Elegir hora</button>
+            <div className="flex flex-col gap-2 pt-2 md:flex-row md:justify-end">
+              <button type="button" onClick={onClose} className="min-h-[44px] w-full rounded-xl border border-stone-300 px-4 py-2 text-sm font-bold text-stone-700 hover:bg-stone-100 md:w-auto">Cancelar</button>
+              <button type="button" onClick={goToSlots} disabled={!canShowSlots || loadingSlots} className="min-h-[44px] w-full rounded-xl bg-[#1d4ed8] px-4 py-2 text-sm font-bold text-white disabled:opacity-50 md:w-auto">Elegir hora</button>
             </div>
           </div>
         )}
@@ -179,16 +179,16 @@ export function AdminCreateBookingModal({
             ) : (
               <div className="grid grid-cols-3 gap-2">
                 {slots.map((slot) => (
-                  <button key={slot} type="button" onClick={() => setSelectedSlot(slot)} className={`rounded-xl border py-2 text-sm font-bold transition ${selectedSlot === slot ? 'border-[#1d4ed8] bg-[#1d4ed8]/15 text-[#1d4ed8]' : 'border-stone-300 bg-stone-50 text-stone-700 hover:bg-stone-100'}`}>
+                  <button key={slot} type="button" onClick={() => setSelectedSlot(slot)} className={`min-h-[44px] rounded-xl border py-2 text-sm font-bold transition ${selectedSlot === slot ? 'border-[#1d4ed8] bg-[#1d4ed8]/15 text-[#1d4ed8]' : 'border-stone-300 bg-stone-50 text-stone-700 hover:bg-stone-100'}`}>
                     {slot}
                   </button>
                 ))}
               </div>
             )}
             {error && <p className="text-xs font-medium text-red-600">{error}</p>}
-            <div className="flex justify-end gap-2 pt-2">
-              <button type="button" onClick={() => setStep('choose')} className="rounded-xl border border-stone-300 px-4 py-2 text-sm font-bold text-stone-700 hover:bg-stone-100">Atrás</button>
-              <button type="button" onClick={handleCreate} disabled={!selectedSlot || loading} className="rounded-xl bg-[#1d4ed8] px-4 py-2 text-sm font-bold text-white disabled:opacity-50">
+            <div className="flex flex-col gap-2 pt-2 md:flex-row md:justify-end">
+              <button type="button" onClick={() => setStep('choose')} className="min-h-[44px] w-full rounded-xl border border-stone-300 px-4 py-2 text-sm font-bold text-stone-700 hover:bg-stone-100 md:w-auto">Atrás</button>
+              <button type="button" onClick={handleCreate} disabled={!selectedSlot || loading} className="min-h-[44px] w-full rounded-xl bg-[#1d4ed8] px-4 py-2 text-sm font-bold text-white disabled:opacity-50 md:w-auto">
                 {loading ? 'Creando...' : `Crear reserva ${selectedSlot}`}
               </button>
             </div>

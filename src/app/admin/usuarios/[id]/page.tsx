@@ -108,7 +108,7 @@ export default async function AdminUsuarioPage({ params }: PageProps) {
         <p className="mb-4 text-xs font-medium text-stone-500">
           Marca &quot;Resto pagado&quot; cuando en el club se confirme que ha pagado el resto de la pista.
         </p>
-        <div className="overflow-hidden rounded-xl border border-stone-200 bg-white">
+        <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white">
           {bookings && bookings.length > 0 ? (
             <ul className="divide-y divide-stone-200">
               {bookings.map((b) => (

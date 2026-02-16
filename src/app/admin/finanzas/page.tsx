@@ -152,8 +152,8 @@ export default function AdminFinanzasPage() {
           title="Dashboard financiero"
           subtitle="Ingresos, comisiones Stripe y beneficio neto."
         />
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center">
+          <div className="flex min-h-[44px] items-center gap-2">
             <label htmlFor="period" className="text-sm font-semibold text-stone-600">
               Período:
             </label>
@@ -162,7 +162,7 @@ export default function AdminFinanzasPage() {
               value={period}
               onChange={(e) => setPeriod(e.target.value as PeriodKey)}
               disabled={!!selectedDate}
-              className="rounded-xl border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-900 outline-none focus:border-[#1d4ed8] focus:ring-1 focus:ring-[#1d4ed8] disabled:opacity-60 disabled:cursor-not-allowed"
+              className="min-h-[44px] w-full rounded-xl border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-900 outline-none focus:border-[#1d4ed8] focus:ring-1 focus:ring-[#1d4ed8] disabled:opacity-60 disabled:cursor-not-allowed md:w-auto"
             >
               {PERIOD_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -180,14 +180,14 @@ export default function AdminFinanzasPage() {
               type="date"
               value={selectedDate ?? ''}
               onChange={(e) => setSelectedDate(e.target.value || null)}
-              className="rounded-xl border border-stone-300 bg-white px-4 py-2 text-sm text-stone-900 outline-none focus:border-[#1d4ed8] focus:ring-1 focus:ring-[#1d4ed8]"
+              className="min-h-[44px] w-full rounded-xl border border-stone-300 bg-white px-4 py-2 text-sm text-stone-900 outline-none focus:border-[#1d4ed8] focus:ring-1 focus:ring-[#1d4ed8] md:w-auto"
             />
           </div>
           {selectedDate && (
             <button
               type="button"
               onClick={() => setSelectedDate(null)}
-              className="rounded-xl border border-stone-300 bg-stone-100 px-4 py-2 text-sm font-bold text-stone-700 hover:bg-stone-200"
+              className="min-h-[44px] w-full rounded-xl border border-stone-300 bg-stone-100 px-4 py-2 text-sm font-bold text-stone-700 hover:bg-stone-200 md:w-auto"
             >
               Limpiar filtro
             </button>
@@ -196,7 +196,7 @@ export default function AdminFinanzasPage() {
       </div>
 
       {/* 4 tarjetas */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
           <p className="text-xs font-bold uppercase tracking-wider text-emerald-700">Ingresos totales</p>
           <p className="mt-2 text-2xl font-bold text-emerald-800">{formatEur(totals.totalIncome)}</p>
@@ -222,7 +222,7 @@ export default function AdminFinanzasPage() {
             Transacciones del {filterDate ? formatDay(filterDate) : ''}
           </h2>
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
+            <table className="w-full min-w-[400px] text-left text-sm">
               <thead>
                 <tr className="border-b border-stone-200 bg-stone-50 text-xs font-bold uppercase tracking-wider text-stone-500">
                   <th className="px-4 py-3 align-middle">Hora</th>
@@ -258,16 +258,16 @@ export default function AdminFinanzasPage() {
 
       {/* Gráfico barras mensual (solo cuando no es vista por día) */}
       {!isDayView && barData.length > 0 && (
-        <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
-          <h2 className="mb-4 text-base font-bold text-stone-900">Ingresos y comisiones por mes</h2>
-          <div className="h-80">
+        <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm md:p-5">
+          <h2 className="mb-4 text-sm font-bold text-stone-900 md:text-base">Ingresos y comisiones por mes</h2>
+          <div className="h-[250px] w-full md:h-[350px]">
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart data={barData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `${v}€`} />
+                <XAxis dataKey="name" tick={{ fontSize: 10 }} />
+                <YAxis tick={{ fontSize: 10 }} tickFormatter={(v) => `${v}€`} />
                 <Tooltip formatter={(v) => formatEur(Number(v ?? 0))} />
-                <Legend />
+                <Legend wrapperStyle={{ paddingTop: 8 }} layout="horizontal" verticalAlign="bottom" />
                 <Bar dataKey="Ingresos" fill="#059669" radius={[4, 4, 0, 0]} name="Ingresos" />
                 <Bar dataKey="Comisiones" fill="#dc2626" radius={[4, 4, 0, 0]} name="Comisiones Stripe" />
                 <Line type="monotone" dataKey="Beneficio neto" stroke="#1d4ed8" strokeWidth={2} dot={{ r: 4 }} name="Beneficio neto" />
@@ -279,19 +279,19 @@ export default function AdminFinanzasPage() {
 
       {/* Gráfico evolución diaria (último mes) (solo cuando no es vista por día) */}
       {!isDayView && daily.length > 0 && (
-        <div className="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm">
-          <h2 className="mb-4 text-base font-bold text-stone-900">Evolución diaria (últimos 30 días)</h2>
-          <div className="h-72">
+        <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm md:p-5">
+          <h2 className="mb-4 text-sm font-bold text-stone-900 md:text-base">Evolución diaria (últimos 30 días)</h2>
+          <div className="h-[250px] w-full md:h-[350px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={daily} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis dataKey="date" tickFormatter={formatDay} tick={{ fontSize: 11 }} />
-                <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `${v}€`} />
+                <XAxis dataKey="date" tickFormatter={formatDay} tick={{ fontSize: 10 }} />
+                <YAxis tick={{ fontSize: 10 }} tickFormatter={(v) => `${v}€`} />
                 <Tooltip
                   labelFormatter={(label) => formatDay(String(label ?? ''))}
                   formatter={(v) => formatEur(Number(v ?? 0))}
                 />
-                <Legend />
+                <Legend wrapperStyle={{ paddingTop: 8 }} layout="horizontal" verticalAlign="bottom" />
                 <Area type="monotone" dataKey="income" stackId="1" stroke="#059669" fill="#059669" fillOpacity={0.4} name="Ingresos" />
                 <Area type="monotone" dataKey="fees" stackId="2" stroke="#dc2626" fill="#f87171" fillOpacity={0.3} name="Comisiones" />
                 <Line type="monotone" dataKey="net" stroke="#1d4ed8" strokeWidth={2} dot={{ r: 3 }} name="Beneficio neto" />
@@ -308,7 +308,7 @@ export default function AdminFinanzasPage() {
           Desglose por mes
         </h2>
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
+          <table className="w-full min-w-[400px] text-left text-sm">
             <thead>
               <tr className="border-b border-stone-200 bg-stone-50 text-xs font-bold uppercase tracking-wider text-stone-500">
                 <th className="px-4 py-3 align-middle">Mes</th>

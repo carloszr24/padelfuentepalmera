@@ -56,7 +56,7 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
       </div>
 
       <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm">
-        <form method="get" className="mb-4 flex flex-wrap items-end gap-3">
+        <form method="get" className="mb-4 flex flex-col gap-3 md:flex-row md:flex-wrap md:items-end">
           <div className="flex items-center gap-2">
             <label htmlFor="desde" className="text-xs font-bold text-stone-600">Desde</label>
             <input
@@ -64,7 +64,7 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
               name="desde"
               type="date"
               defaultValue={desde ?? ''}
-              className="rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none focus:border-[#1d4ed8] focus:ring-1 focus:ring-[#1d4ed8]"
+              className="min-h-[44px] flex-1 rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none focus:border-[#1d4ed8] focus:ring-1 focus:ring-[#1d4ed8]"
             />
           </div>
           <div className="flex items-center gap-2">
@@ -74,19 +74,19 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
               name="hasta"
               type="date"
               defaultValue={hasta ?? ''}
-              className="rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none focus:border-[#1d4ed8] focus:ring-1 focus:ring-[#1d4ed8]"
+              className="min-h-[44px] flex-1 rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none focus:border-[#1d4ed8] focus:ring-1 focus:ring-[#1d4ed8]"
             />
           </div>
           <button
             type="submit"
-            className="rounded-xl border border-stone-300 px-4 py-2 text-sm font-bold text-stone-700 transition hover:bg-stone-100"
+            className="min-h-[44px] w-full rounded-xl border border-stone-300 px-4 py-2 text-sm font-bold text-stone-700 transition hover:bg-stone-100 md:w-auto"
           >
             Filtrar
           </button>
           {(desde || hasta) && (
             <a
               href="/admin/reservas"
-              className="rounded-xl border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-600 transition hover:bg-stone-100"
+              className="min-h-[44px] flex w-full items-center justify-center rounded-xl border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-600 transition hover:bg-stone-100 md:w-auto"
             >
               Quitar filtro
             </a>
@@ -102,8 +102,8 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
             Exportar CSV
           </a>
         </div>
-        <div className="overflow-hidden rounded-xl border border-stone-200 bg-white">
-          <table className="w-full text-left text-sm">
+        <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white">
+          <table className="w-full min-w-[600px] text-left text-sm">
             <thead>
               <tr className="border-b border-stone-200 bg-stone-50 text-xs font-bold uppercase tracking-wider text-stone-500">
                 <th className="px-4 py-3 align-middle">Pista</th>

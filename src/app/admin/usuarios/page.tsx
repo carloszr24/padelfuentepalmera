@@ -42,8 +42,8 @@ export default async function AdminUsuariosPage({
 
       <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm">
         <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <form className="flex items-center gap-2" method="get">
-            <div className="relative">
+          <form className="flex w-full flex-col gap-2 sm:flex-row sm:items-center md:w-auto" method="get">
+            <div className="relative flex-1">
               <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone-400">
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
               </span>
@@ -52,12 +52,12 @@ export default async function AdminUsuariosPage({
                 name="q"
                 defaultValue={q}
                 placeholder="Buscar por nombre, email..."
-                className="w-full min-w-[200px] rounded-xl border border-stone-300 bg-white py-2.5 pl-9 pr-4 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#1d4ed8] focus:ring-1 focus:ring-[#1d4ed8]"
+                className="min-h-[44px] w-full rounded-xl border border-stone-300 bg-white py-2.5 pl-9 pr-4 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#1d4ed8] focus:ring-1 focus:ring-[#1d4ed8]"
               />
             </div>
             <button
               type="submit"
-              className="rounded-xl border border-stone-300 px-4 py-2.5 text-sm font-bold text-stone-700 transition hover:bg-stone-100"
+              className="min-h-[44px] w-full rounded-xl border border-stone-300 px-4 py-2.5 text-sm font-bold text-stone-700 transition hover:bg-stone-100 sm:w-auto"
             >
               Buscar
             </button>
@@ -65,8 +65,8 @@ export default async function AdminUsuariosPage({
           <p className="text-xs font-semibold text-stone-500">{total} registros en total</p>
         </div>
 
-        <div className="overflow-hidden rounded-xl border border-stone-200 bg-white">
-          <table className="w-full text-left text-sm">
+        <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white">
+          <table className="w-full min-w-[520px] text-left text-sm">
             <thead>
               <tr className="border-b border-stone-200 bg-stone-50 text-xs font-bold uppercase tracking-wider text-stone-500">
                 <th className="px-4 py-3 align-middle">Nombre</th>

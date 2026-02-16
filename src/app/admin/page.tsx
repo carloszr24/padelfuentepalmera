@@ -98,7 +98,7 @@ export default async function AdminDashboardPage() {
         subtitle="Controla la actividad: ingresos, reservas, usuarios y estado de las pistas."
       />
 
-      <section className="grid grid-cols-2 items-stretch gap-4 lg:grid-cols-5">
+      <section className="grid grid-cols-2 items-stretch gap-4 md:grid-cols-4 lg:grid-cols-5">
         <StatCard
           label="Ingresos totales"
           value={`${totalIncome.toFixed(2)} €`}
@@ -130,8 +130,8 @@ export default async function AdminDashboardPage() {
         <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-stone-800">
           Resumen día a día (últimos {DAYS_FINANCIAL} días)
         </h2>
-        <div className="overflow-hidden rounded-xl border border-stone-200 bg-white">
-          <table className="w-full text-left text-sm">
+        <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white">
+          <table className="w-full min-w-[280px] text-left text-sm">
             <thead>
               <tr className="border-b border-stone-200 text-[11px] font-bold uppercase tracking-wider text-stone-500">
                 <th className="px-4 py-3">Fecha</th>
@@ -165,7 +165,7 @@ export default async function AdminDashboardPage() {
           <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-stone-800">
             Últimas reservas
           </h2>
-          <div className="overflow-hidden rounded-xl border border-stone-200 bg-white">
+          <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white">
             {latestBookings && latestBookings.length > 0 ? (
               <ul className="divide-y divide-stone-200 text-sm">
                 {latestBookings.map((booking) => {
@@ -226,7 +226,7 @@ export default async function AdminDashboardPage() {
           <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-stone-800">
             Últimas transacciones
           </h2>
-          <div className="overflow-hidden rounded-xl border border-stone-200 bg-white">
+          <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white">
             {latestTransactions && latestTransactions.length > 0 ? (
               <ul className="divide-y divide-stone-200 text-sm">
                 {latestTransactions.map((tx) => {

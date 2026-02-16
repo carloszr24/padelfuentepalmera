@@ -94,11 +94,11 @@ export function AdminWalletRechargeButton({
       </button>
 
       {open ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="w-full max-w-sm rounded-3xl border border-stone-200 bg-white p-6 shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-[calc(100vw-32px)] max-w-sm rounded-3xl border border-stone-200 bg-white p-4 shadow-2xl md:p-6">
             <div className="mb-4 flex items-start justify-between gap-3">
               <div>
-                <h2 className="text-lg font-bold text-stone-900">
+                <h2 className="text-base font-bold text-stone-900 md:text-lg">
                   {mode === 'add' ? 'Recargar monedero' : 'Restar del monedero'}
                 </h2>
                 <p className="mt-1 text-xs font-medium text-stone-600">
@@ -108,7 +108,7 @@ export function AdminWalletRechargeButton({
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="rounded-full bg-stone-100 px-2 py-1 text-xs font-bold text-stone-600 hover:bg-stone-200"
+                className="min-h-[44px] min-w-[44px] rounded-full bg-stone-100 px-2 py-1 text-xs font-bold text-stone-600 hover:bg-stone-200"
               >
                 Cerrar
               </button>
@@ -116,8 +116,8 @@ export function AdminWalletRechargeButton({
 
             <form onSubmit={handleSubmit} className="space-y-4 text-sm">
               <div className="flex gap-2">
-                <button type="button" onClick={() => setMode('add')} className={`flex-1 rounded-xl px-3 py-2 text-xs font-bold transition ${mode === 'add' ? 'border border-emerald-400 bg-emerald-50 text-emerald-700' : 'border border-stone-300 bg-stone-50 text-stone-600 hover:bg-stone-100'}`}>Recargar</button>
-                <button type="button" onClick={() => setMode('subtract')} className={`flex-1 rounded-xl px-3 py-2 text-xs font-bold transition ${mode === 'subtract' ? 'border border-amber-400 bg-amber-50 text-amber-700' : 'border border-stone-300 bg-stone-50 text-stone-600 hover:bg-stone-100'}`}>Restar</button>
+                <button type="button" onClick={() => setMode('add')} className={`min-h-[44px] flex-1 rounded-xl px-3 py-2 text-xs font-bold transition ${mode === 'add' ? 'border border-emerald-400 bg-emerald-50 text-emerald-700' : 'border border-stone-300 bg-stone-50 text-stone-600 hover:bg-stone-100'}`}>Recargar</button>
+                <button type="button" onClick={() => setMode('subtract')} className={`min-h-[44px] flex-1 rounded-xl px-3 py-2 text-xs font-bold transition ${mode === 'subtract' ? 'border border-amber-400 bg-amber-50 text-amber-700' : 'border border-stone-300 bg-stone-50 text-stone-600 hover:bg-stone-100'}`}>Restar</button>
               </div>
               <div className="space-y-1">
                 <label htmlFor="amount-admin" className="text-xs font-bold text-stone-700">Importe (€)</label>
@@ -142,18 +142,18 @@ export function AdminWalletRechargeButton({
                 <p className="text-xs font-medium text-red-600">{error}</p>
               ) : null}
 
-              <div className="mt-4 flex justify-end gap-2">
+              <div className="mt-4 flex flex-col gap-2 md:flex-row md:justify-end">
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="rounded-full border border-stone-300 px-4 py-2 text-xs font-bold text-stone-700 hover:bg-stone-100"
+                  className="min-h-[44px] w-full rounded-full border border-stone-300 px-4 py-2 text-xs font-bold text-stone-700 hover:bg-stone-100 md:w-auto"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={loading || !isValid}
-                  className={`rounded-full px-4 py-2 text-xs font-bold text-white disabled:cursor-not-allowed disabled:opacity-60 ${mode === 'add' ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-amber-600 hover:bg-amber-500'}`}
+                  className={`min-h-[44px] w-full rounded-full px-4 py-2 text-xs font-bold text-white disabled:cursor-not-allowed disabled:opacity-60 md:w-auto ${mode === 'add' ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-amber-600 hover:bg-amber-500'}`}
                 >
                   {loading ? 'Aplicando...' : mode === 'add' ? 'Aplicar recarga' : 'Aplicar resta'}
                 </button>

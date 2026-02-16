@@ -36,8 +36,8 @@ export default async function AdminMonederosPage() {
 
       <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm">
         <p className="mb-4 text-xs font-semibold text-stone-500">{profiles?.length ?? 0} usuarios</p>
-        <div className="overflow-hidden rounded-xl border border-stone-200 bg-white">
-          <table className="w-full text-left text-sm">
+        <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white">
+          <table className="w-full min-w-[400px] text-left text-sm">
             <thead>
               <tr className="border-b border-stone-200 bg-stone-50 text-xs font-bold uppercase tracking-wider text-stone-500">
                 <th className="px-4 py-3 align-middle">Usuario</th>

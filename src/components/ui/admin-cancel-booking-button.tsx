@@ -46,12 +46,12 @@ export function AdminCancelBookingButton({ bookingId }: Props) {
       </button>
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-sm rounded-2xl border border-stone-200 bg-white p-5 shadow-xl">
+          <div className="w-full max-w-[calc(100vw-32px)] max-w-sm rounded-2xl border border-stone-200 bg-white p-4 shadow-xl md:p-5">
             <h3 className="text-sm font-bold text-stone-900">Cancelar reserva (admin)</h3>
             <p className="mt-2 text-xs text-stone-600">
               La reserva se cancelará sin penalización. Puedes elegir si devolver la señal al usuario.
             </p>
-            <label className="mt-4 flex cursor-pointer items-center gap-2">
+            <label className="mt-4 flex min-h-[44px] cursor-pointer items-center gap-2">
               <input
                 type="checkbox"
                 checked={refundDeposit}
@@ -60,12 +60,12 @@ export function AdminCancelBookingButton({ bookingId }: Props) {
               />
               <span className="text-sm font-medium text-stone-700">Devolver señal al usuario</span>
             </label>
-            <div className="mt-5 flex flex-wrap gap-2">
+            <div className="mt-5 flex min-h-[44px] flex-col gap-2 md:flex-row md:flex-wrap">
               <button
                 type="button"
                 onClick={handleCancel}
                 disabled={loading}
-                className="rounded-xl bg-red-600 px-4 py-2 text-sm font-bold text-white hover:bg-red-700 disabled:opacity-60"
+                className="min-h-[44px] w-full rounded-xl bg-red-600 px-4 py-2 text-sm font-bold text-white hover:bg-red-700 disabled:opacity-60 md:w-auto"
               >
                 {loading ? '...' : 'Confirmar cancelación'}
               </button>
@@ -73,7 +73,7 @@ export function AdminCancelBookingButton({ bookingId }: Props) {
                 type="button"
                 onClick={() => !loading && setOpen(false)}
                 disabled={loading}
-                className="rounded-xl border border-stone-300 px-4 py-2 text-sm font-bold text-stone-700 hover:bg-stone-100"
+                className="min-h-[44px] w-full rounded-xl border border-stone-300 px-4 py-2 text-sm font-bold text-stone-700 hover:bg-stone-100 md:w-auto"
               >
                 Cerrar
               </button>
