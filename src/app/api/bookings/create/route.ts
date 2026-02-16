@@ -30,6 +30,22 @@ export async function POST(request: Request) {
     );
   }
 
+  // Bloquear reserva si tiene deuda o saldo negativo (no confiar solo en la UI)
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('has_debt, wallet_balance')
+    .eq('id', user.id)
+    .single();
+
+  const hasDebt = (profile as { has_debt?: boolean } | null)?.has_debt === true;
+  const balance = Number((profile as { wallet_balance?: number } | null)?.wallet_balance ?? 0);
+  if (hasDebt || balance < 0) {
+    return NextResponse.json(
+      { message: 'Tienes una deuda pendiente. Recarga tu monedero para poder reservar.' },
+      { status: 400 }
+    );
+  }
+
   const startNorm = String(startTime).slice(0, 5);
   const now = new Date();
   const todayMadrid = now.toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' });

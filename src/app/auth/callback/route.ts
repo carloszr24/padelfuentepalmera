@@ -50,5 +50,10 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${origin}/recuperar-contrasena?error=link_expired`);
   }
 
+  // Tras verificar email (signup/email): cerrar sesión y que inicie sesión manualmente
+  if (type === 'signup' || type === 'email') {
+    await supabase.auth.signOut();
+  }
+
   return response;
 }
