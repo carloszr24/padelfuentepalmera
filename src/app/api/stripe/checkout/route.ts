@@ -13,17 +13,24 @@ const MAX_AMOUNT_EUR = 500;
 const baseUrl =
   process.env.NEXT_PUBLIC_URL?.replace(/\/$/, '') || 'http://localhost:3000';
 
+const ALLOWED_ORIGINS = [
+  new URL(baseUrl).origin,
+  'https://padelfuentepalmera.com',
+  'https://www.padelfuentepalmera.com',
+  'http://localhost:3000',
+].filter((o, i, a) => a.indexOf(o) === i);
+
 function isAllowedOrigin(origin: string | null, referer: string | null): boolean {
   if (!origin && !referer) return true;
-  const allowed = new URL(baseUrl).origin;
-  if (origin && new URL(origin).origin === allowed) return true;
-  if (referer) {
+  const check = (urlStr: string) => {
     try {
-      if (new URL(referer).origin === allowed) return true;
+      return ALLOWED_ORIGINS.includes(new URL(urlStr).origin);
     } catch {
-      // invalid referer
+      return false;
     }
-  }
+  };
+  if (origin && check(origin)) return true;
+  if (referer && check(referer)) return true;
   return false;
 }
 
