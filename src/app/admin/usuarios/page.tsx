@@ -4,28 +4,29 @@ import { AdminPageHeader } from '@/components/ui/admin-page-header';
 import { AdminWalletRechargeButton } from '@/components/ui/admin-wallet-recharge-button';
 
 type AdminUsuariosPageProps = {
-  searchParams?: {
-    q?: string;
-  };
+  searchParams?: Promise<{ q?: string }> | { q?: string };
 };
 
 export default async function AdminUsuariosPage({
   searchParams,
 }: AdminUsuariosPageProps) {
-  // Sanear búsqueda: solo caracteres seguros para evitar inyección en filtro PostgREST
-  const raw = searchParams?.q?.trim() || '';
+  const params = typeof (searchParams as Promise<unknown>)?.then === 'function'
+    ? await (searchParams as Promise<{ q?: string }>)
+    : (searchParams ?? {});
+  const raw = (params?.q ?? '').trim();
   const q = raw.slice(0, 100).replace(/[^\w\s@.\-áéíóúñüÁÉÍÓÚÑÜ]/g, '');
 
   const supabase = createSupabaseServiceClient();
 
-  const query = supabase
+  let query = supabase
     .from('profiles')
     .select('id, full_name, email, phone, wallet_balance, has_debt, debt_amount')
     .order('full_name', { ascending: true });
 
-  if (q) {
+  if (q.length >= 1) {
     const term = q.replace(/%/g, '\\%').replace(/_/g, '\\_');
-    query.or(`full_name.ilike.%${term}%,email.ilike.%${term}%`);
+    const pattern = `%${term}%`;
+    query = query.or(`full_name.ilike."${pattern}",email.ilike."${pattern}",phone.ilike."${pattern}"`);
   }
 
   const { data: profiles } = await query;
