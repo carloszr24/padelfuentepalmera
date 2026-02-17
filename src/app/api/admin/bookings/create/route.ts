@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { isValidUUID } from '@/lib/utils';
+import { getOpeningForDate } from '@/lib/club-schedule';
 
 export async function POST(request: Request) {
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? request.headers.get('x-real-ip') ?? 'unknown';
@@ -52,6 +53,24 @@ export async function POST(request: Request) {
 
   const startNormalized = startTime.length === 5 ? `${startTime}:00` : startTime;
   const endNormalized = endTime.length === 5 ? `${endTime}:00` : endTime;
+  const startNorm = String(startTime).slice(0, 5);
+  const endNorm = String(endTime).slice(0, 5);
+
+  const opening = await getOpeningForDate(bookingDate);
+  if (!opening.isOpen) {
+    return NextResponse.json(
+      { message: 'Club cerrado ese día.' },
+      { status: 400 }
+    );
+  }
+  const openT = opening.openTime ?? '00:00';
+  const closeT = opening.closeTime ?? '23:59';
+  if (startNorm < openT || endNorm > closeT) {
+    return NextResponse.json(
+      { message: 'La franja horaria no está dentro del horario de apertura.' },
+      { status: 400 }
+    );
+  }
 
   const { data: bookingId, error } = await supabase.rpc('admin_create_booking', {
     p_user_id: userId,

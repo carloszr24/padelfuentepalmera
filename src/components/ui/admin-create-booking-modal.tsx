@@ -49,6 +49,7 @@ export function AdminCreateBookingModal({
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [slots, setSlots] = useState<string[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
+  const [clubClosed, setClubClosed] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -65,6 +66,7 @@ export function AdminCreateBookingModal({
       setCourtId('');
       setDate(new Date().toISOString().slice(0, 10));
       setSlots([]);
+      setClubClosed(false);
       setSelectedSlot('');
       setError(null);
     }
@@ -73,10 +75,14 @@ export function AdminCreateBookingModal({
   useEffect(() => {
     if (!open || !courtId || !date) return;
     setLoadingSlots(true);
+    setClubClosed(false);
     fetch(`/api/bookings/availability?courtId=${encodeURIComponent(courtId)}&date=${encodeURIComponent(date)}`)
       .then((r) => r.json())
-      .then((data) => setSlots(data?.available ?? []))
-      .catch(() => setSlots([]))
+      .then((data) => {
+        setSlots(data?.closed === true ? [] : (data?.available ?? []));
+        setClubClosed(data?.closed === true);
+      })
+      .catch(() => { setSlots([]); setClubClosed(false); })
       .finally(() => setLoadingSlots(false));
   }, [open, courtId, date]);
 
@@ -174,6 +180,8 @@ export function AdminCreateBookingModal({
             <p className="text-sm font-medium text-stone-700">{courtName} · {new Date(date).toLocaleDateString('es-ES', { weekday: 'short', day: '2-digit', month: 'short' })} · {userName}</p>
             {loadingSlots ? (
               <p className="text-sm font-medium text-stone-600">Cargando horarios...</p>
+            ) : clubClosed ? (
+              <p className="text-sm font-semibold text-amber-600">Club cerrado ese día.</p>
             ) : slots.length === 0 ? (
               <p className="text-sm font-semibold text-amber-600">No hay huecos libres ese día.</p>
             ) : (

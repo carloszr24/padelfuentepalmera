@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { getOpeningForDate } from '@/lib/club-schedule';
 
 export async function POST(request: Request) {
   const supabase = await createServerSupabaseClient();
@@ -47,6 +48,7 @@ export async function POST(request: Request) {
   }
 
   const startNorm = String(startTime).slice(0, 5);
+  const endNorm = String(endTime).slice(0, 5);
   const now = new Date();
   const todayMadrid = now.toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' });
   const timeMadrid = now.toLocaleTimeString('en-GB', {
@@ -58,6 +60,22 @@ export async function POST(request: Request) {
   if (bookingDate < todayMadrid || (bookingDate === todayMadrid && startNorm <= timeMadrid)) {
     return NextResponse.json(
       { message: 'No se puede reservar una hora que ya ha pasado' },
+      { status: 400 }
+    );
+  }
+
+  const opening = await getOpeningForDate(bookingDate);
+  if (!opening.isOpen) {
+    return NextResponse.json(
+      { message: 'Club cerrado ese día.' },
+      { status: 400 }
+    );
+  }
+  const openT = opening.openTime ?? '00:00';
+  const closeT = opening.closeTime ?? '23:59';
+  if (startNorm < openT || endNorm > closeT) {
+    return NextResponse.json(
+      { message: 'La franja horaria no está dentro del horario de apertura.' },
       { status: 400 }
     );
   }

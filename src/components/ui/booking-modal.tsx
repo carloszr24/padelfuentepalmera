@@ -51,6 +51,8 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', onSuccess
   const [date, setDate] = useState('');
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
+  const [clubClosed, setClubClosed] = useState(false);
+  const [clubClosedLabel, setClubClosedLabel] = useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -72,8 +74,9 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', onSuccess
   const isTodayMadrid = date === todayMadrid;
   const slotsToShow =
     isTodayMadrid ? availableSlots.filter((slot) => slot > timeMadrid) : availableSlots;
-  const noSlotsMessage =
-    isTodayMadrid && slotsToShow.length === 0
+  const noSlotsMessage = clubClosed
+    ? (clubClosedLabel ? `Club cerrado (${clubClosedLabel}).` : 'Club cerrado ese día.')
+    : isTodayMadrid && slotsToShow.length === 0
       ? 'No quedan horas disponibles para hoy. Selecciona otro día.'
       : 'No hay huecos disponibles ese día. Elige otra fecha o pista.';
 
@@ -83,6 +86,8 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', onSuccess
       setCourtId('');
       setDate(new Date().toISOString().slice(0, 10));
       setAvailableSlots([]);
+      setClubClosed(false);
+      setClubClosedLabel(null);
       setSelectedSlot('');
       setError(null);
     }
@@ -98,8 +103,14 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', onSuccess
       .then((r) => r.json())
       .then((data) => {
         setAvailableSlots(data?.available ?? []);
+        setClubClosed(data?.closed === true);
+        setClubClosedLabel(data?.label ?? null);
       })
-      .catch(() => setAvailableSlots([]))
+      .catch(() => {
+        setAvailableSlots([]);
+        setClubClosed(false);
+        setClubClosedLabel(null);
+      })
       .finally(() => setLoadingSlots(false));
   }, [courtId, date, step]);
 

@@ -11,6 +11,7 @@ const NAV_LINKS = [
   { href: '/admin/reservas', label: 'Reservas' },
   { href: '/admin/estadisticas', label: 'Estadísticas' },
   { href: '/admin/pistas', label: 'Pistas' },
+  { href: '/admin/horarios', label: 'Horarios' },
   { href: '/admin/monederos', label: 'Monederos' },
   { href: '/admin/transacciones', label: 'Transacciones' },
   { href: '/admin/finanzas', label: 'Finanzas' },

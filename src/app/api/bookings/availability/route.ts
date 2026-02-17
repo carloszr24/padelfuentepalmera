@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/server';
+import { getOpeningForDate } from '@/lib/club-schedule';
 
-// Horario club: 10-11:30, 11:30-13:00 | 16:30-18, 18-19:30, 19:30-21, 21-22:30
+// Horario club: 10-11:30, 11:30-13:00 | 16:30-18, 18-19:30, 19:30-21, 21-22:30 (se filtran por apertura)
 const SLOT_STARTS = ['10:00', '11:30', '16:30', '18:00', '19:30', '21:00'];
 
 function slotEnd(start: string): string {
@@ -77,6 +78,19 @@ export async function GET(request: Request) {
     });
   }
 
+  const opening = await getOpeningForDate(date);
+  if (!opening.isOpen) {
+    return NextResponse.json({ available: [], closed: true, label: opening.label ?? undefined });
+  }
+
+  const openTime = opening.openTime ?? '00:00';
+  const closeTime = opening.closeTime ?? '23:59';
+  const slotsInRange = SLOT_STARTS.filter((slotStart) => {
+    const end = slotEnd(slotStart);
+    const slotEndM = end.slice(0, 5);
+    return slotStart >= openTime && slotEndM <= closeTime;
+  });
+
   const now = new Date();
   const todayMadrid = now.toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' });
   const timeMadrid = now.toLocaleTimeString('en-GB', {
@@ -86,7 +100,7 @@ export async function GET(request: Request) {
     hour12: false,
   });
 
-  const available = SLOT_STARTS.filter((slotStart) => {
+  const available = slotsInRange.filter((slotStart) => {
     if (date === todayMadrid && slotStart <= timeMadrid) return false;
     const end = slotEnd(slotStart);
     const overlaps = occupied.some((o) =>
@@ -95,5 +109,5 @@ export async function GET(request: Request) {
     return !overlaps;
   });
 
-  return NextResponse.json({ available });
+  return NextResponse.json({ available, closed: false });
 }
