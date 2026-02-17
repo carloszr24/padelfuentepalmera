@@ -39,7 +39,7 @@ export function AdminNoshowButton({ bookingId }: Props) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-[11px] font-bold text-amber-800 hover:bg-amber-100"
+        className="min-h-[36px] w-full min-w-[88px] shrink-0 inline-flex items-center justify-center rounded-full border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-800 hover:bg-amber-100 sm:w-auto"
       >
         No-show
       </button>

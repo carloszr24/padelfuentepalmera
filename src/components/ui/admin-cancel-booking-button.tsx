@@ -40,7 +40,7 @@ export function AdminCancelBookingButton({ bookingId }: Props) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="min-h-[44px] inline-flex items-center rounded-xl border border-red-300 bg-red-50 px-3 py-2 text-xs font-bold text-red-700 transition hover:bg-red-100"
+        className="min-h-[36px] w-full min-w-[88px] shrink-0 inline-flex items-center justify-center rounded-full border border-red-300 bg-red-50 px-3 py-1.5 text-xs font-bold text-red-700 transition hover:bg-red-100 sm:w-auto"
       >
         Cancelar
       </button>

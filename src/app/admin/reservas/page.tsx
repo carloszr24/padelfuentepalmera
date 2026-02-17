@@ -178,14 +178,10 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
                     </td>
                     <td className="px-4 py-3 align-middle">
                       {b.status === 'confirmed' && (
-                        <>
+                        <div className="flex flex-col gap-2 items-start">
                           <AdminCancelBookingButton bookingId={b.id} />
-                          {showNoshow && (
-                            <span className="ml-2 inline-block">
-                              <AdminNoshowButton bookingId={b.id} />
-                            </span>
-                          )}
-                        </>
+                          {showNoshow && <AdminNoshowButton bookingId={b.id} />}
+                        </div>
                       )}
                     </td>
                   </tr>
