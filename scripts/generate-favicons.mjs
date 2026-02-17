@@ -15,9 +15,9 @@ const root = join(__dirname, '..');
 const publicDir = join(root, 'public');
 const logoPath = join(publicDir, 'logo.png');
 
-const BLACK_THRESHOLD = 35; // pixels with R,G,B below this become transparent
+const BLACK_THRESHOLD = 55; // negro y borde negro → transparente (R,G,B por debajo)
 
-/** Convierte fondo negro/near-black a transparente y devuelve sharp instance. */
+/** Convierte fondo/borde negro a transparente. Devuelve buffer PNG a tamaño completo. */
 async function logoWithTransparentBg() {
   const { data, info } = await sharp(logoPath)
     .ensureAlpha()
@@ -39,8 +39,12 @@ async function logoWithTransparentBg() {
 
 async function main() {
   const base = await logoWithTransparentBg();
-  const appDir = join(root, 'src', 'app');
 
+  const fullPng = await base.clone().toBuffer();
+  writeFileSync(join(publicDir, 'logo-transparent.png'), fullPng);
+  console.log('Created public/logo-transparent.png (logo sin fondo negro para header/footer/panel)');
+
+  const appDir = join(root, 'src', 'app');
   const png16 = await base.clone().resize(16, 16).toBuffer();
   const png32 = await base.clone().resize(32, 32).toBuffer();
   const ico = await toIco([png16, png32]);
@@ -48,14 +52,13 @@ async function main() {
 
   writeFileSync(join(appDir, 'icon.ico'), ico);
   writeFileSync(join(appDir, 'apple-icon.png'), apple180);
-  console.log('Created src/app/icon.ico (favicon 32x32)');
-  console.log('Created src/app/apple-icon.png (180x180)');
+  console.log('Created src/app/icon.ico and apple-icon.png');
 
   writeFileSync(join(publicDir, 'favicon.ico'), ico);
   writeFileSync(join(publicDir, 'favicon-16x16.png'), png16);
   writeFileSync(join(publicDir, 'favicon-32x32.png'), png32);
   writeFileSync(join(publicDir, 'apple-touch-icon.png'), apple180);
-  console.log('Updated public/favicon.ico, favicon-16x16.png, favicon-32x32.png, apple-touch-icon.png');
+  console.log('Updated public favicons');
 }
 
 main().catch((e) => {

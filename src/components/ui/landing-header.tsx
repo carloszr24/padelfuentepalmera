@@ -64,7 +64,7 @@ export function LandingHeader({ isLoggedIn = false }: LandingHeaderProps) {
             aria-label="Fuente Palmera Pádel - Inicio"
           >
             <Image
-              src="/logo.png"
+              src="/logo-transparent.png"
               alt="Fuente Palmera Pádel"
               width={64}
               height={64}

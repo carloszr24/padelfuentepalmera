@@ -193,7 +193,7 @@ export default async function Home() {
         <div className="mx-auto flex max-w-5xl flex-col gap-8 px-5 sm:flex-row sm:items-start sm:justify-between sm:px-8">
           <div className="flex flex-col gap-4">
             <Link href="/" className="inline-flex w-fit">
-              <Image src="/logo.png" alt="Fuente Palmera Padel Club" width={120} height={120} className="h-14 w-14 border-0 object-contain object-left outline-none ring-0 sm:h-16 sm:w-16 [&_img]:border-0 [&_img]:outline-none [&_img]:ring-0" unoptimized />
+              <Image src="/logo-transparent.png" alt="Fuente Palmera Padel Club" width={120} height={120} className="h-14 w-14 border-0 object-contain object-left outline-none ring-0 sm:h-16 sm:w-16 [&_img]:border-0 [&_img]:outline-none [&_img]:ring-0" unoptimized />
             </Link>
             <p className="font-semibold text-stone-900">Fuente Palmera Padel Club</p>
             <p className="mt-1">
