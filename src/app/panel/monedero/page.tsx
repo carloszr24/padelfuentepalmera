@@ -37,7 +37,7 @@ export default async function PanelMonederoPage({ searchParams }: PageProps) {
     .limit(30);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {params?.success === '1' && params?.session_id && (
         <StripeSuccessCredit success={true} sessionId={params.session_id} />
       )}
@@ -59,15 +59,15 @@ export default async function PanelMonederoPage({ searchParams }: PageProps) {
         />
         <Link
           href="/panel"
-          className="rounded-xl border border-stone-300 px-4 py-2 text-sm font-bold text-stone-700 transition hover:bg-stone-100"
+          className="min-h-[44px] inline-flex items-center rounded-xl border border-stone-300 px-4 py-2.5 text-sm font-bold text-stone-700 transition hover:bg-stone-100"
         >
           Volver al inicio
         </Link>
       </div>
 
       <div className="grid gap-6 md:grid-cols-[1fr,1.2fr]">
-        <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-wider text-stone-500">Saldo actual</p>
+        <div className="flex min-h-[140px] flex-col justify-center rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm">
+          <p className="text-xs font-bold uppercase tracking-wide text-stone-500">Saldo actual</p>
           <p className={`mt-3 text-2xl font-bold ${balance < 0 ? 'text-amber-700' : 'text-stone-900'}`}>
             {balance < 0 ? '-' : ''}{Math.abs(Number(balance)).toFixed(2)} €
             {balance < 0 && <span className="ml-2 text-base font-semibold text-amber-700">(deuda)</span>}
@@ -88,10 +88,10 @@ export default async function PanelMonederoPage({ searchParams }: PageProps) {
               Aún no hay movimientos.
             </p>
           ) : (
-            <div className="overflow-hidden rounded-xl border border-stone-200 bg-white">
-              <table className="w-full text-left text-sm">
+            <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white">
+              <table className="w-full min-w-[320px] text-left text-sm">
                 <thead>
-                  <tr className="border-b border-stone-200 bg-stone-50 text-xs font-bold uppercase tracking-wider text-stone-500">
+                  <tr className="border-b border-stone-200 bg-stone-50 text-xs font-bold uppercase tracking-wide text-stone-500">
                     <th className="px-4 py-3 align-middle">Descripción</th>
                     <th className="px-4 py-3 align-middle">Fecha</th>
                     <th className="px-4 py-3 align-middle text-right">Importe</th>
@@ -107,13 +107,13 @@ export default async function PanelMonederoPage({ searchParams }: PageProps) {
                       description: string | null;
                     }) => (
                       <tr key={tx.id} className="border-b border-stone-100 transition hover:bg-stone-50">
-                        <td className="px-4 py-3.5 align-middle font-medium text-stone-800">
+                        <td className="px-4 py-3 align-middle font-medium text-stone-800">
                           {typeLabel[tx.type] ?? tx.description ?? 'Movimiento'}
                         </td>
-                        <td className="px-4 py-3.5 align-middle text-xs font-medium text-stone-600 whitespace-nowrap">
+                        <td className="px-4 py-3 align-middle text-xs font-medium text-stone-600 whitespace-nowrap">
                           {formatDateTime(tx.created_at)}
                         </td>
-                        <td className="px-4 py-3.5 align-middle text-right font-bold tabular-nums">
+                        <td className="px-4 py-3 align-middle text-right font-bold tabular-nums">
                           <span className={tx.amount >= 0 ? 'text-emerald-600' : 'text-red-600'}>
                             {tx.amount >= 0 ? '+' : ''}{Number(tx.amount).toFixed(2)} €
                           </span>

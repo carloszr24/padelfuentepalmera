@@ -37,11 +37,11 @@ export function AdminPageHeader({
           </span>
         ))}
       </nav>
-      <h1 className="text-xl font-bold tracking-tight text-stone-900 md:text-3xl">
+      <h1 className="text-xl font-bold tracking-tight text-stone-900 md:text-2xl">
         {title}
       </h1>
       {subtitle && (
-        <p className="max-w-2xl text-xs font-medium text-stone-600 md:text-sm">
+        <p className="max-w-2xl text-sm text-stone-500">
           {subtitle}
         </p>
       )}

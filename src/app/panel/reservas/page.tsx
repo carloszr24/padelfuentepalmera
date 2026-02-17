@@ -38,7 +38,7 @@ export default async function PanelReservasPage() {
   const displayDebtAmount = hasDebt ? debtAmount : (balance < 0 ? Math.abs(balance) : 0);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {isBlocked && (
         <div className="rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm font-semibold text-red-800">
           Tienes una deuda pendiente de {displayDebtAmount.toFixed(2).replace('.', ',')}€. Recarga tu monedero para poder reservar.
@@ -60,7 +60,7 @@ export default async function PanelReservasPage() {
           )}
           <Link
             href="/panel"
-            className="rounded-xl border border-stone-300 px-4 py-2 text-sm font-bold text-stone-700 transition hover:bg-stone-100"
+            className="min-h-[44px] inline-flex items-center rounded-xl border border-stone-300 px-4 py-2.5 text-sm font-bold text-stone-700 transition hover:bg-stone-100"
           >
             Volver al inicio
           </Link>
@@ -74,7 +74,7 @@ export default async function PanelReservasPage() {
         <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white">
           <table className="w-full min-w-[480px] text-left text-sm">
             <thead>
-              <tr className="border-b border-stone-200 bg-stone-50 text-xs font-bold uppercase tracking-wider text-stone-500">
+              <tr className="border-b border-stone-200 bg-stone-50 text-xs font-bold uppercase tracking-wide text-stone-500">
                 <th className="px-4 py-3 align-middle">Pista</th>
                 <th className="px-4 py-3 align-middle">Fecha y hora</th>
                 <th className="px-4 py-3 align-middle">Estado</th>
@@ -102,19 +102,19 @@ export default async function PanelReservasPage() {
                     const courtName = Array.isArray(b.courts) ? b.courts[0]?.name : (b.courts as { name?: string } | null)?.name;
                     return (
                     <tr key={b.id} className="border-b border-stone-100 transition hover:bg-stone-50">
-                      <td className="px-4 py-3.5 align-middle font-bold text-stone-900">
+                      <td className="px-4 py-3 align-middle font-bold text-stone-900">
                         {courtName ?? 'Pista'}
                       </td>
-                      <td className="px-4 py-3.5 align-middle font-medium text-stone-800">
+                      <td className="px-4 py-3 align-middle font-medium text-stone-800">
                         <p className="leading-tight">{formatDate(b.booking_date)}</p>
-                        <p className="mt-0.5 text-[11px] leading-tight text-stone-500">
+                        <p className="mt-0.5 text-xs leading-tight text-stone-500">
                           {b.start_time.slice(0, 5)} - {b.end_time.slice(0, 5)}
                         </p>
                       </td>
-                      <td className="px-4 py-3.5 align-middle">
-                        <div className="flex flex-col gap-1">
+                      <td className="px-4 py-3 align-middle">
+                        <div className="flex flex-col gap-1 items-start">
                           <span
-                            className={`inline-flex w-fit rounded-full px-3 py-1 text-[11px] font-bold leading-none ${
+                            className={`inline-flex w-fit rounded-full px-3 py-1.5 text-xs font-bold ${
                               b.status === 'confirmed'
                                 ? 'bg-emerald-100 text-emerald-700'
                                 : b.status === 'completed'
@@ -125,11 +125,11 @@ export default async function PanelReservasPage() {
                             {b.status === 'confirmed' ? 'Confirmada' : b.status === 'completed' ? 'Completada' : 'Cancelada'}
                           </span>
                           {b.deposit_paid && (
-                            <span className="text-[11px] font-medium leading-none text-emerald-600">Depósito pagado</span>
+                            <span className="text-xs font-medium leading-none text-emerald-600">Depósito pagado</span>
                           )}
                         </div>
                       </td>
-                      <td className="min-w-[140px] px-4 py-3.5 align-middle">
+                      <td className="min-w-[140px] px-4 py-3 align-middle">
                         <CancelBookingButton
                           bookingId={b.id}
                           depositPaid={b.deposit_paid}

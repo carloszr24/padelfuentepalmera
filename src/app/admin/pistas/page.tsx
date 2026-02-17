@@ -11,7 +11,7 @@ export default async function AdminPistasPage() {
     .order('name', { ascending: true });
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <AdminPageHeader
         breadcrumbs={[{ label: 'Inicio', href: '/admin' }, { label: 'Pistas' }]}
         title="Pistas"

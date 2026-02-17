@@ -91,14 +91,14 @@ export default async function AdminDashboardPage() {
   );
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6">
       <AdminPageHeader
         breadcrumbs={[{ label: 'Inicio', href: '/admin' }, { label: 'Dashboard' }]}
         title="Resumen del club"
         subtitle="Controla la actividad: ingresos, reservas, usuarios y estado de las pistas."
       />
 
-      <section className="grid grid-cols-2 items-stretch gap-4 md:grid-cols-4 lg:grid-cols-5">
+      <section className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <StatCard
           label="Ingresos totales"
           value={`${totalIncome.toFixed(2)} €`}
@@ -133,7 +133,7 @@ export default async function AdminDashboardPage() {
         <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white">
           <table className="w-full min-w-[280px] text-left text-sm">
             <thead>
-              <tr className="border-b border-stone-200 text-[11px] font-bold uppercase tracking-wider text-stone-500">
+              <tr className="border-b border-stone-200 text-xs font-bold uppercase tracking-wide text-stone-500">
                 <th className="px-4 py-3">Fecha</th>
                 <th className="px-4 py-3">Reservas</th>
                 <th className="px-4 py-3">Recargas (€)</th>
@@ -142,15 +142,15 @@ export default async function AdminDashboardPage() {
             <tbody>
               {dailyRows.map(([dateStr, row]) => (
                 <tr key={dateStr} className="border-b border-stone-100 text-stone-800 transition hover:bg-stone-50">
-                  <td className="px-4 py-2.5 font-medium">
+                  <td className="px-4 py-3 font-medium">
                     {new Date(dateStr).toLocaleDateString('es-ES', {
                       weekday: 'short',
                       day: '2-digit',
                       month: 'short',
                     })}
                   </td>
-                  <td className="px-4 py-2.5">{row.bookings}</td>
-                  <td className="px-4 py-2.5 font-bold text-emerald-600">
+                  <td className="px-4 py-3">{row.bookings}</td>
+                  <td className="px-4 py-3 font-bold text-emerald-600">
                     {row.recharge > 0 ? `+${row.recharge.toFixed(2)}` : '—'}
                   </td>
                 </tr>
@@ -196,7 +196,7 @@ export default async function AdminDashboardPage() {
                       </p>
                     </div>
                     <span
-                      className={`inline-flex rounded-full px-3 py-1 text-[11px] font-bold capitalize ${
+                      className={`inline-flex rounded-full px-3 py-1.5 text-xs font-bold capitalize ${
                         booking.status === 'confirmed'
                           ? 'bg-emerald-100 text-emerald-700'
                           : booking.status === 'completed'
@@ -282,16 +282,12 @@ type StatCardProps = {
 
 function StatCard({ label, value, helper }: StatCardProps) {
   return (
-    <div className="flex h-full min-h-[140px] flex-col rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm transition hover:border-stone-300 hover:bg-white">
-      <div className="min-h-[2.5rem]">
-        <p className="line-clamp-2 text-xs font-bold uppercase tracking-wider text-stone-500">{label}</p>
-      </div>
-      <p className="mt-3 shrink-0 text-2xl font-bold leading-tight text-stone-900 tabular-nums whitespace-nowrap">{value}</p>
+    <div className="flex min-h-[140px] flex-col items-center justify-center rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm transition hover:border-stone-300 hover:bg-white text-center">
+      <p className="text-xs font-bold uppercase tracking-wide text-stone-500">{label}</p>
+      <p className="mt-2 text-2xl font-bold leading-tight text-stone-900 tabular-nums">{value}</p>
       {helper ? (
-        <p className="mt-2 line-clamp-2 min-h-[2rem] text-[11px] font-medium leading-snug text-stone-500">{helper}</p>
-      ) : (
-        <div className="mt-2 min-h-[2rem]" />
-      )}
+        <p className="mt-1 line-clamp-2 text-xs font-medium text-stone-500">{helper}</p>
+      ) : null}
     </div>
   );
 }

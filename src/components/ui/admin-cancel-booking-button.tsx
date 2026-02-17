@@ -40,14 +40,14 @@ export function AdminCancelBookingButton({ bookingId }: Props) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="rounded-full border border-red-300 bg-red-50 px-3 py-1 text-[11px] font-bold text-red-700 hover:bg-red-100"
+        className="min-h-[44px] inline-flex items-center rounded-xl border border-red-300 bg-red-50 px-3 py-2 text-xs font-bold text-red-700 transition hover:bg-red-100"
       >
         Cancelar
       </button>
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-[calc(100vw-32px)] max-w-sm rounded-2xl border border-stone-200 bg-white p-4 shadow-xl md:p-5">
-            <h3 className="text-sm font-bold text-stone-900">Cancelar reserva (admin)</h3>
+          <div className="w-full max-w-[calc(100vw-32px)] max-w-sm rounded-2xl border border-stone-200 bg-white p-6 shadow-xl">
+            <h3 className="text-xl font-bold text-stone-900">Cancelar reserva (admin)</h3>
             <p className="mt-2 text-xs text-stone-600">
               La reserva se cancelará sin penalización. Puedes elegir si devolver la señal al usuario.
             </p>
@@ -60,22 +60,22 @@ export function AdminCancelBookingButton({ bookingId }: Props) {
               />
               <span className="text-sm font-medium text-stone-700">Devolver señal al usuario</span>
             </label>
-            <div className="mt-5 flex min-h-[44px] flex-col gap-2 md:flex-row md:flex-wrap">
-              <button
-                type="button"
-                onClick={handleCancel}
-                disabled={loading}
-                className="min-h-[44px] w-full rounded-xl bg-red-600 px-4 py-2 text-sm font-bold text-white hover:bg-red-700 disabled:opacity-60 md:w-auto"
-              >
-                {loading ? '...' : 'Confirmar cancelación'}
-              </button>
+            <div className="mt-6 flex flex-col gap-3 md:flex-row md:justify-end md:gap-4">
               <button
                 type="button"
                 onClick={() => !loading && setOpen(false)}
                 disabled={loading}
-                className="min-h-[44px] w-full rounded-xl border border-stone-300 px-4 py-2 text-sm font-bold text-stone-700 hover:bg-stone-100 md:w-auto"
+                className="min-h-[44px] w-full rounded-xl border border-stone-300 px-4 py-2.5 text-sm font-bold text-stone-700 transition hover:bg-stone-100 md:w-auto"
               >
                 Cerrar
+              </button>
+              <button
+                type="button"
+                onClick={handleCancel}
+                disabled={loading}
+                className="min-h-[44px] w-full rounded-xl bg-red-600 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-red-700 disabled:opacity-60 md:w-auto"
+              >
+                {loading ? '...' : 'Confirmar cancelación'}
               </button>
             </div>
           </div>

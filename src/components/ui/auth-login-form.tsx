@@ -64,7 +64,7 @@ export function AuthLoginForm() {
       <div className="space-y-1">
         <label
           htmlFor="email"
-          className="text-xs font-bold text-stone-700"
+          className="text-sm font-semibold text-stone-600"
         >
           Email
         </label>
@@ -74,7 +74,7 @@ export function AuthLoginForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
+          className="min-h-[44px] w-full rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
           placeholder="tu@email.com"
         />
       </div>
@@ -83,7 +83,7 @@ export function AuthLoginForm() {
         <div className="flex items-center justify-between">
           <label
             htmlFor="password"
-            className="text-xs font-bold text-stone-700"
+            className="text-sm font-semibold text-stone-600"
           >
             Contraseña
           </label>
@@ -101,7 +101,7 @@ export function AuthLoginForm() {
           onChange={(e) => setPassword(e.target.value)}
           required
           minLength={6}
-          className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
+          className="min-h-[44px] w-full rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
           placeholder="••••••••"
         />
       </div>
@@ -113,7 +113,7 @@ export function AuthLoginForm() {
       <button
         type="submit"
         disabled={loading}
-        className="mt-2 w-full rounded-full bg-[#1d4ed8] px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-[#1d4ed8]/30 hover:bg-[#2563eb] disabled:cursor-not-allowed disabled:opacity-60"
+        className="mt-2 min-h-[44px] w-full rounded-xl bg-[#1d4ed8] px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-[#1d4ed8]/30 transition hover:bg-[#2563eb] disabled:cursor-not-allowed disabled:opacity-60"
       >
         {loading ? 'Entrando...' : 'Iniciar sesión'}
       </button>

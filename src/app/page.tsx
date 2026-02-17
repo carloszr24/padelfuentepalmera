@@ -57,7 +57,7 @@ export default async function Home() {
           aria-hidden
         />
         <div className="absolute inset-0 bg-stone-900/50" aria-hidden />
-        <div className="relative z-10 mx-auto flex min-h-[85dvh] max-w-5xl flex-col justify-end px-5 pb-16 pt-28 sm:min-h-[90dvh] sm:justify-center sm:pb-24 sm:pt-32 sm:px-8">
+        <div className="relative z-10 mx-auto flex min-h-[85dvh] max-w-5xl flex-col justify-end px-4 pb-16 pt-28 sm:min-h-[90dvh] sm:justify-center sm:pb-24 sm:pt-32 sm:px-6 md:px-8">
           <div className="hero-entrance">
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/90">
               Fuente Palmera · Córdoba
@@ -99,7 +99,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <main className="mx-auto max-w-5xl px-5 pb-24 pt-14 sm:px-8 sm:pb-32 sm:pt-20">
+      <main className="mx-auto max-w-5xl px-4 pb-24 pt-14 sm:px-6 md:px-8 sm:pb-32 sm:pt-20">
         {/* Qué te ofrecemos: zona cálida y clara */}
         <section id="que-te-ofrecemos" className="space-y-6">
           <div>

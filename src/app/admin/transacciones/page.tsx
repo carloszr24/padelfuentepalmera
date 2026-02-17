@@ -11,7 +11,7 @@ export default async function AdminTransaccionesPage() {
     .limit(100);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <AdminPageHeader
         breadcrumbs={[{ label: 'Inicio', href: '/admin' }, { label: 'Transacciones' }]}
         title="Transacciones"
@@ -23,7 +23,7 @@ export default async function AdminTransaccionesPage() {
           <p className="text-xs font-semibold text-stone-500">Últimas 100 transacciones (export hasta 2000)</p>
           <a
             href="/api/admin/transactions/export"
-            className="rounded-xl border border-stone-300 px-3 py-1.5 text-xs font-bold text-stone-700 hover:bg-stone-100"
+            className="min-h-[44px] inline-flex items-center rounded-xl border border-stone-300 px-4 py-2.5 text-sm font-bold text-stone-700 transition hover:bg-stone-100"
             download
           >
             Exportar CSV
@@ -32,7 +32,7 @@ export default async function AdminTransaccionesPage() {
         <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white">
           <table className="w-full min-w-[480px] text-left text-sm">
             <thead>
-              <tr className="border-b border-stone-200 bg-stone-50 text-xs font-bold uppercase tracking-wider text-stone-500">
+              <tr className="border-b border-stone-200 bg-stone-50 text-xs font-bold uppercase tracking-wide text-stone-500">
                 <th className="px-4 py-3 align-middle">Usuario</th>
                 <th className="px-4 py-3 align-middle">Descripción</th>
                 <th className="px-4 py-3 align-middle">Fecha</th>
@@ -54,10 +54,10 @@ export default async function AdminTransaccionesPage() {
                     : null;
                   return (
                     <tr key={tx.id} className="border-b border-stone-100 transition hover:bg-stone-50">
-                      <td className="px-4 py-3.5 align-middle font-bold text-stone-900">{name ?? 'Usuario'}</td>
-                      <td className="px-4 py-3.5 align-middle font-medium text-stone-800">{tx.description || getTransactionLabel(tx.type)}</td>
-                      <td className="px-4 py-3.5 align-middle text-xs font-medium text-stone-600 whitespace-nowrap">{formatDateTime(tx.created_at)}</td>
-                      <td className="px-4 py-3.5 align-middle text-right font-bold tabular-nums">
+                      <td className="px-4 py-3 align-middle font-bold text-stone-900">{name ?? 'Usuario'}</td>
+                      <td className="px-4 py-3 align-middle font-medium text-stone-800">{tx.description || getTransactionLabel(tx.type)}</td>
+                      <td className="px-4 py-3 align-middle text-xs font-medium text-stone-600 whitespace-nowrap">{formatDateTime(tx.created_at)}</td>
+                      <td className="px-4 py-3 align-middle text-right font-bold tabular-nums">
                         <span className={tx.amount >= 0 ? 'text-emerald-600' : 'text-red-600'}>
                           {tx.amount >= 0 ? '+' : ''}{Number(tx.amount).toFixed(2)} €
                         </span>

@@ -36,7 +36,7 @@ export default async function AdminUsuariosPage({
   const total = profiles?.length ?? 0;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <AdminPageHeader
         breadcrumbs={[{ label: 'Inicio', href: '/admin' }, { label: 'Usuarios' }]}
         title="Usuarios"
@@ -45,7 +45,7 @@ export default async function AdminUsuariosPage({
 
       <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm">
         <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <form className="flex w-full flex-col gap-2 sm:flex-row sm:items-center md:w-auto" method="get">
+          <form className="flex w-full flex-col gap-3 md:flex-row md:items-center md:gap-4 md:w-auto" method="get">
             <div className="relative flex-1">
               <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone-400">
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
@@ -60,7 +60,7 @@ export default async function AdminUsuariosPage({
             </div>
             <button
               type="submit"
-              className="min-h-[44px] w-full rounded-xl border border-stone-300 px-4 py-2.5 text-sm font-bold text-stone-700 transition hover:bg-stone-100 sm:w-auto"
+              className="min-h-[44px] w-full rounded-xl border border-stone-300 px-4 py-2.5 text-sm font-bold text-stone-700 transition hover:bg-stone-100 md:w-auto"
             >
               Buscar
             </button>
@@ -71,7 +71,7 @@ export default async function AdminUsuariosPage({
         <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white">
           <table className="w-full min-w-[520px] text-left text-sm">
             <thead>
-              <tr className="border-b border-stone-200 bg-stone-50 text-xs font-bold uppercase tracking-wider text-stone-500">
+              <tr className="border-b border-stone-200 bg-stone-50 text-xs font-bold uppercase tracking-wide text-stone-500">
                 <th className="px-4 py-3 align-middle">Nombre</th>
                 <th className="px-4 py-3 align-middle">Contacto</th>
                 <th className="px-4 py-3 align-middle">Saldo</th>
@@ -92,7 +92,7 @@ export default async function AdminUsuariosPage({
               key={p.id}
               className="border-b border-stone-100 transition hover:bg-stone-50"
             >
-              <td className="px-4 py-3.5 align-middle">
+              <td className="px-4 py-3 align-middle">
                 <p className="font-bold leading-tight text-stone-900">
                   {p.full_name || 'Sin nombre'}
                 </p>
@@ -102,12 +102,12 @@ export default async function AdminUsuariosPage({
                 <p className="max-w-[180px] truncate leading-tight">{p.email || '-'}</p>
                 <p className="mt-0.5 text-[11px] leading-tight text-stone-500">{p.phone || '-'}</p>
               </td>
-              <td className="px-4 py-3.5 align-middle">
+              <td className="px-4 py-3 align-middle">
                 <span className="font-bold tabular-nums text-emerald-600">
                   {Number(p.wallet_balance ?? 0).toFixed(2)} €
                 </span>
                 {(p as { has_debt?: boolean }).has_debt && (
-                  <span className="ml-2 inline-block rounded bg-red-100 px-2 py-0.5 text-[11px] font-bold text-red-700">
+                  <span className="ml-2 inline-flex rounded-full px-3 py-1.5 text-xs font-bold text-red-700 bg-red-100">
                     Deuda: {Number((p as { debt_amount?: number }).debt_amount ?? 0).toFixed(2).replace('.', ',')} €
                   </span>
                 )}
@@ -115,11 +115,11 @@ export default async function AdminUsuariosPage({
               <td className="px-4 py-3.5 align-middle font-medium text-stone-600">
                 —
               </td>
-              <td className="px-4 py-3.5 align-middle">
+              <td className="px-4 py-3 align-middle">
                 <div className="flex flex-wrap items-center gap-2">
                   <Link
                     href={`/admin/usuarios/${p.id}`}
-                    className="rounded-lg border border-[#1d4ed8]/50 bg-[#1d4ed8]/10 px-3 py-1.5 text-xs font-bold text-[#1d4ed8] transition hover:bg-[#1d4ed8]/20"
+                    className="min-h-[44px] inline-flex items-center rounded-xl border border-[#1d4ed8]/50 bg-[#1d4ed8]/10 px-3 py-2 text-xs font-bold text-[#1d4ed8] transition hover:bg-[#1d4ed8]/20"
                   >
                     Ver perfil
                   </Link>

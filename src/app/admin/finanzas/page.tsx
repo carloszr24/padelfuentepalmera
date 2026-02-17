@@ -145,14 +145,14 @@ export default function AdminFinanzasPage() {
   }));
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <AdminPageHeader
           breadcrumbs={[{ label: 'Inicio', href: '/admin' }, { label: 'Finanzas' }]}
           title="Dashboard financiero"
           subtitle="Ingresos, comisiones Stripe y beneficio neto."
         />
-        <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center">
+        <div className="flex flex-col gap-3 md:flex-row md:flex-wrap md:items-center md:gap-4">
           <div className="flex min-h-[44px] items-center gap-2">
             <label htmlFor="period" className="text-sm font-semibold text-stone-600">
               Período:
@@ -162,7 +162,7 @@ export default function AdminFinanzasPage() {
               value={period}
               onChange={(e) => setPeriod(e.target.value as PeriodKey)}
               disabled={!!selectedDate}
-              className="min-h-[44px] w-full rounded-xl border border-stone-300 bg-white px-4 py-2 text-sm font-medium text-stone-900 outline-none focus:border-[#1d4ed8] focus:ring-1 focus:ring-[#1d4ed8] disabled:opacity-60 disabled:cursor-not-allowed md:w-auto"
+              className="min-h-[44px] w-full rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-sm text-stone-900 outline-none focus:border-[#1d4ed8] focus:ring-1 focus:ring-[#1d4ed8] disabled:opacity-60 disabled:cursor-not-allowed md:w-auto"
             >
               {PERIOD_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -180,14 +180,14 @@ export default function AdminFinanzasPage() {
               type="date"
               value={selectedDate ?? ''}
               onChange={(e) => setSelectedDate(e.target.value || null)}
-              className="min-h-[44px] w-full rounded-xl border border-stone-300 bg-white px-4 py-2 text-sm text-stone-900 outline-none focus:border-[#1d4ed8] focus:ring-1 focus:ring-[#1d4ed8] md:w-auto"
+              className="min-h-[44px] w-full rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-sm text-stone-900 outline-none focus:border-[#1d4ed8] focus:ring-1 focus:ring-[#1d4ed8] md:w-auto"
             />
           </div>
           {selectedDate && (
             <button
               type="button"
               onClick={() => setSelectedDate(null)}
-              className="min-h-[44px] w-full rounded-xl border border-stone-300 bg-stone-100 px-4 py-2 text-sm font-bold text-stone-700 hover:bg-stone-200 md:w-auto"
+              className="min-h-[44px] w-full rounded-xl border border-stone-300 px-4 py-2.5 text-sm font-bold text-stone-700 transition hover:bg-stone-100 md:w-auto"
             >
               Limpiar filtro
             </button>
@@ -197,20 +197,20 @@ export default function AdminFinanzasPage() {
 
       {/* 4 tarjetas */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
-          <p className="text-xs font-bold uppercase tracking-wider text-emerald-700">Ingresos totales</p>
+        <div className="flex min-h-[140px] flex-col items-center justify-center rounded-2xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm text-center">
+          <p className="text-xs font-bold uppercase tracking-wide text-emerald-700">Ingresos totales</p>
           <p className="mt-2 text-2xl font-bold text-emerald-800">{formatEur(totals.totalIncome)}</p>
         </div>
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-5">
-          <p className="text-xs font-bold uppercase tracking-wider text-red-700">Comisiones Stripe</p>
+        <div className="flex min-h-[140px] flex-col items-center justify-center rounded-2xl border border-red-200 bg-red-50 p-5 shadow-sm text-center">
+          <p className="text-xs font-bold uppercase tracking-wide text-red-700">Comisiones Stripe</p>
           <p className="mt-2 text-2xl font-bold text-red-800">{formatEur(totals.totalStripeFees)}</p>
         </div>
-        <div className="rounded-2xl border border-[#1d4ed8]/20 bg-[#1d4ed8]/5 p-5">
-          <p className="text-xs font-bold uppercase tracking-wider text-[#1d4ed8]">Beneficio neto</p>
+        <div className="flex min-h-[140px] flex-col items-center justify-center rounded-2xl border border-[#1d4ed8]/20 bg-[#1d4ed8]/5 p-5 shadow-sm text-center">
+          <p className="text-xs font-bold uppercase tracking-wide text-[#1d4ed8]">Beneficio neto</p>
           <p className="mt-2 text-2xl font-bold text-[#1d4ed8]">{formatEur(totals.totalNet)}</p>
         </div>
-        <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5">
-          <p className="text-xs font-bold uppercase tracking-wider text-stone-600">Transacciones</p>
+        <div className="flex min-h-[140px] flex-col items-center justify-center rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm text-center">
+          <p className="text-xs font-bold uppercase tracking-wide text-stone-600">Transacciones</p>
           <p className="mt-2 text-2xl font-bold text-stone-900">{totals.txCount}</p>
         </div>
       </div>
@@ -224,7 +224,7 @@ export default function AdminFinanzasPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[400px] text-left text-sm">
               <thead>
-                <tr className="border-b border-stone-200 bg-stone-50 text-xs font-bold uppercase tracking-wider text-stone-500">
+                <tr className="border-b border-stone-200 bg-stone-50 text-xs font-bold uppercase tracking-wide text-stone-500">
                   <th className="px-4 py-3 align-middle">Hora</th>
                   <th className="px-4 py-3 align-middle">Usuario</th>
                   <th className="px-4 py-3 align-middle">Tipo</th>
@@ -310,7 +310,7 @@ export default function AdminFinanzasPage() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[400px] text-left text-sm">
             <thead>
-              <tr className="border-b border-stone-200 bg-stone-50 text-xs font-bold uppercase tracking-wider text-stone-500">
+              <tr className="border-b border-stone-200 bg-stone-50 text-xs font-bold uppercase tracking-wide text-stone-500">
                 <th className="px-4 py-3 align-middle">Mes</th>
                 <th className="px-4 py-3 align-middle text-right">Recargas Stripe</th>
                 <th className="px-4 py-3 align-middle text-right">Recargas Admin</th>
