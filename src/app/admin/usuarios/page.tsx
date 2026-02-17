@@ -10,9 +10,11 @@ type AdminUsuariosPageProps = {
 export default async function AdminUsuariosPage({
   searchParams,
 }: AdminUsuariosPageProps) {
-  const resolved: { q?: string } = typeof (searchParams as Promise<unknown>)?.then === 'function'
-    ? await (searchParams as Promise<{ q?: string }>)
-    : (searchParams ?? {});
+  const resolved = await (
+    typeof (searchParams as Promise<unknown>)?.then === 'function'
+      ? (searchParams as Promise<{ q?: string }>)
+      : Promise.resolve(searchParams ?? {})
+  );
   const raw = (resolved?.q ?? '').trim();
   const q = raw.slice(0, 100).replace(/[^\w\s@.\-áéíóúñüÁÉÍÓÚÑÜ]/g, '');
 
