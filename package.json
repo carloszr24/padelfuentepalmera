@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "favicons": "node scripts/generate-favicons.mjs",
+    "seed:load": "node --env-file=.env.local scripts/seed-load-test.mjs",
     "dev": "next dev",
     "dev:lan": "next dev --hostname 0.0.0.0",
     "build": "next build",

@@ -86,7 +86,7 @@ export default async function Home() {
             </div>
             <div className="mt-10 flex flex-wrap gap-6 text-sm text-white/80">
               <span className="flex items-center gap-2">
-                <span className="font-semibold text-white">09:00 – 21:30</span>
+                <span className="font-semibold text-white">10:00 – 22:30</span>
                 Horario
               </span>
               <span className="flex items-center gap-2">
@@ -125,7 +125,7 @@ export default async function Home() {
               <FeatureCard
                 icon="🏐"
                 title="Pistas en condiciones"
-                description="Superficie e iluminación cuidadas. Horario 09:00 – 21:30."
+                description="Superficie e iluminación cuidadas. Horario 10:00 – 22:30."
               />
               <FeatureCard
                 icon="✓"

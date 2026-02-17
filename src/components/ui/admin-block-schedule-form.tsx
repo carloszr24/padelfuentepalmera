@@ -3,16 +3,14 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+// Horario club: mañana 10-11:30, 11:30-13:00; tarde 16:30-18, 18-19:30, 19:30-21, 21-22:30
 const SLOT_OPTIONS: { start: string; end: string; label: string }[] = [
-  { start: '09:00', end: '10:30', label: '09:00 - 10:30' },
-  { start: '10:30', end: '12:00', label: '10:30 - 12:00' },
-  { start: '12:00', end: '13:30', label: '12:00 - 13:30' },
-  { start: '13:30', end: '15:00', label: '13:30 - 15:00' },
-  { start: '15:00', end: '16:30', label: '15:00 - 16:30' },
+  { start: '10:00', end: '11:30', label: '10:00 - 11:30' },
+  { start: '11:30', end: '13:00', label: '11:30 - 13:00' },
   { start: '16:30', end: '18:00', label: '16:30 - 18:00' },
   { start: '18:00', end: '19:30', label: '18:00 - 19:30' },
   { start: '19:30', end: '21:00', label: '19:30 - 21:00' },
-  { start: '20:00', end: '21:30', label: '20:00 - 21:30' },
+  { start: '21:00', end: '22:30', label: '21:00 - 22:30' },
 ];
 
 type Court = { id: string; name: string };
