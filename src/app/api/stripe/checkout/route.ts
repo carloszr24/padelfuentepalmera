@@ -113,6 +113,7 @@ export async function POST(request: Request) {
       },
       success_url: `${baseUrl}/panel/monedero/exito?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/panel/monedero?cancel=1`,
+      redirect_on_completion: 'always',
     });
 
     if (!session.url) {
