@@ -6,13 +6,14 @@ import { useRouter } from 'next/navigation';
 type Props = {
   success: boolean;
   sessionId: string | null;
+  onCredited?: () => void;
 };
 
 /**
  * Al volver de Stripe con success=1 y session_id, llama a confirm-session para acreditar
  * el saldo (plan B si el webhook no ha funcionado). Luego refresca para mostrar el saldo.
  */
-export function StripeSuccessCredit({ success, sessionId }: Props) {
+export function StripeSuccessCredit({ success, sessionId, onCredited }: Props) {
   const router = useRouter();
   const [status, setStatus] = useState<'idle' | 'loading' | 'ok' | 'error'>('idle');
 
@@ -31,6 +32,7 @@ export function StripeSuccessCredit({ success, sessionId }: Props) {
         if (cancelled) return;
         if (res.ok) {
           setStatus('ok');
+          onCredited?.();
           router.refresh();
         } else {
           setStatus('error');
@@ -43,7 +45,7 @@ export function StripeSuccessCredit({ success, sessionId }: Props) {
     return () => {
       cancelled = true;
     };
-  }, [success, sessionId, router]);
+  }, [success, sessionId, router, onCredited]);
 
   if (status === 'loading') {
     return (

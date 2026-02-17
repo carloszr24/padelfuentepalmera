@@ -58,7 +58,7 @@ export default async function AdminTransaccionesPage() {
                       <td className="px-4 py-3 align-middle font-medium text-stone-800">{tx.description || getTransactionLabel(tx.type)}</td>
                       <td className="px-4 py-3 align-middle text-xs font-medium text-stone-600 whitespace-nowrap">{formatDateTime(tx.created_at)}</td>
                       <td className="px-4 py-3 align-middle text-right font-bold tabular-nums">
-                        <span className={tx.amount >= 0 ? 'text-emerald-600' : 'text-red-600'}>
+                        <span className={`whitespace-nowrap ${tx.amount >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                           {tx.amount >= 0 ? '+' : ''}{Number(tx.amount).toFixed(2)} €
                         </span>
                       </td>

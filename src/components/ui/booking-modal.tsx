@@ -33,6 +33,7 @@ type Court = { id: string; name: string };
 type BookingModalProps = {
   courts: Court[];
   triggerLabel?: string;
+  onSuccess?: () => void;
 };
 
 function buildDateStrip(count: number): { date: string; label: string; dayShort: string }[] {
@@ -52,7 +53,7 @@ function buildDateStrip(count: number): { date: string; label: string; dayShort:
   return out;
 }
 
-export function BookingModal({ courts, triggerLabel = 'Nueva reserva' }: BookingModalProps) {
+export function BookingModal({ courts, triggerLabel = 'Nueva reserva', onSuccess }: BookingModalProps) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<'choose' | 'slots' | 'confirm'>('choose');
   const [courtId, setCourtId] = useState('');
@@ -143,6 +144,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva' }: Booking
         return;
       }
       setOpen(false);
+      onSuccess?.();
       router.refresh();
     } catch {
       setError('Error de conexión. Inténtalo de nuevo.');

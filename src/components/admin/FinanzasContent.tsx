@@ -198,15 +198,15 @@ export default function FinanzasContent() {
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <div className="flex min-h-[140px] flex-col items-center justify-center rounded-2xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm text-center">
           <p className="text-xs font-bold uppercase tracking-wide text-emerald-700">Ingresos totales</p>
-          <p className="mt-2 text-2xl font-bold text-emerald-800">{formatEur(totals.totalIncome)}</p>
+          <p className="mt-2 text-2xl font-bold text-emerald-800"><span className="whitespace-nowrap">{formatEur(totals.totalIncome)}</span></p>
         </div>
         <div className="flex min-h-[140px] flex-col items-center justify-center rounded-2xl border border-red-200 bg-red-50 p-5 shadow-sm text-center">
           <p className="text-xs font-bold uppercase tracking-wide text-red-700">Comisiones Stripe</p>
-          <p className="mt-2 text-2xl font-bold text-red-800">{formatEur(totals.totalStripeFees)}</p>
+          <p className="mt-2 text-2xl font-bold text-red-800"><span className="whitespace-nowrap">{formatEur(totals.totalStripeFees)}</span></p>
         </div>
         <div className="flex min-h-[140px] flex-col items-center justify-center rounded-2xl border border-[#1d4ed8]/20 bg-[#1d4ed8]/5 p-5 shadow-sm text-center">
           <p className="text-xs font-bold uppercase tracking-wide text-[#1d4ed8]">Beneficio neto</p>
-          <p className="mt-2 text-2xl font-bold text-[#1d4ed8]">{formatEur(totals.totalNet)}</p>
+          <p className="mt-2 text-2xl font-bold text-[#1d4ed8]"><span className="whitespace-nowrap">{formatEur(totals.totalNet)}</span></p>
         </div>
         <div className="flex min-h-[140px] flex-col items-center justify-center rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm text-center">
           <p className="text-xs font-bold uppercase tracking-wide text-stone-600">Transacciones</p>
@@ -243,8 +243,8 @@ export default function FinanzasContent() {
                       <td className="px-4 py-3.5 tabular-nums text-stone-700">{formatTime(tx.created_at)}</td>
                       <td className="px-4 py-3.5 font-medium text-stone-900">{tx.full_name ?? '—'}</td>
                       <td className="px-4 py-3.5 text-stone-700">{tx.type}</td>
-                      <td className="px-4 py-3.5 text-right tabular-nums text-emerald-700">{formatEur(tx.amount)}</td>
-                      <td className="px-4 py-3.5 text-right tabular-nums text-red-700">{formatEur(tx.fee)}</td>
+                      <td className="px-4 py-3.5 text-right tabular-nums text-emerald-700"><span className="whitespace-nowrap">{formatEur(tx.amount)}</span></td>
+                      <td className="px-4 py-3.5 text-right tabular-nums text-red-700"><span className="whitespace-nowrap">{formatEur(tx.fee)}</span></td>
                     </tr>
                   ))
                 )}
@@ -324,10 +324,10 @@ export default function FinanzasContent() {
                 months.map((m) => (
                   <tr key={m.month} className="border-b border-stone-100 hover:bg-stone-50">
                     <td className="px-4 py-3.5 font-medium text-stone-900">{formatMonth(m.month)}</td>
-                    <td className="px-4 py-3.5 text-right tabular-nums text-emerald-700">{formatEur(m.stripeIncome)}</td>
-                    <td className="px-4 py-3.5 text-right tabular-nums text-stone-700">{formatEur(m.adminIncome)}</td>
-                    <td className="px-4 py-3.5 text-right tabular-nums text-red-700">{formatEur(m.stripeFees)}</td>
-                    <td className="px-4 py-3.5 text-right tabular-nums font-semibold text-[#1d4ed8]">{formatEur(m.netProfit)}</td>
+                    <td className="px-4 py-3.5 text-right tabular-nums text-emerald-700"><span className="whitespace-nowrap">{formatEur(m.stripeIncome)}</span></td>
+                    <td className="px-4 py-3.5 text-right tabular-nums text-stone-700"><span className="whitespace-nowrap">{formatEur(m.adminIncome)}</span></td>
+                    <td className="px-4 py-3.5 text-right tabular-nums text-red-700"><span className="whitespace-nowrap">{formatEur(m.stripeFees)}</span></td>
+                    <td className="px-4 py-3.5 text-right tabular-nums font-semibold text-[#1d4ed8]"><span className="whitespace-nowrap">{formatEur(m.netProfit)}</span></td>
                   </tr>
                 ))
               )}

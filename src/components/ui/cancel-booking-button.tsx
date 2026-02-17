@@ -18,6 +18,8 @@ type Props = {
   /** Saldo del monedero del usuario (para cancelación tardía: debe poder pagar 13,50€) */
   walletBalance?: number;
   className?: string;
+  /** Llamado tras cancelar con éxito (para refrescar lista sin recargar) */
+  onCancelSuccess?: () => void;
 };
 
 /** Devuelve true si el inicio de la reserva es al menos 24h en el futuro (en hora local España). */
@@ -34,6 +36,7 @@ export function CancelBookingButton({
   startTime,
   walletBalance = 0,
   className = '',
+  onCancelSuccess,
 }: Props) {
   const [loading, setLoading] = useState(false);
   const [confirm, setConfirm] = useState(false);
@@ -66,6 +69,7 @@ export function CancelBookingButton({
         setConfirm(false);
         return;
       }
+      onCancelSuccess?.();
       router.refresh();
     } catch {
       alert('Error de conexión');
@@ -90,11 +94,11 @@ export function CancelBookingButton({
         <div className="flex flex-col gap-3">
           {atLeast24h ? (
             <p className="text-xs font-medium text-stone-600">
-              Se te devolverán {DEPOSIT_EUR.toFixed(2).replace('.', ',')}€ a tu monedero. ¿Confirmar cancelación?
+              Se te devolverán <span className="whitespace-nowrap">{DEPOSIT_EUR.toFixed(2).replace('.', ',')} €</span> a tu monedero. ¿Confirmar cancelación?
             </p>
           ) : isLateCancellation ? (
             <p className="text-xs font-medium text-stone-600">
-              Cancelación tardía: no se devuelve la señal ({DEPOSIT_EUR.toFixed(2).replace('.', ',')}€) y se cobrará el resto ({REST_EUR.toFixed(2).replace('.', ',')}€) de tu monedero.
+              Cancelación tardía: no se devuelve la señal (<span className="whitespace-nowrap">{DEPOSIT_EUR.toFixed(2).replace('.', ',')} €</span>) y se cobrará el resto (<span className="whitespace-nowrap">{REST_EUR.toFixed(2).replace('.', ',')} €</span>) de tu monedero.
               {!hasEnoughForPenalty && (
                 <span className="mt-1 block font-semibold text-amber-700">
                   No tienes saldo suficiente: quedará como deuda y deberás recargar antes de poder reservar de nuevo.

@@ -78,19 +78,19 @@ export default async function AdminUsuarioPage({ params }: PageProps) {
         <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm">
           <p className="text-xs font-bold uppercase tracking-wider text-stone-500">Saldo actual</p>
           <p className="mt-1 text-xl font-bold text-stone-900">
-            {Number(profile.wallet_balance ?? 0).toFixed(2)} €
+            <span className="whitespace-nowrap">{Number(profile.wallet_balance ?? 0).toFixed(2)} €</span>
           </p>
         </div>
         <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm">
           <p className="text-xs font-bold uppercase tracking-wider text-stone-500">Total recargado (histórico)</p>
           <p className="mt-1 text-xl font-bold text-emerald-600">
-            +{totalRecargado.toFixed(2)} €
+            <span className="whitespace-nowrap">+{totalRecargado.toFixed(2)} €</span>
           </p>
         </div>
         <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm">
           <p className="text-xs font-bold uppercase tracking-wider text-stone-500">Total depósitos reservas</p>
           <p className="mt-1 text-xl font-bold text-amber-600">
-            −{totalDepositos.toFixed(2)} €
+            <span className="whitespace-nowrap">−{totalDepositos.toFixed(2)} €</span>
           </p>
         </div>
         <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm">

@@ -151,7 +151,7 @@ export default async function AdminDashboardPage() {
                   </td>
                   <td className="px-4 py-3">{row.bookings}</td>
                   <td className="px-4 py-3 font-bold text-emerald-600">
-                    {row.recharge > 0 ? `+${row.recharge.toFixed(2)}` : '—'}
+                    <span className="whitespace-nowrap">{row.recharge > 0 ? `+${row.recharge.toFixed(2)} €` : '—'}</span>
                   </td>
                 </tr>
               ))}
@@ -255,8 +255,7 @@ export default async function AdminDashboardPage() {
                         tx.amount >= 0 ? 'text-emerald-600' : 'text-red-600'
                       }`}
                     >
-                      {tx.amount >= 0 ? '+' : ''}
-                      {Number(tx.amount).toFixed(2)} €
+                      <span className="whitespace-nowrap">{tx.amount >= 0 ? '+' : ''}{Number(tx.amount).toFixed(2)} €</span>
                     </p>
                   </li>
                   );
@@ -284,7 +283,7 @@ function StatCard({ label, value, helper }: StatCardProps) {
   return (
     <div className="flex min-h-[140px] flex-col items-center justify-center rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm transition hover:border-stone-300 hover:bg-white text-center">
       <p className="text-xs font-bold uppercase tracking-wide text-stone-500">{label}</p>
-      <p className="mt-2 text-2xl font-bold leading-tight text-stone-900 tabular-nums">{value}</p>
+      <p className="mt-2 text-2xl font-bold leading-tight text-stone-900 tabular-nums"><span className="whitespace-nowrap">{value}</span></p>
       {helper ? (
         <p className="mt-1 line-clamp-2 text-xs font-medium text-stone-500">{helper}</p>
       ) : null}

@@ -24,6 +24,7 @@ export function PanelMobileNav() {
             <Link
               key={href}
               href={href}
+              prefetch={true}
               className={`flex flex-col items-center gap-1 rounded-xl px-4 py-2.5 text-center transition ${
                 isActive
                   ? 'bg-[#1d4ed8]/10 text-[#1d4ed8]'

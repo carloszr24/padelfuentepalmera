@@ -103,12 +103,12 @@ export default async function AdminUsuariosPage({
                 <p className="mt-0.5 text-[11px] leading-tight text-stone-500">{p.phone || '-'}</p>
               </td>
               <td className="px-4 py-3 align-middle">
-                <span className="font-bold tabular-nums text-emerald-600">
+                <span className="whitespace-nowrap font-bold tabular-nums text-emerald-600">
                   {Number(p.wallet_balance ?? 0).toFixed(2)} €
                 </span>
                 {(p as { has_debt?: boolean }).has_debt && (
                   <span className="ml-2 inline-flex rounded-full px-3 py-1.5 text-xs font-bold text-red-700 bg-red-100">
-                    Deuda: {Number((p as { debt_amount?: number }).debt_amount ?? 0).toFixed(2).replace('.', ',')} €
+                    Deuda: <span className="whitespace-nowrap">{Number((p as { debt_amount?: number }).debt_amount ?? 0).toFixed(2).replace('.', ',')} €</span>
                   </span>
                 )}
               </td>

@@ -152,7 +152,7 @@ export function WalletModal({ open, onClose, trigger }: WalletModalProps) {
               className="min-h-[44px] w-full rounded-xl px-4 py-2.5 text-sm font-bold text-white transition disabled:opacity-50 sm:w-auto"
               style={{ backgroundColor: ACCENT }}
             >
-              {loading ? 'Redirigiendo…' : `Pagar ${amount != null ? `${amount.toFixed(2)} €` : '—'}`}
+              {loading ? 'Redirigiendo…' : amount != null ? <span className="whitespace-nowrap">Pagar {amount.toFixed(2)} €</span> : '—'}
             </button>
           </div>
         </form>

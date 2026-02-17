@@ -48,7 +48,7 @@ export function AdminNoshowButton({ bookingId }: Props) {
           <div className="w-full max-w-[calc(100vw-32px)] max-w-sm rounded-2xl border border-stone-200 bg-white p-4 shadow-xl md:p-5">
             <h3 className="text-sm font-bold text-stone-900">Marcar no-show</h3>
             <p className="mt-2 text-xs text-stone-600">
-              El usuario no se ha presentado. ¿Cobrar el resto de la reserva (13,50€) de su monedero?
+              El usuario no se ha presentado. ¿Cobrar el resto de la reserva (<span className="whitespace-nowrap">13,50 €</span>) de su monedero?
             </p>
             <div className="mt-5 flex min-h-[44px] flex-col gap-2 md:flex-row md:flex-wrap">
               <button
