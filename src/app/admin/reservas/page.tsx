@@ -1,19 +1,18 @@
+import Link from 'next/link';
 import { createSupabaseServiceClient } from '@/lib/supabase/server';
 import { AdminPageHeader } from '@/components/ui/admin-page-header';
-import { AdminCreateBookingModal } from '@/components/ui/admin-create-booking-modal';
 import { AdminCreateBookingTrigger } from '@/components/ui/admin-create-booking-trigger';
-import { AdminMarkRemainingPaidButton } from '@/components/ui/admin-mark-remaining-paid-button';
-import { AdminCancelBookingButton } from '@/components/ui/admin-cancel-booking-button';
-import { AdminNoshowButton } from '@/components/ui/admin-noshow-button';
+import { AdminReservasContent, type BookingRow } from '@/components/admin/AdminReservasContent';
 
 type PageProps = {
   searchParams: Promise<{ desde?: string; hasta?: string }> | { desde?: string; hasta?: string };
 };
 
 export default async function AdminReservasPage({ searchParams }: PageProps) {
-  const params = typeof (searchParams as Promise<unknown>).then === 'function'
-    ? await (searchParams as Promise<{ desde?: string; hasta?: string }>)
-    : (searchParams as { desde?: string; hasta?: string });
+  const params =
+    typeof (searchParams as Promise<unknown>).then === 'function'
+      ? await (searchParams as Promise<{ desde?: string; hasta?: string }>)
+      : (searchParams as { desde?: string; hasta?: string });
 
   const desde = params?.desde?.trim().slice(0, 10);
   const hasta = params?.hasta?.trim().slice(0, 10);
@@ -43,6 +42,7 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
 
   const courtsList = courts ?? [];
   const usersList = profiles ?? [];
+  const bookingsList = (bookings ?? []) as BookingRow[];
 
   return (
     <div className="space-y-6">
@@ -56,9 +56,14 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
       </div>
 
       <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm">
-        <form method="get" className="mb-4 flex flex-col gap-3 md:flex-row md:flex-wrap md:items-end md:gap-4">
+        <form
+          method="get"
+          className="mb-4 flex flex-col gap-3 md:flex-row md:flex-wrap md:items-end md:gap-4"
+        >
           <div className="flex items-center gap-2">
-            <label htmlFor="desde" className="text-sm font-semibold text-stone-600">Desde</label>
+            <label htmlFor="desde" className="text-sm font-semibold text-stone-600">
+              Desde
+            </label>
             <input
               id="desde"
               name="desde"
@@ -68,7 +73,9 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
             />
           </div>
           <div className="flex items-center gap-2">
-            <label htmlFor="hasta" className="text-sm font-semibold text-stone-600">Hasta</label>
+            <label htmlFor="hasta" className="text-sm font-semibold text-stone-600">
+              Hasta
+            </label>
             <input
               id="hasta"
               name="hasta"
@@ -84,125 +91,17 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
             Filtrar
           </button>
           {(desde || hasta) && (
-            <a
+            <Link
               href="/admin/reservas"
               className="min-h-[44px] flex w-full items-center justify-center rounded-xl border border-stone-300 px-4 py-2.5 text-sm font-bold text-stone-700 transition hover:bg-stone-100 md:w-auto"
             >
               Quitar filtro
-            </a>
+            </Link>
           )}
         </form>
-        <div className="mb-4 flex flex-wrap items-center gap-3">
-          <p className="text-xs font-semibold text-stone-500">{bookings?.length ?? 0} reservas en total</p>
-          <a
-            href={`/api/admin/bookings/export${desde || hasta ? `?${new URLSearchParams({ ...(desde && { desde }), ...(hasta && { hasta }) }).toString()}` : ''}`}
-            className="min-h-[44px] inline-flex items-center rounded-xl border border-stone-300 px-4 py-2.5 text-sm font-bold text-stone-700 transition hover:bg-stone-100"
-            download
-          >
-            Exportar CSV
-          </a>
-        </div>
-        <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white">
-          <table className="w-full min-w-[600px] text-left text-sm">
-            <thead>
-              <tr className="border-b border-stone-200 bg-stone-50 text-xs font-bold uppercase tracking-wide text-stone-500">
-                <th className="px-4 py-3 align-middle">Pista</th>
-                <th className="px-4 py-3 align-middle">Usuario</th>
-                <th className="px-4 py-3 align-middle">Fecha y hora</th>
-                <th className="px-4 py-3 align-middle">Estado</th>
-                <th className="px-4 py-3 align-middle">Resto pagado</th>
-                <th className="px-4 py-3 align-middle">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {bookings?.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="px-4 py-12 text-center text-sm font-medium text-stone-500">
-                    No hay reservas registradas todavía.
-                  </td>
-                </tr>
-              ) : (
-                (() => {
-                  const now = new Date();
-                  const todayMadrid = now.toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' });
-                  const timeMadrid = now.toLocaleTimeString('en-GB', { timeZone: 'Europe/Madrid', hour: '2-digit', minute: '2-digit', hour12: false });
-                  return bookings?.map((b) => {
-                  const courtName = Array.isArray(b.courts) ? b.courts[0]?.name : (b.courts as { name?: string } | null)?.name;
-                  const profileName = Array.isArray(b.profiles) ? b.profiles[0]?.full_name : (b.profiles as { full_name?: string } | null)?.full_name;
-                  const startTimeStr = String(b.start_time).slice(0, 5);
-                  const isPast = b.booking_date < todayMadrid || (b.booking_date === todayMadrid && startTimeStr <= timeMadrid);
-                  const showNoshow = b.status === 'confirmed' && isPast;
-                  return (
-                  <tr key={b.id} className="border-b border-stone-100 transition hover:bg-stone-50">
-                    <td className="px-4 py-3 align-middle font-bold text-stone-900">
-                      {courtName ?? 'Pista'}
-                    </td>
-                    <td className="px-4 py-3 align-middle font-medium text-stone-800">
-                      {profileName ?? 'Usuario'}
-                    </td>
-                    <td className="px-4 py-3 align-middle font-medium text-stone-800">
-                      <p className="leading-tight">{formatDate(b.booking_date)}</p>
-                      <p className="mt-0.5 text-[11px] leading-tight text-stone-500">
-                        {String(b.start_time).slice(0, 5)} - {String(b.end_time).slice(0, 5)}
-                      </p>
-                    </td>
-                    <td className="px-4 py-3 align-middle text-center">
-                      <div className="flex flex-col gap-1 items-center">
-                        <span
-                          className={`inline-flex w-fit rounded-full px-3 py-1.5 text-xs font-bold ${
-                            b.status === 'confirmed'
-                              ? 'bg-emerald-100 text-emerald-700'
-                              : b.status === 'completed'
-                                ? 'bg-sky-100 text-sky-700'
-                                : b.status === 'no_show'
-                                  ? 'bg-amber-100 text-amber-700'
-                                  : 'bg-red-100 text-red-700'
-                          }`}
-                        >
-                          {b.status === 'confirmed' ? 'Confirmada' : b.status === 'completed' ? 'Completada' : b.status === 'no_show' ? 'No-show' : 'Cancelada'}
-                        </span>
-                        {b.deposit_paid ? (
-                          <span className="text-[11px] font-medium leading-none text-emerald-600">Depósito pagado</span>
-                        ) : (
-                          <span className="text-[11px] leading-none text-stone-500">Sin depósito (admin)</span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3 align-middle">
-                      {b.status === 'confirmed' && (
-                        <AdminMarkRemainingPaidButton
-                          bookingId={b.id}
-                          alreadyPaid={!!(b as { remaining_paid_at?: string | null }).remaining_paid_at}
-                        />
-                      )}
-                    </td>
-                    <td className="px-4 py-3 align-middle">
-                      {b.status === 'confirmed' && (
-                        <div className="flex flex-col gap-2 items-start">
-                          <AdminCancelBookingButton bookingId={b.id} />
-                          {showNoshow && <AdminNoshowButton bookingId={b.id} />}
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                  );
-                });
-                })()
-              )}
-            </tbody>
-          </table>
-        </div>
+
+        <AdminReservasContent bookings={bookingsList} desde={desde ?? null} hasta={hasta ?? null} />
       </div>
     </div>
   );
 }
-
-function formatDate(dateStr: string) {
-  const d = new Date(dateStr);
-  return d.toLocaleDateString('es-ES', {
-    weekday: 'short',
-    day: '2-digit',
-    month: 'short',
-  });
-}
-
