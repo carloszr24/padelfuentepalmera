@@ -60,10 +60,11 @@ export default function EstadisticasContent() {
 
   const query = `period=${period}`;
 
-  useEffect(() => {
+  const fetchStats = (useFresh = false) => {
     setLoading(true);
     setError(null);
-    fetch(`/api/admin/stats/bookings?${query}`)
+    const url = `/api/admin/stats/bookings?${query}${useFresh ? '&fresh=1' : ''}`;
+    fetch(url)
       .then((res) => {
         if (!res.ok) throw new Error('Error al cargar');
         return res.json();
@@ -71,6 +72,10 @@ export default function EstadisticasContent() {
       .then(setData)
       .catch(() => setError('No se pudieron cargar las estadísticas'))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchStats(false);
   }, [query]);
 
   const {
@@ -198,7 +203,7 @@ export default function EstadisticasContent() {
           title="Estadísticas de reservas"
           subtitle="Horas punta, días y pistas más demandados."
         />
-        <div className="flex min-h-[44px] items-center gap-2">
+        <div className="flex min-h-[44px] flex-wrap items-center gap-2">
           <label htmlFor="period-stats" className="text-sm font-semibold text-stone-600">
             Período:
           </label>
@@ -214,6 +219,13 @@ export default function EstadisticasContent() {
               </option>
             ))}
           </select>
+          <button
+            type="button"
+            onClick={() => fetchStats(true)}
+            className="min-h-[44px] rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-sm font-bold text-stone-700 transition hover:bg-stone-100"
+          >
+            Actualizar
+          </button>
         </div>
       </div>
 

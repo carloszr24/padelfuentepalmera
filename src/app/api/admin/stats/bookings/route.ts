@@ -6,7 +6,7 @@ import { checkRateLimit } from '@/lib/rate-limit';
 const VALID_PERIODS = ['7d', '1m', '3m', '6m', '1y', 'all'] as const;
 type PeriodKey = (typeof VALID_PERIODS)[number];
 
-const CACHE_TTL_MS = 5 * 60 * 1000; // 5 min
+const CACHE_TTL_MS = 60 * 1000; // 1 min para que las nuevas reservas se reflejen antes
 const cache = new Map<string, { data: unknown; expires: number }>();
 
 function sinceDate(period: PeriodKey): { start: string | null; end: string | null } {
@@ -68,10 +68,11 @@ export async function GET(request: Request) {
   const period = VALID_PERIODS.includes(periodParam as PeriodKey)
     ? (periodParam as PeriodKey)
     : '1m';
+  const fresh = searchParams.get('fresh') === '1';
 
   const cacheKey = `bookings:${period}`;
   const cached = cache.get(cacheKey);
-  if (cached && Date.now() < cached.expires) {
+  if (!fresh && cached && Date.now() < cached.expires) {
     return NextResponse.json(cached.data);
   }
 
