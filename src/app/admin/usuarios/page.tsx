@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { createSupabaseServiceClient } from '@/lib/supabase/server';
 import { AdminPageHeader } from '@/components/ui/admin-page-header';
 import { AdminWalletRechargeButton } from '@/components/ui/admin-wallet-recharge-button';
+import { AdminCreateUserTrigger } from '@/components/ui/admin-create-user-trigger';
 
 type AdminUsuariosPageProps = {
   searchParams?: Promise<{ q?: string }> | { q?: string };
@@ -65,18 +66,21 @@ export default async function AdminUsuariosPage({
               Buscar
             </button>
           </form>
-          <p className="text-xs font-semibold text-stone-500">{total} registros en total</p>
+          <div className="flex flex-wrap items-center gap-3">
+            <p className="text-xs font-semibold text-stone-500">{total} registros en total</p>
+            <AdminCreateUserTrigger />
+          </div>
         </div>
 
-        <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white">
-          <table className="w-full min-w-[520px] text-left text-sm">
+        <div className="overflow-x-hidden rounded-xl border border-stone-200 bg-white">
+          <table className="w-full table-fixed text-left text-sm">
             <thead>
               <tr className="border-b border-stone-200 bg-stone-50 text-xs font-bold uppercase tracking-wide text-stone-500">
-                <th className="px-4 py-3 align-middle">Nombre</th>
-                <th className="px-4 py-3 align-middle">Contacto</th>
-                <th className="px-4 py-3 align-middle">Saldo</th>
-                <th className="px-4 py-3 align-middle">Reservas</th>
-                <th className="px-4 py-3 align-middle">Acciones</th>
+                <th className="w-[22%] px-4 py-3 align-middle">Nombre</th>
+                <th className="w-[26%] px-4 py-3 align-middle">Contacto</th>
+                <th className="w-[18%] px-4 py-3 align-middle">Saldo</th>
+                <th className="w-[8%] px-4 py-3 align-middle">Reservas</th>
+                <th className="w-[26%] px-4 py-3 align-middle">Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -115,17 +119,18 @@ export default async function AdminUsuariosPage({
               <td className="px-4 py-3.5 align-middle font-medium text-stone-600">
                 —
               </td>
-              <td className="px-4 py-3 align-middle">
-                <div className="flex flex-wrap items-center gap-2">
+              <td className="px-3 py-2 align-middle">
+                <div className="flex flex-col gap-1.5">
                   <Link
                     href={`/admin/usuarios/${p.id}`}
-                    className="min-h-[44px] inline-flex items-center rounded-xl border border-[#1d4ed8]/50 bg-[#1d4ed8]/10 px-3 py-2 text-xs font-bold text-[#1d4ed8] transition hover:bg-[#1d4ed8]/20"
+                    className="inline-flex items-center justify-center rounded-lg border border-[#1d4ed8]/50 bg-[#1d4ed8]/10 px-2.5 py-1.5 text-xs font-bold text-[#1d4ed8] transition hover:bg-[#1d4ed8]/20"
                   >
                     Ver perfil
                   </Link>
                   <AdminWalletRechargeButton
                     userId={p.id}
                     userName={p.full_name || p.email || 'Usuario'}
+                    compact
                   />
                 </div>
               </td>

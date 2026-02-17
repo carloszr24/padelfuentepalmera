@@ -6,11 +6,14 @@ import { useRouter } from 'next/navigation';
 type AdminWalletRechargeButtonProps = {
   userId: string;
   userName: string;
+  /** En tabla compacta: botones en columna y menos padding */
+  compact?: boolean;
 };
 
 export function AdminWalletRechargeButton({
   userId,
   userName,
+  compact = false,
 }: AdminWalletRechargeButtonProps) {
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState<number | ''>('');
@@ -76,22 +79,28 @@ export function AdminWalletRechargeButton({
     }
   };
 
+  const btnClass = compact
+    ? 'inline-flex items-center justify-center rounded-lg px-2.5 py-1.5 text-xs font-bold transition'
+    : 'min-h-[44px] inline-flex items-center rounded-xl px-3 py-2 text-xs font-bold transition';
+
   return (
     <>
-      <button
-        type="button"
-        onClick={() => { setMode('add'); setAmount(''); setError(null); setOpen(true); }}
-        className="min-h-[44px] inline-flex items-center rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700 transition hover:bg-emerald-100"
-      >
-        Recargar
-      </button>
-      <button
-        type="button"
-        onClick={() => { setMode('subtract'); setAmount(''); setError(null); setOpen(true); }}
-        className="min-h-[44px] inline-flex items-center rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-700 transition hover:bg-amber-100"
-      >
-        Restar
-      </button>
+      <div className={compact ? 'flex flex-col gap-1.5' : 'inline-flex flex-wrap items-center gap-2'}>
+        <button
+          type="button"
+          onClick={() => { setMode('add'); setAmount(''); setError(null); setOpen(true); }}
+          className={`${btnClass} border border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100`}
+        >
+          Recargar
+        </button>
+        <button
+          type="button"
+          onClick={() => { setMode('subtract'); setAmount(''); setError(null); setOpen(true); }}
+          className={`${btnClass} border border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100`}
+        >
+          Restar
+        </button>
+      </div>
 
       {open ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
