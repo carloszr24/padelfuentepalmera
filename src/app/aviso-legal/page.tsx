@@ -24,8 +24,8 @@ export default function AvisoLegalPage() {
           <section>
             <h2 className="mb-2 text-base font-semibold text-white">1. Datos identificativos</h2>
             <p>
-              Este sitio web es operado por Fuente Palmera Padel Club. Dirección: 14120 Fuente Palmera (Córdoba).
-              Para cualquier consulta puede contactar en info@fpadelclub.com o en el teléfono indicado en la web.
+              Este sitio web es operado por Fuente Palmera Padel Club. Dirección: Crta. La Ventilla - Fuente Palmera (Detrás de empresa Ferroinsa).
+              Para cualquier consulta puede contactar en info@padelfuentepalmera.com o en el teléfono +34 634 50 07 53.
             </p>
           </section>
           <section>

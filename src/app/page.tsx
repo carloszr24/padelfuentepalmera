@@ -197,11 +197,11 @@ export default async function Home() {
             </Link>
             <p className="font-semibold text-stone-900">Fuente Palmera Padel Club</p>
             <p className="mt-1">
-              14120 Fuente Palmera (Córdoba)
+              Crta. La Ventilla - Fuente Palmera (Detrás de empresa Ferroinsa)
               <br />
-              <a href="tel:+34600000000" className="hover:text-stone-900 hover:underline">600 000 000</a>
+              <a href="tel:+34634500753" className="hover:text-stone-900 hover:underline">+34 634 50 07 53</a>
               {' · '}
-              <a href="mailto:info@fpadelclub.com" className="hover:text-stone-900 hover:underline">info@fpadelclub.com</a>
+              <a href="mailto:info@padelfuentepalmera.com" className="hover:text-stone-900 hover:underline">info@padelfuentepalmera.com</a>
             </p>
           </div>
           <div className="flex gap-8">

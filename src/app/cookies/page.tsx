@@ -49,7 +49,7 @@ export default function CookiesPage() {
           <section>
             <h2 className="mb-2 text-base font-semibold text-white">4. Más información</h2>
             <p>
-              Para cualquier duda sobre el uso de cookies puede contactarnos en info@fpadelclub.com. Para más
+              Para cualquier duda sobre el uso de cookies puede contactarnos en info@padelfuentepalmera.com. Para más
               información sobre sus datos personales, consulte nuestra{' '}
               <Link href="/privacidad" className="text-[#FFBBD7] hover:text-white underline">
                 Política de privacidad

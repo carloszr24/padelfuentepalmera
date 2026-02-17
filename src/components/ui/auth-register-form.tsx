@@ -177,7 +177,7 @@ export function AuthRegisterForm() {
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
-          placeholder="Ej. 600 000 000"
+          placeholder="Ej. 634 50 07 53"
         />
       </div>
 

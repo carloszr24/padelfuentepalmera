@@ -26,7 +26,7 @@ export default function PrivacidadPage() {
             <p>
               Fuente Palmera Padel Club es el responsable del tratamiento de los datos personales que nos facilite
               al registrarse, reservar pistas o utilizar el monedero digital. Puede contactarnos en
-              info@fpadelclub.com o en la dirección física indicada en la web.
+              info@padelfuentepalmera.com o en la dirección física indicada en la web.
             </p>
           </section>
           <section>
