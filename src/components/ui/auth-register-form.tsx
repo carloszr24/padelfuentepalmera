@@ -12,6 +12,7 @@ export function AuthRegisterForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [registeredEmail, setRegisteredEmail] = useState<string | null>(null);
+  const [alreadyHasAccount, setAlreadyHasAccount] = useState(false);
 
   const [resendLoading, setResendLoading] = useState(false);
   const [resendSent, setResendSent] = useState(false);
@@ -20,12 +21,13 @@ export function AuthRegisterForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setAlreadyHasAccount(false);
 
     try {
       setLoading(true);
       const supabase = getBrowserSupabaseClient();
 
-      const { error: signUpError } = await supabase.auth.signUp({
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -49,6 +51,14 @@ export function AuthRegisterForm() {
             ? 'Esta contraseña ha aparecido en una filtración de datos. Elige otra más segura (por ejemplo una frase larga o generada por un gestor de contraseñas).'
             : signUpError.message
         );
+        return;
+      }
+
+      // Si el usuario ya existía, Supabase no devuelve error pero identities viene vacío.
+      const identities = (signUpData?.user as { identities?: unknown[] } | undefined)?.identities;
+      if (identities?.length === 0) {
+        await supabase.auth.signOut();
+        setAlreadyHasAccount(true);
         return;
       }
 
@@ -83,6 +93,32 @@ export function AuthRegisterForm() {
       setResendLoading(false);
     }
   };
+
+  if (alreadyHasAccount) {
+    return (
+      <div className="space-y-5 text-sm">
+        <div className="flex justify-center">
+          <div className="flex size-16 items-center justify-center rounded-full bg-amber-100 text-amber-600">
+            <svg className="size-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+          </div>
+        </div>
+        <h2 className="text-center text-xl font-bold text-stone-900">
+          Ya tienes una cuenta
+        </h2>
+        <p className="text-center text-stone-600">
+          Este correo ya está registrado. Inicia sesión con tu contraseña o usa &quot;Recuperar contraseña&quot; si no la recuerdas.
+        </p>
+        <Link
+          href="/login"
+          className="block w-full rounded-full bg-[#1d4ed8] px-4 py-2.5 text-center text-sm font-bold text-white shadow-lg shadow-[#1d4ed8]/30 hover:bg-[#2563eb]"
+        >
+          Ir a iniciar sesión
+        </Link>
+      </div>
+    );
+  }
 
   if (registeredEmail) {
     return (
