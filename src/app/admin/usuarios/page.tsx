@@ -10,10 +10,10 @@ type AdminUsuariosPageProps = {
 export default async function AdminUsuariosPage({
   searchParams,
 }: AdminUsuariosPageProps) {
-  const params = typeof (searchParams as Promise<unknown>)?.then === 'function'
+  const resolved: { q?: string } = typeof (searchParams as Promise<unknown>)?.then === 'function'
     ? await (searchParams as Promise<{ q?: string }>)
     : (searchParams ?? {});
-  const raw = (params?.q ?? '').trim();
+  const raw = (resolved?.q ?? '').trim();
   const q = raw.slice(0, 100).replace(/[^\w\s@.\-áéíóúñüÁÉÍÓÚÑÜ]/g, '');
 
   const supabase = createSupabaseServiceClient();
