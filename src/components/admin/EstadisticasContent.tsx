@@ -246,7 +246,7 @@ export default function EstadisticasContent() {
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis dataKey="name" tick={{ fontSize: 10 }} />
               <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
-              <Tooltip formatter={(v: number) => [v, 'Reservas']} labelFormatter={(l) => `${l} h`} />
+              <Tooltip formatter={(v) => [v ?? 0, 'Reservas']} labelFormatter={(l) => `${l} h`} />
               <Bar dataKey="total" fill="#1d4ed8" radius={[4, 4, 0, 0]} name="Reservas" />
             </BarChart>
           </ResponsiveContainer>
@@ -262,7 +262,7 @@ export default function EstadisticasContent() {
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis dataKey="name" tick={{ fontSize: 10 }} />
               <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
-              <Tooltip formatter={(v: number) => [v, 'Reservas']} />
+              <Tooltip formatter={(v) => [v ?? 0, 'Reservas']} />
               <Bar dataKey="total" fill="#059669" radius={[4, 4, 0, 0]} name="Reservas" />
             </BarChart>
           </ResponsiveContainer>
@@ -282,7 +282,7 @@ export default function EstadisticasContent() {
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis type="number" tick={{ fontSize: 10 }} allowDecimals={false} />
               <YAxis type="category" dataKey="name" width={80} tick={{ fontSize: 11 }} />
-              <Tooltip formatter={(v: number) => [v, 'Reservas']} />
+              <Tooltip formatter={(v) => [v ?? 0, 'Reservas']} />
               <Bar dataKey="total" fill="#1d4ed8" radius={[0, 4, 4, 0]} name="Reservas" />
             </BarChart>
           </ResponsiveContainer>
@@ -298,7 +298,7 @@ export default function EstadisticasContent() {
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis dataKey="label" tick={{ fontSize: 10 }} />
               <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
-              <Tooltip formatter={(v: number) => [v, 'Reservas']} />
+              <Tooltip formatter={(v) => [v ?? 0, 'Reservas']} />
               <Line type="monotone" dataKey="total" stroke="#059669" strokeWidth={2} dot={{ r: 3 }} name="Reservas" />
             </LineChart>
           </ResponsiveContainer>
@@ -329,7 +329,7 @@ export default function EstadisticasContent() {
                     <Cell key={i} fill={CHART_COLORS[i % CHART_COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(v: number) => [v, 'Reservas']} />
+                <Tooltip formatter={(v) => [v ?? 0, 'Reservas']} />
                 <Legend />
               </PieChart>
             </ResponsiveContainer>
