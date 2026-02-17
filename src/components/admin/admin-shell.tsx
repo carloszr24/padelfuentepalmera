@@ -9,6 +9,7 @@ const NAV_LINKS = [
   { href: '/admin', label: 'Dashboard' },
   { href: '/admin/usuarios', label: 'Usuarios' },
   { href: '/admin/reservas', label: 'Reservas' },
+  { href: '/admin/estadisticas', label: 'Estadísticas' },
   { href: '/admin/pistas', label: 'Pistas' },
   { href: '/admin/monederos', label: 'Monederos' },
   { href: '/admin/transacciones', label: 'Transacciones' },
