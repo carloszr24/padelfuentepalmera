@@ -38,8 +38,6 @@ export function PanelReservasClient() {
   const isBlocked = hasDebt || balance < 0;
   const displayDebtAmount = hasDebt ? debtAmount : balance < 0 ? Math.abs(balance) : 0;
 
-  const { user } = usePanelUser();
-
   useEffect(() => {
     if (!user?.id) return;
     let cancelled = false;
