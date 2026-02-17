@@ -111,7 +111,7 @@ export async function POST(request: Request) {
         userId: user.id,
         amount: String(amountEur),
       },
-      success_url: `${baseUrl}/panel/monedero?success=1&session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${baseUrl}/panel/monedero/exito?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${baseUrl}/panel/monedero?cancel=1`,
     });
 
