@@ -1,9 +1,9 @@
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { createSupabaseServiceClient } from '@/lib/supabase/server';
 import { AdminPageHeader } from '@/components/ui/admin-page-header';
 import { AdminCourtCard } from '@/components/ui/admin-court-card';
 
 export default async function AdminPistasPage() {
-  const supabase = await createServerSupabaseClient();
+  const supabase = createSupabaseServiceClient();
 
   const { data: courts } = await supabase
     .from('courts')

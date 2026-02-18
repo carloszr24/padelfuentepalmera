@@ -1,9 +1,9 @@
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { createSupabaseServiceClient } from '@/lib/supabase/server';
 import { AdminPageHeader } from '@/components/ui/admin-page-header';
 import { AdminWalletRechargeButton } from '@/components/ui/admin-wallet-recharge-button';
 
 export default async function AdminMonederosPage() {
-  const supabase = await createServerSupabaseClient();
+  const supabase = createSupabaseServiceClient();
 
   const { data: profiles } = await supabase
     .from('profiles')

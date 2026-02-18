@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { createSupabaseServiceClient } from '@/lib/supabase/server';
 import { AdminPageHeader } from '@/components/ui/admin-page-header';
 import { AdminMarkRemainingPaidButton } from '@/components/ui/admin-mark-remaining-paid-button';
 import { AdminWalletRechargeButton } from '@/components/ui/admin-wallet-recharge-button';
@@ -8,7 +8,7 @@ type PageProps = { params: Promise<{ id: string }> };
 
 export default async function AdminUsuarioPage({ params }: PageProps) {
   const { id } = await params;
-  const supabase = await createServerSupabaseClient();
+  const supabase = createSupabaseServiceClient();
 
   const { data: profile } = await supabase
     .from('profiles')

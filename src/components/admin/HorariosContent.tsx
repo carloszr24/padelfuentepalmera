@@ -40,11 +40,16 @@ type ExceptionRow = {
   label: string | null;
 };
 
-export function HorariosContent() {
+type HorariosContentProps = {
+  initialWeekly?: WeeklyRow[];
+  initialExceptions?: ExceptionRow[];
+};
+
+export function HorariosContent({ initialWeekly, initialExceptions }: HorariosContentProps) {
   const router = useRouter();
-  const [weekly, setWeekly] = useState<WeeklyRow[]>(DEFAULT_WEEKLY);
-  const [exceptions, setExceptions] = useState<ExceptionRow[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [weekly, setWeekly] = useState<WeeklyRow[]>(initialWeekly ?? DEFAULT_WEEKLY);
+  const [exceptions, setExceptions] = useState<ExceptionRow[]>(initialExceptions ?? []);
+  const [loading, setLoading] = useState(initialWeekly === undefined);
   const [saving, setSaving] = useState(false);
   const [exceptionModalOpen, setExceptionModalOpen] = useState(false);
   const [exceptionForm, setExceptionForm] = useState({
@@ -92,8 +97,9 @@ export function HorariosContent() {
   }, []);
 
   useEffect(() => {
+    if (initialWeekly !== undefined) return;
     load();
-  }, [load]);
+  }, [initialWeekly, load]);
 
   const handleSaveWeekly = async () => {
     setSaving(true);
