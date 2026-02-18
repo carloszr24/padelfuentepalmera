@@ -22,7 +22,7 @@ export function LandingHeader({ isLoggedIn = false }: LandingHeaderProps) {
       <div className="relative mx-auto flex min-h-20 max-w-7xl items-center px-4 py-3 sm:min-h-24 sm:px-6 sm:py-4 lg:px-8 lg:py-4 xl:px-10">
         {/* Izquierda: nav en desktop, hamburger en móvil */}
         <div className="flex flex-1 items-center justify-start">
-          <nav className="hidden items-center gap-6 text-sm md:flex lg:gap-8">
+          <nav className="hidden items-center gap-6 text-base md:flex lg:gap-8 lg:text-lg">
             {NAV_LINKS.map(({ href, label }) => (
               <a
                 key={href}
@@ -81,21 +81,21 @@ export function LandingHeader({ isLoggedIn = false }: LandingHeaderProps) {
           {isLoggedIn ? (
             <a
               href="/panel"
-              className="rounded-full border border-stone-300 px-3 py-2 text-sm font-medium text-stone-700 transition hover:border-stone-400 hover:bg-stone-50 sm:px-4 sm:py-2.5"
+              className="rounded-full border border-stone-300 px-4 py-2.5 text-base font-medium text-stone-700 transition hover:border-stone-400 hover:bg-stone-50 sm:px-5 sm:py-3 lg:text-lg"
             >
               Mi panel
             </a>
           ) : (
             <a
               href="/registro"
-              className="rounded-full border border-stone-300 px-3 py-2 text-sm font-medium text-stone-700 transition hover:border-stone-400 hover:bg-stone-50 sm:px-4 sm:py-2.5"
+              className="rounded-full border border-stone-300 px-4 py-2.5 text-base font-medium text-stone-700 transition hover:border-stone-400 hover:bg-stone-50 sm:px-5 sm:py-3 lg:text-lg"
             >
               Únete
             </a>
           )}
           <a
             href={isLoggedIn ? '/panel/reservas' : '/registro'}
-            className="hidden rounded-full bg-[#1d4ed8] px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-[#1d4ed8]/40 transition hover:scale-[1.02] hover:bg-[#2563eb] hover:shadow-[#1d4ed8]/50 md:inline-flex md:px-5"
+            className="hidden rounded-full bg-[#1d4ed8] px-5 py-3 text-base font-semibold text-white shadow-lg shadow-[#1d4ed8]/40 transition hover:scale-[1.02] hover:bg-[#2563eb] hover:shadow-[#1d4ed8]/50 md:inline-flex md:px-6 lg:text-lg lg:px-7 lg:py-3.5"
           >
             Reserva tu pista
           </a>

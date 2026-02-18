@@ -59,32 +59,32 @@ export default async function Home() {
         <div className="absolute inset-0 bg-stone-900/50" aria-hidden />
         <div className="relative z-10 mx-auto flex min-h-[85dvh] max-w-5xl flex-col justify-end px-4 pb-16 pt-28 sm:min-h-[90dvh] sm:justify-center sm:pb-24 sm:pt-32 sm:px-6 md:px-8">
           <div className="hero-entrance">
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/90">
+            <p className="text-sm font-bold uppercase tracking-[0.2em] text-white/90 sm:text-base">
               Fuente Palmera · Córdoba
             </p>
-            <h1 className="mt-2 text-balance text-3xl font-extrabold leading-tight tracking-tight text-white drop-shadow sm:text-4xl md:text-5xl">
+            <h1 className="mt-2 text-balance text-4xl font-extrabold leading-tight tracking-tight text-white drop-shadow sm:text-5xl md:text-6xl lg:text-7xl">
               Pista cuando quieras.
               <br />
               <span className="text-[#93c5fd]">Reserva en un clic.</span>
             </h1>
-            <p className="mt-4 max-w-md text-base leading-relaxed text-white/90 sm:text-lg">
+            <p className="mt-4 max-w-lg text-lg leading-relaxed text-white/90 sm:text-xl md:text-xl">
               Reserva online, paga el depósito con el monedero y preocúpate solo de jugar.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
               <a
                 href={user ? '/panel/reservas' : '/registro'}
-                className="inline-flex justify-center rounded-2xl bg-white px-8 py-4 text-base font-bold text-stone-900 shadow-xl transition hover:bg-stone-100 active:scale-[0.98]"
+                className="inline-flex justify-center rounded-2xl bg-white px-8 py-4 text-base font-bold text-stone-900 shadow-xl transition hover:bg-stone-100 active:scale-[0.98] md:px-10 md:py-5 md:text-lg"
               >
                 {user ? 'Reservar pista' : 'Crear cuenta y reservar'}
               </a>
               <a
                 href="#que-te-ofrecemos"
-                className="inline-flex justify-center rounded-2xl border-2 border-white/80 bg-white/10 px-8 py-4 text-base font-semibold text-white backdrop-blur-sm transition hover:bg-white/20"
+                className="inline-flex justify-center rounded-2xl border-2 border-white/80 bg-white/10 px-8 py-4 text-base font-semibold text-white backdrop-blur-sm transition hover:bg-white/20 md:px-10 md:py-5 md:text-lg"
               >
                 Ver cómo funciona
               </a>
             </div>
-            <div className="mt-10 flex flex-wrap gap-6 text-sm text-white/80">
+            <div className="mt-10 flex flex-wrap gap-6 text-base text-white/80 sm:text-lg md:gap-8">
               <span className="flex items-center gap-2">
                 <span className="font-semibold text-white">10:00 – 22:30</span>
                 Horario
@@ -103,10 +103,10 @@ export default async function Home() {
         {/* Qué te ofrecemos: zona cálida y clara */}
         <section id="que-te-ofrecemos" className="space-y-6">
           <div>
-            <h2 className="text-2xl font-bold text-stone-900 sm:text-3xl">
+            <h2 className="text-3xl font-bold text-stone-900 sm:text-4xl md:text-4xl">
               Qué te ofrecemos
             </h2>
-            <p className="mt-2 text-stone-600">
+            <p className="mt-2 text-base text-stone-600 sm:text-lg">
               Lo que necesitas para reservar y jugar sin complicaciones.
             </p>
           </div>
@@ -139,14 +139,14 @@ export default async function Home() {
         {/* Instagram: slider más compacto en móvil */}
         <section id="novedades" className="mt-16 space-y-4 sm:mt-20">
           <div className="flex items-center justify-between gap-4">
-            <h2 className="text-xl font-bold text-stone-900 sm:text-2xl">
+            <h2 className="text-2xl font-bold text-stone-900 sm:text-3xl md:text-4xl">
               Novedades
             </h2>
             <a
               href="https://www.instagram.com/fuentepalmerapadel/"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm font-semibold text-[#1d4ed8] hover:underline"
+              className="text-base font-semibold text-[#1d4ed8] hover:underline md:text-lg"
             >
               @fuentepalmerapadel ↗
             </a>
@@ -165,23 +165,23 @@ export default async function Home() {
         </section>
 
         {/* CTA final */}
-        <section className="mt-16 rounded-2xl bg-stone-900 px-6 py-10 text-white sm:mt-20 sm:px-10 sm:py-12" id="cta">
-          <h2 className="text-xl font-bold sm:text-2xl">
+        <section className="mt-16 rounded-2xl bg-stone-900 px-6 py-10 text-white sm:mt-20 sm:px-10 sm:py-12 md:py-14" id="cta">
+          <h2 className="text-2xl font-bold sm:text-3xl md:text-4xl">
             ¿Listo? Crea tu cuenta y reserva tu primera pista.
           </h2>
-          <p className="mt-2 text-sm text-stone-300">
+          <p className="mt-2 text-base text-stone-300 sm:text-lg">
             Registro en segundos. Recarga el monedero y a jugar.
           </p>
-          <div className="mt-6 flex flex-wrap gap-3">
+          <div className="mt-6 flex flex-wrap gap-3 md:mt-8 md:gap-4">
             <a
               href="/registro"
-              className="inline-flex rounded-xl bg-white px-6 py-3 text-sm font-bold text-stone-900 transition hover:bg-stone-100"
+              className="inline-flex rounded-xl bg-white px-6 py-3 text-base font-bold text-stone-900 transition hover:bg-stone-100 md:px-8 md:py-4 md:text-lg"
             >
               Crear cuenta
             </a>
             <a
               href={user ? '/panel/reservas' : '/registro'}
-              className="inline-flex rounded-xl border border-stone-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-stone-800"
+              className="inline-flex rounded-xl border border-stone-500 px-6 py-3 text-base font-semibold text-white transition hover:bg-stone-800 md:px-8 md:py-4 md:text-lg"
             >
               Ver disponibilidad
             </a>
@@ -189,7 +189,7 @@ export default async function Home() {
         </section>
       </main>
 
-      <footer id="contacto" className="border-t border-stone-200 bg-white py-10 text-sm text-stone-600">
+      <footer id="contacto" className="border-t border-stone-200 bg-white py-10 text-base text-stone-600 md:py-12 md:text-lg">
         <div className="mx-auto flex max-w-5xl flex-col gap-8 px-5 sm:flex-row sm:items-start sm:justify-between sm:px-8">
           <div className="flex flex-col gap-4">
             <Link href="/" className="inline-flex w-fit">
@@ -217,7 +217,7 @@ export default async function Home() {
             </div>
           </div>
         </div>
-        <p className="mx-auto mt-8 max-w-5xl px-5 text-center text-xs text-stone-400 sm:px-8">
+        <p className="mx-auto mt-8 max-w-5xl px-5 text-center text-sm text-stone-400 sm:px-8 md:text-base">
           © {new Date().getFullYear()} Fuente Palmera Padel Club
         </p>
       </footer>
@@ -233,13 +233,13 @@ type FeatureCardProps = {
 
 function FeatureCard({ icon, title, description }: FeatureCardProps) {
   return (
-    <div className="flex gap-4 rounded-2xl bg-white/90 p-5 shadow-sm ring-1 ring-amber-200/50 transition hover:bg-white hover:shadow-md hover:ring-amber-300/60">
-      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-2xl">
+    <div className="flex gap-4 rounded-2xl bg-white/90 p-5 shadow-sm ring-1 ring-amber-200/50 transition hover:bg-white hover:shadow-md hover:ring-amber-300/60 sm:p-6 md:gap-5">
+      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-2xl md:h-14 md:w-14 md:text-3xl">
         {icon}
       </div>
       <div className="min-w-0">
-        <h3 className="font-bold text-stone-900">{title}</h3>
-        <p className="mt-1.5 text-sm leading-relaxed text-stone-600">{description}</p>
+        <h3 className="font-bold text-stone-900 text-lg md:text-xl">{title}</h3>
+        <p className="mt-1.5 text-sm leading-relaxed text-stone-600 sm:text-base md:mt-2">{description}</p>
       </div>
     </div>
   );
