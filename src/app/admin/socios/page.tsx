@@ -41,7 +41,18 @@ export default async function AdminSociosPage({ searchParams }: PageProps) {
   }
 
   const { data: members } = await query;
-  const list = (members ?? []) as MemberWithProfile[];
+  const raw = (members ?? []) as Array<{
+    id: string;
+    user_id: string;
+    start_date: string;
+    expiry_date: string;
+    is_paid: boolean;
+    profiles: { full_name: string | null; email: string | null; phone: string | null }[] | { full_name: string | null; email: string | null; phone: string | null } | null;
+  }>;
+  const list: MemberWithProfile[] = raw.map((m) => ({
+    ...m,
+    profiles: Array.isArray(m.profiles) ? (m.profiles[0] ?? null) : m.profiles,
+  }));
 
   return (
     <div className="space-y-6">
