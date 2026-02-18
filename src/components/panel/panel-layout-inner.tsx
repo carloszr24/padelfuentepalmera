@@ -33,7 +33,7 @@ export function PanelLayoutInner({ children }: { children: ReactNode }) {
                 alt="Fuente Palmera"
                 width={40}
                 height={40}
-                className="size-full rounded-full border-0 object-contain object-center outline-none ring-0 mix-blend-darken [&_img]:border-0 [&_img]:outline-none [&_img]:ring-0"
+                className="size-full rounded-full border-0 object-contain object-center outline-none ring-0 [&_img]:border-0 [&_img]:outline-none [&_img]:ring-0"
                 unoptimized
               />
             </div>

@@ -1,9 +1,12 @@
 /**
- * Seed de carga: ~100 usuarios de prueba + ~50 reservas
- * Para probar capacidad de la web.
+ * Seed de carga: usuarios de prueba + reservas ficticias para probar capacidad.
  *
  * Uso (con variables en .env.local):
  *   node --env-file=.env.local scripts/seed-load-test.mjs
+ *
+ * Opcional (más datos o segundo lote):
+ *   NUM_USERS=200 NUM_BOOKINGS=100 node --env-file=.env.local scripts/seed-load-test.mjs
+ *   OFFSET=201 node --env-file=.env.local scripts/seed-load-test.mjs   # usuarios 201-400
  *
  * Requiere: NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
  */
@@ -13,8 +16,9 @@ import { createClient } from '@supabase/supabase-js';
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-const NUM_USERS = 100;
-const NUM_BOOKINGS = 50;
+const OFFSET = Math.max(1, parseInt(process.env.OFFSET || '1', 10) || 1);
+const NUM_USERS = Math.max(1, Math.min(500, parseInt(process.env.NUM_USERS || '200', 10) || 200));
+const NUM_BOOKINGS = Math.max(1, Math.min(300, parseInt(process.env.NUM_BOOKINGS || '100', 10) || 100));
 const EMAIL_DOMAIN = 'fuente-palmera-load.local';
 const PASSWORD = 'LoadTest2025!'; // contraseña común para todos los usuarios de prueba
 
@@ -40,12 +44,13 @@ const SLOTS = [
 ];
 
 async function main() {
-  console.log('Creando', NUM_USERS, 'usuarios de prueba...');
+  console.log(`Creando ${NUM_USERS} usuarios de prueba (loadtest-${OFFSET} a loadtest-${OFFSET + NUM_USERS - 1})...`);
   const createdIds = [];
 
-  for (let i = 1; i <= NUM_USERS; i++) {
-    const email = `loadtest-${i}@${EMAIL_DOMAIN}`;
-    const fullName = `Usuario carga ${i}`;
+  for (let i = 0; i < NUM_USERS; i++) {
+    const n = OFFSET + i;
+    const email = `loadtest-${n}@${EMAIL_DOMAIN}`;
+    const fullName = `Usuario carga ${n}`;
     try {
       const { data, error } = await supabase.auth.admin.createUser({
         email,
@@ -62,7 +67,7 @@ async function main() {
         }
       } else if (data?.user?.id) {
         createdIds.push(data.user.id);
-        if (i % 10 === 0) console.log(`  ${i}/${NUM_USERS} creados`);
+        if ((i + 1) % 20 === 0) console.log(`  ${i + 1}/${NUM_USERS} creados`);
       }
     } catch (e) {
       console.error(`  Excepción en ${email}:`, e.message);
