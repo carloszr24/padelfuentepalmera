@@ -68,7 +68,8 @@ export function LandingHeader({ isLoggedIn = false }: LandingHeaderProps) {
               alt="Fuente Palmera Pádel"
               width={64}
               height={64}
-              className="h-full w-full rounded-full border-0 object-contain object-center outline-none ring-0"
+              className="h-full w-full rounded-full border-0 object-contain object-center outline-none ring-0 bg-transparent"
+              style={{ mixBlendMode: 'lighten' }}
               unoptimized
               priority
             />

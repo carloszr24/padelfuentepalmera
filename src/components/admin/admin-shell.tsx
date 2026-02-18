@@ -34,7 +34,7 @@ function SidebarContent({
       <div className="mb-6 flex items-center justify-between gap-2">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 flex-shrink-0 overflow-hidden rounded-lg bg-transparent [&_img]:!border-0 [&_img]:!shadow-none [&_img]:!outline-none [&_img]:!ring-0">
-            <Image src="/logo-transparent.png" alt="Fuente Palmera" width={40} height={40} className="size-full rounded-full border-0 object-contain object-center outline-none ring-0 [&_img]:border-0 [&_img]:outline-none [&_img]:ring-0" unoptimized />
+            <Image src="/logo-transparent.png" alt="Fuente Palmera" width={40} height={40} className="size-full rounded-full border-0 object-contain object-center outline-none ring-0 bg-transparent [&_img]:border-0 [&_img]:outline-none [&_img]:ring-0" style={{ mixBlendMode: 'lighten' }} unoptimized />
           </div>
           <div className="flex flex-col">
             <span className="text-xs font-bold uppercase tracking-[0.18em] text-stone-500">Admin</span>
