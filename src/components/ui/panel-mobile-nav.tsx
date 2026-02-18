@@ -2,11 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { IconHome, IconCalendar, IconWallet, IconUser } from '@/components/ui/panel-nav-icons';
 
 const NAV_ITEMS = [
-  { href: '/panel', label: 'Inicio', icon: '⌂' },
-  { href: '/panel/reservas', label: 'Reservas', icon: '📅' },
-  { href: '/panel/monedero', label: 'Monedero', icon: '💰' },
+  { href: '/panel', label: 'Inicio', Icon: IconHome },
+  { href: '/panel/reservas', label: 'Reservas', Icon: IconCalendar },
+  { href: '/panel/monedero', label: 'Monedero', Icon: IconWallet },
+  { href: '/panel/perfil', label: 'Perfil', Icon: IconUser },
 ] as const;
 
 export function PanelMobileNav() {
@@ -14,24 +16,22 @@ export function PanelMobileNav() {
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-stone-200 bg-white/95 backdrop-blur-md pb-[env(safe-area-inset-bottom)] md:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-gray-200 bg-white pb-[env(safe-area-inset-bottom)] pt-2 md:hidden"
       aria-label="Navegación principal"
     >
-      <div className="mx-auto flex max-w-lg items-center justify-around px-2 py-2">
-        {NAV_ITEMS.map(({ href, label, icon }) => {
+      <div className="mx-auto flex max-w-lg items-center justify-around px-2">
+        {NAV_ITEMS.map(({ href, label, Icon }) => {
           const isActive = pathname === href || (href !== '/panel' && pathname.startsWith(href));
           return (
             <Link
               key={href}
               href={href}
               prefetch={true}
-              className={`flex flex-col items-center gap-1 rounded-xl px-4 py-2.5 text-center transition ${
-                isActive
-                  ? 'bg-[#1d4ed8]/10 text-[#1d4ed8]'
-                  : 'text-stone-500 hover:bg-stone-100 hover:text-stone-700'
+              className={`flex flex-col items-center gap-1 rounded-xl px-3 py-2 text-center transition ${
+                isActive ? 'text-blue-600' : 'text-stone-500 hover:text-stone-700'
               }`}
             >
-              <span className="text-lg leading-none" aria-hidden>{icon}</span>
+              <Icon className="h-6 w-6 shrink-0" />
               <span className="text-[11px] font-semibold">{label}</span>
             </Link>
           );

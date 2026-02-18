@@ -21,6 +21,8 @@ type BookingRow = {
   courts: { name: string } | { name: string }[] | null;
 };
 
+const today = () => new Date().toISOString().slice(0, 10);
+
 function formatDate(dateStr: string) {
   const d = new Date(dateStr);
   return d.toLocaleDateString('es-ES', {
@@ -28,6 +30,38 @@ function formatDate(dateStr: string) {
     day: '2-digit',
     month: 'short',
   });
+}
+
+function formatDateHeader(dateStr: string) {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('es-ES', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  });
+}
+
+type TabKey = 'proximas' | 'pasadas' | 'canceladas';
+
+function filterByTab(bookings: BookingRow[], tab: TabKey): BookingRow[] {
+  const t = today();
+  if (tab === 'proximas') {
+    return bookings.filter((b) => b.booking_date >= t && b.status !== 'cancelled').sort((a, b) => a.booking_date.localeCompare(b.booking_date) || a.start_time.localeCompare(b.start_time));
+  }
+  if (tab === 'pasadas') {
+    return bookings.filter((b) => b.booking_date < t && b.status !== 'cancelled').sort((a, b) => b.booking_date.localeCompare(a.booking_date) || b.start_time.localeCompare(a.start_time));
+  }
+  return bookings.filter((b) => b.status === 'cancelled').sort((a, b) => b.booking_date.localeCompare(a.booking_date));
+}
+
+function groupByDate(bookings: BookingRow[]): { date: string; items: BookingRow[] }[] {
+  const map = new Map<string, BookingRow[]>();
+  for (const b of bookings) {
+    const list = map.get(b.booking_date) ?? [];
+    list.push(b);
+    map.set(b.booking_date, list);
+  }
+  return Array.from(map.entries()).map(([date, items]) => ({ date, items }));
 }
 
 type PanelReservasClientProps = {
@@ -39,6 +73,7 @@ export function PanelReservasClient({ initialCourts = [], initialBookings }: Pan
   const { user, balance, hasDebt, debtAmount, profile, refreshProfile } = usePanelUser();
   const [courts, setCourts] = useState<Court[]>(initialCourts);
   const [bookings, setBookings] = useState<BookingRow[] | null>(initialBookings ?? null);
+  const [tab, setTab] = useState<TabKey>('proximas');
 
   const isBlocked = hasDebt || balance < 0;
   const displayDebtAmount = hasDebt ? debtAmount : balance < 0 ? Math.abs(balance) : 0;
@@ -82,6 +117,16 @@ export function PanelReservasClient({ initialCourts = [], initialBookings }: Pan
     return <PanelReservasSkeleton />;
   }
 
+  const filtered = filterByTab(bookings, tab);
+  const grouped = groupByDate(filtered);
+
+  const emptyMessage =
+    tab === 'proximas'
+      ? 'No tienes reservas próximas'
+      : tab === 'pasadas'
+        ? 'No tienes reservas pasadas'
+        : 'No tienes reservas canceladas';
+
   return (
     <div className="min-w-0 max-w-full space-y-6 overflow-x-hidden">
       {isBlocked && (
@@ -115,80 +160,81 @@ export function PanelReservasClient({ initialCourts = [], initialBookings }: Pan
         </div>
       </div>
 
+      <div className="flex gap-1 rounded-xl border border-stone-200 bg-stone-50 p-1">
+        {(['proximas', 'pasadas', 'canceladas'] as const).map((key) => (
+          <button
+            key={key}
+            type="button"
+            onClick={() => setTab(key)}
+            className={`min-h-[44px] flex-1 rounded-lg px-3 py-2 text-sm font-bold transition md:flex-none md:px-4 ${
+              tab === key
+                ? 'bg-white text-stone-900 shadow-sm'
+                : 'text-stone-600 hover:text-stone-900'
+            }`}
+          >
+            {key === 'proximas' ? 'Próximas' : key === 'pasadas' ? 'Pasadas' : 'Canceladas'}
+          </button>
+        ))}
+      </div>
+
       <div className="min-w-0 max-w-full overflow-hidden rounded-xl border border-stone-200 bg-stone-50 p-4 shadow-sm">
-        <div className="mb-4 flex flex-wrap items-center gap-3">
-          <p className="text-xs font-semibold text-stone-500">{bookings.length} reservas en total</p>
-        </div>
-        <div className="min-w-0 overflow-x-auto rounded-xl border border-stone-200 bg-white">
-          <table className="w-full min-w-[480px] text-left text-sm">
-            <thead>
-              <tr className="border-b border-stone-200 bg-stone-50 text-xs font-bold uppercase tracking-wide text-stone-500">
-                <th className="px-4 py-3 align-middle">Pista</th>
-                <th className="px-4 py-3 align-middle">Fecha y hora</th>
-                <th className="px-4 py-3 align-middle">Estado</th>
-                <th className="px-4 py-3 align-middle">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {!bookings.length ? (
-                <tr>
-                  <td colSpan={4} className="px-4 py-12 text-center text-sm font-medium text-stone-500">
-                    Aún no tienes reservas. Cuando crees una, aparecerá aquí.
-                  </td>
-                </tr>
-              ) : (
-                bookings.map((b) => {
-                  const courtName =
-                    Array.isArray(b.courts) ? b.courts[0]?.name : (b.courts as { name?: string } | null)?.name;
-                  return (
-                    <tr key={b.id} className="border-b border-stone-100 transition hover:bg-stone-50">
-                      <td className="px-4 py-3 align-middle font-bold text-stone-900">{courtName ?? 'Pista'}</td>
-                      <td className="px-4 py-3 align-middle font-medium text-stone-800">
-                        <p className="leading-tight">{formatDate(b.booking_date)}</p>
-                        <p className="mt-0.5 text-xs leading-tight text-stone-500">
-                          {b.start_time.slice(0, 5)} - {b.end_time.slice(0, 5)}
-                        </p>
-                      </td>
-                      <td className="px-4 py-3 align-middle">
-                        <div className="flex flex-col gap-1 items-start">
-                          <span
-                            className={`inline-flex w-fit rounded-full px-3 py-1.5 text-xs font-bold ${
-                              b.status === 'confirmed'
-                                ? 'bg-emerald-100 text-emerald-700'
-                                : b.status === 'completed'
-                                  ? 'bg-sky-100 text-sky-700'
-                                  : 'bg-red-100 text-red-700'
-                            }`}
-                          >
-                            {b.status === 'confirmed'
-                              ? 'Confirmada'
-                              : b.status === 'completed'
-                                ? 'Completada'
-                                : 'Cancelada'}
-                          </span>
-                          {b.deposit_paid && (
-                            <span className="text-xs font-medium leading-none text-emerald-600">Depósito pagado</span>
-                          )}
+        {filtered.length === 0 ? (
+          <p className="py-12 text-center text-sm font-medium text-stone-500">{emptyMessage}</p>
+        ) : (
+          <div className="space-y-6">
+            {grouped.map(({ date, items }) => (
+              <div key={date}>
+                <h3 className="mb-2 text-sm font-bold capitalize text-stone-700">
+                  {formatDateHeader(date)}
+                </h3>
+                <div className="space-y-3 md:overflow-x-auto">
+                  <div className="hidden min-w-[480px] md:block">
+                    <table className="w-full text-left text-sm">
+                      <tbody>
+                        {items.map((b) => {
+                          const courtName = Array.isArray(b.courts) ? b.courts[0]?.name : (b.courts as { name?: string } | null)?.name;
+                          return (
+                            <tr key={b.id} className="border-b border-stone-100 transition hover:bg-stone-50">
+                              <td className="px-4 py-3 font-bold text-stone-900">{courtName ?? 'Pista'}</td>
+                              <td className="px-4 py-3 font-medium text-stone-800">{b.start_time.slice(0, 5)} - {b.end_time.slice(0, 5)}</td>
+                              <td className="px-4 py-3">
+                                <span className={`inline-flex rounded-full px-3 py-1 text-xs font-bold ${b.status === 'confirmed' ? 'bg-emerald-100 text-emerald-700' : b.status === 'completed' ? 'bg-sky-100 text-sky-700' : 'bg-red-100 text-red-700'}`}>
+                                  {b.status === 'confirmed' ? 'Confirmada' : b.status === 'completed' ? 'Completada' : 'Cancelada'}
+                                </span>
+                              </td>
+                              <td className="px-4 py-3">
+                                <CancelBookingButton bookingId={b.id} depositPaid={b.deposit_paid} status={b.status} bookingDate={b.booking_date} startTime={b.start_time} walletBalance={profile?.wallet_balance ?? 0} onCancelSuccess={onBookingChange} />
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="space-y-3 md:hidden">
+                    {items.map((b) => {
+                      const courtName = Array.isArray(b.courts) ? b.courts[0]?.name : (b.courts as { name?: string } | null)?.name;
+                      return (
+                        <div key={b.id} className="rounded-xl border border-stone-200 bg-white p-4 shadow-sm">
+                          <div className="flex items-start justify-between gap-2">
+                            <p className="font-bold text-stone-900">{courtName ?? 'Pista'}</p>
+                            <span className={`shrink-0 rounded-full px-3 py-1 text-xs font-bold ${b.status === 'confirmed' ? 'bg-emerald-100 text-emerald-700' : b.status === 'completed' ? 'bg-sky-100 text-sky-700' : 'bg-red-100 text-red-700'}`}>
+                              {b.status === 'confirmed' ? 'Confirmada' : b.status === 'completed' ? 'Completada' : 'Cancelada'}
+                            </span>
+                          </div>
+                          <p className="mt-1 text-sm font-medium text-stone-800">{b.start_time.slice(0, 5)} - {b.end_time.slice(0, 5)}</p>
+                          <div className="mt-3">
+                            <CancelBookingButton bookingId={b.id} depositPaid={b.deposit_paid} status={b.status} bookingDate={b.booking_date} startTime={b.start_time} walletBalance={profile?.wallet_balance ?? 0} onCancelSuccess={onBookingChange} />
+                          </div>
                         </div>
-                      </td>
-                      <td className="min-w-[140px] px-4 py-3 align-middle">
-                        <CancelBookingButton
-                          bookingId={b.id}
-                          depositPaid={b.deposit_paid}
-                          status={b.status}
-                          bookingDate={b.booking_date}
-                          startTime={b.start_time}
-                          walletBalance={profile?.wallet_balance ?? 0}
-                          onCancelSuccess={onBookingChange}
-                        />
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

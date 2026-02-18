@@ -1,11 +1,13 @@
 /**
  * Rate limit por IP en memoria. Limpieza del Map cada 60 s.
  * Para producción a gran escala considerar Redis.
- * Límites: checkout 5/min, webhook 20/min, admin 10/min.
+ * Límites: login 10/15min, booking 20/min (crear/cancelar usuario), checkout 5/min, webhook 20/min, admin 10/min.
  */
 const store = new Map<string, { count: number; resetAt: number }>();
 
 const LIMITS = {
+  login: { max: 10, windowMs: 15 * 60_000 },
+  booking: { max: 20, windowMs: 60_000 },
   checkout: { max: 5, windowMs: 60_000 },
   webhook: { max: 20, windowMs: 60_000 },
   admin: { max: 10, windowMs: 60_000 },

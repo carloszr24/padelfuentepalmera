@@ -34,6 +34,10 @@ export async function proxy(request: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser();
 
+    if (isPanelOrAdmin && !user) {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
+
     if (isPanelOrAdmin && user && serviceKey) {
       const adminClient = createClient(url, serviceKey);
       const {

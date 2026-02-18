@@ -1,8 +1,21 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { getOpeningForDate } from '@/lib/club-schedule';
+import { checkRateLimit } from '@/lib/rate-limit';
+import { isValidUUID } from '@/lib/utils';
 
 export async function POST(request: Request) {
+  const ip =
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    request.headers.get('x-real-ip') ??
+    'unknown';
+  if (!checkRateLimit('booking', ip)) {
+    return NextResponse.json(
+      { message: 'Demasiadas peticiones. Espera un momento.' },
+      { status: 429 }
+    );
+  }
+
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },
@@ -27,6 +40,12 @@ export async function POST(request: Request) {
   if (!courtId || !bookingDate || !startTime || !endTime) {
     return NextResponse.json(
       { message: 'Faltan datos: pista, fecha, hora inicio y hora fin' },
+      { status: 400 }
+    );
+  }
+  if (!isValidUUID(courtId)) {
+    return NextResponse.json(
+      { message: 'Pista no válida' },
       { status: 400 }
     );
   }

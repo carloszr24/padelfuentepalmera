@@ -1,7 +1,20 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { checkRateLimit } from '@/lib/rate-limit';
+import { isValidUUID } from '@/lib/utils';
 
 export async function POST(request: Request) {
+  const ip =
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    request.headers.get('x-real-ip') ??
+    'unknown';
+  if (!checkRateLimit('booking', ip)) {
+    return NextResponse.json(
+      { message: 'Demasiadas peticiones. Espera un momento.' },
+      { status: 429 }
+    );
+  }
+
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },
@@ -18,6 +31,12 @@ export async function POST(request: Request) {
   if (!bookingId) {
     return NextResponse.json(
       { message: 'Falta el identificador de la reserva' },
+      { status: 400 }
+    );
+  }
+  if (!isValidUUID(bookingId)) {
+    return NextResponse.json(
+      { message: 'Identificador de reserva no válido' },
       { status: 400 }
     );
   }

@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { getBrowserSupabaseClient } from '@/lib/supabase/client';
 
 export function AuthLoginForm() {
   const [email, setEmail] = useState('');
@@ -26,22 +25,21 @@ export function AuthLoginForm() {
 
     try {
       setLoading(true);
-      const supabase = getBrowserSupabaseClient();
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+        credentials: 'include',
       });
+      const data = (await res.json().catch(() => ({}))) as { message?: string };
 
-      if (signInError) {
-        const msg = signInError.message?.toLowerCase() ?? '';
-        const isUnconfirmed =
-          msg.includes('email not confirmed') ||
-          (msg.includes('email') && (msg.includes('confirm') || msg.includes('verif')));
-        setError(
-          isUnconfirmed
-            ? 'Debes confirmar tu email antes de iniciar sesión. Revisa tu bandeja de entrada (y la carpeta de spam).'
-            : signInError.message
-        );
+      if (res.status === 429) {
+        setError(data.message ?? 'Demasiados intentos. Espera unos minutos.');
+        return;
+      }
+
+      if (!res.ok) {
+        setError(data.message ?? 'No se ha podido iniciar sesión.');
         return;
       }
 

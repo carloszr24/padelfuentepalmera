@@ -32,7 +32,13 @@ export default async function AdminUsuariosPage({
     query = query.or(`full_name.ilike."${pattern}",email.ilike."${pattern}",phone.ilike."${pattern}"`);
   }
 
-  const { data: profiles } = await query;
+  const today = new Date().toISOString().slice(0, 10);
+  const [profilesRes, membersRes] = await Promise.all([
+    query,
+    supabase.from('members').select('user_id').gte('expiry_date', today),
+  ]);
+  const { data: profiles } = profilesRes;
+  const activeMemberIds = new Set((membersRes.data ?? []).map((m: { user_id: string }) => m.user_id));
 
   const total = profiles?.length ?? 0;
 
@@ -97,9 +103,16 @@ export default async function AdminUsuariosPage({
               className="border-b border-stone-100 transition hover:bg-stone-50"
             >
               <td className="px-4 py-3 align-middle">
-                <p className="font-bold leading-tight text-stone-900">
-                  {p.full_name || 'Sin nombre'}
-                </p>
+                <div className="flex flex-wrap items-center gap-2">
+                  <p className="font-bold leading-tight text-stone-900">
+                    {p.full_name || 'Sin nombre'}
+                  </p>
+                  {activeMemberIds.has(p.id) && (
+                    <span className="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800">
+                      Socio
+                    </span>
+                  )}
+                </div>
                 <p className="mt-0.5 max-w-[120px] truncate text-[11px] leading-tight text-stone-500">{p.id.slice(0, 8)}…</p>
               </td>
               <td className="px-4 py-3.5 align-middle font-medium text-stone-800">

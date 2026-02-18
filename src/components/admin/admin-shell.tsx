@@ -8,6 +8,7 @@ import { LogoutButton } from '@/components/ui/logout-button';
 const NAV_LINKS = [
   { href: '/admin', label: 'Dashboard' },
   { href: '/admin/usuarios', label: 'Usuarios' },
+  { href: '/admin/socios', label: 'Socios' },
   { href: '/admin/reservas', label: 'Reservas' },
   { href: '/admin/estadisticas', label: 'Estadísticas' },
   { href: '/admin/pistas', label: 'Pistas' },

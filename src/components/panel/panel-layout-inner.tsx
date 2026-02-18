@@ -83,6 +83,7 @@ export function PanelLayoutInner({ children }: { children: ReactNode }) {
             <PanelNavLink href="/panel" label="Inicio" />
             <PanelNavLink href="/panel/reservas" label="Reservas" />
             <PanelNavLink href="/panel/monedero" label="Monedero" />
+            <PanelNavLink href="/panel/perfil" label="Perfil" />
           </nav>
 
           <div className="mt-6 border-t border-stone-200 pt-4">
@@ -90,7 +91,7 @@ export function PanelLayoutInner({ children }: { children: ReactNode }) {
           </div>
         </aside>
 
-        <main className="min-h-0 min-w-0 flex-1 overflow-x-hidden rounded-xl border border-stone-200 bg-white p-4 shadow-sm pb-24 md:pb-8 md:p-8 lg:p-10 max-w-full box-border">
+        <main className="min-h-0 min-w-0 flex-1 overflow-x-hidden rounded-xl border border-stone-200 bg-white p-4 shadow-sm pb-20 md:pb-8 md:p-8 lg:p-10 max-w-full box-border">
           <div className="mb-4 flex flex-col gap-3 md:hidden">
             <div className="flex items-center justify-between gap-2">
               <Link
@@ -100,15 +101,6 @@ export function PanelLayoutInner({ children }: { children: ReactNode }) {
               >
                 ← Web
               </Link>
-              {isAdmin && (
-                <Link
-                  href="/admin"
-                  className="rounded-full border border-emerald-300 bg-emerald-50 px-2.5 py-1.5 text-[11px] font-bold text-emerald-700"
-                  prefetch={true}
-                >
-                  Admin
-                </Link>
-              )}
             </div>
             <div className="flex min-w-0 items-center justify-between gap-2 rounded-xl bg-stone-50 px-4 py-3">
               <p className="min-w-0 truncate text-sm font-bold text-stone-900">{displayName}</p>
