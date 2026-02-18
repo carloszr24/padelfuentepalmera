@@ -163,6 +163,9 @@ BEGIN
   IF ((p_booking_date + p_start_time) AT TIME ZONE 'Europe/Madrid') <= now() THEN
     RAISE EXCEPTION 'No se puede reservar en una hora que ya ha pasado';
   END IF;
+  IF p_booking_date > ((now() AT TIME ZONE 'Europe/Madrid')::date + 14) THEN
+    RAISE EXCEPTION 'Solo se pueden hacer reservas como máximo a 14 días vista';
+  END IF;
 
   SELECT wallet_balance INTO v_balance FROM public.profiles WHERE id = p_user_id FOR UPDATE;
   IF v_balance < v_deposit THEN RAISE EXCEPTION 'Insufficient wallet balance for deposit'; END IF;

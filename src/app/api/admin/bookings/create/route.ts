@@ -51,6 +51,24 @@ export async function POST(request: Request) {
     );
   }
 
+  const now = new Date();
+  const todayMadrid = now.toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' });
+  const maxDate = new Date(now);
+  maxDate.setDate(maxDate.getDate() + 14);
+  const maxDateMadrid = maxDate.toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' });
+  if (bookingDate < todayMadrid) {
+    return NextResponse.json(
+      { message: 'No se puede reservar en una fecha pasada' },
+      { status: 400 }
+    );
+  }
+  if (bookingDate > maxDateMadrid) {
+    return NextResponse.json(
+      { message: 'Solo se pueden hacer reservas como máximo a 14 días vista' },
+      { status: 400 }
+    );
+  }
+
   const startNormalized = startTime.length === 5 ? `${startTime}:00` : startTime;
   const endNormalized = endTime.length === 5 ? `${endTime}:00` : endTime;
   const startNorm = String(startTime).slice(0, 5);

@@ -58,7 +58,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', onSuccess
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const dateStrip = useMemo(() => buildDateStrip(21), []);
+  const dateStrip = useMemo(() => buildDateStrip(14), []);
 
   const courtName = courts.find((c) => String(c.id) === String(courtId))?.name ?? '';
   const endTime = selectedSlot ? slotEnd(selectedSlot) : '';

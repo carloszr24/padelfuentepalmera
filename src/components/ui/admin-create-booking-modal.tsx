@@ -55,7 +55,7 @@ export function AdminCreateBookingModal({
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const dateStrip = useMemo(() => buildDateStrip(21), []);
+  const dateStrip = useMemo(() => buildDateStrip(14), []);
   const userName = users.find((u) => u.id === userId)?.full_name || users.find((u) => u.id === userId)?.email || '—';
   const courtName = courts.find((c) => c.id === courtId)?.name ?? '—';
 

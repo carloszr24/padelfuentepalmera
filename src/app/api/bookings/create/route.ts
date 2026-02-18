@@ -63,6 +63,15 @@ export async function POST(request: Request) {
       { status: 400 }
     );
   }
+  const maxDate = new Date(now);
+  maxDate.setDate(maxDate.getDate() + 14);
+  const maxDateMadrid = maxDate.toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' });
+  if (bookingDate > maxDateMadrid) {
+    return NextResponse.json(
+      { message: 'Solo se pueden hacer reservas como máximo a 14 días vista' },
+      { status: 400 }
+    );
+  }
 
   const opening = await getOpeningForDate(bookingDate);
   if (!opening.isOpen) {

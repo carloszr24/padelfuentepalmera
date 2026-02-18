@@ -55,6 +55,10 @@ DECLARE
 BEGIN
   IF NOT public.is_admin() THEN RAISE EXCEPTION 'Only admins'; END IF;
 
+  IF p_booking_date > ((now() AT TIME ZONE 'Europe/Madrid')::date + 14) THEN
+    RAISE EXCEPTION 'Solo se pueden hacer reservas como máximo a 14 días vista';
+  END IF;
+
   IF NOT EXISTS (SELECT 1 FROM public.courts WHERE id = p_court_id AND is_active = true) THEN
     RAISE EXCEPTION 'Pista no encontrada o inactiva';
   END IF;
