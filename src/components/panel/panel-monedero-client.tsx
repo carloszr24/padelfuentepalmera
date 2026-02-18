@@ -38,16 +38,22 @@ function formatDateTime(dateStr: string) {
   });
 }
 
-export function PanelMonederoClient() {
+type PanelMonederoClientProps = {
+  initialTransactions?: TxRow[];
+};
+
+export function PanelMonederoClient({ initialTransactions }: PanelMonederoClientProps) {
   const { balance, refreshProfile } = usePanelUser();
   const searchParams = useSearchParams();
-  const [transactions, setTransactions] = useState<TxRow[] | null>(null);
+  const [transactions, setTransactions] = useState<TxRow[] | null>(initialTransactions ?? null);
 
   const success = searchParams?.get('success') === '1';
   const sessionId = searchParams?.get('session_id') ?? undefined;
   const cancel = searchParams?.get('cancel') === '1';
 
+  // Solo fetch en cliente si no nos pasaron datos iniciales (ej. navegación client-side)
   useEffect(() => {
+    if (initialTransactions !== undefined) return;
     let cancelled = false;
     getBrowserSupabaseClient()
       .from('transactions')
@@ -60,7 +66,7 @@ export function PanelMonederoClient() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [initialTransactions]);
 
   if (transactions === null) {
     return <PanelMonederoSkeleton />;
