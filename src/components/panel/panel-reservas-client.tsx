@@ -30,16 +30,22 @@ function formatDate(dateStr: string) {
   });
 }
 
-export function PanelReservasClient() {
+type PanelReservasClientProps = {
+  initialCourts?: Court[];
+  initialBookings?: BookingRow[];
+};
+
+export function PanelReservasClient({ initialCourts = [], initialBookings }: PanelReservasClientProps) {
   const { user, balance, hasDebt, debtAmount, profile, refreshProfile } = usePanelUser();
-  const [courts, setCourts] = useState<Court[]>([]);
-  const [bookings, setBookings] = useState<BookingRow[] | null>(null);
+  const [courts, setCourts] = useState<Court[]>(initialCourts);
+  const [bookings, setBookings] = useState<BookingRow[] | null>(initialBookings ?? null);
 
   const isBlocked = hasDebt || balance < 0;
   const displayDebtAmount = hasDebt ? debtAmount : balance < 0 ? Math.abs(balance) : 0;
 
+  // Solo hacer fetch en cliente si no nos pasaron datos iniciales (ej. navegación client-side)
   useEffect(() => {
-    if (!user?.id) return;
+    if (!user?.id || initialBookings !== undefined) return;
     let cancelled = false;
     const supabase = getBrowserSupabaseClient();
     Promise.all([
@@ -58,7 +64,7 @@ export function PanelReservasClient() {
     return () => {
       cancelled = true;
     };
-  }, [user?.id]);
+  }, [user?.id, initialBookings]);
 
   const onBookingChange = () => {
     if (!user?.id) return;
