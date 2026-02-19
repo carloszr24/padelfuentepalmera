@@ -10,11 +10,11 @@ export default function AdminLoading() {
         <div className="h-5 w-64 rounded bg-stone-200" />
         <div className="mt-1 h-3 w-80 rounded bg-stone-100" />
       </div>
-      <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5">
+      <div className="rounded-[10px] bg-[#f7f7f5] p-5">
         <div className="mb-4 h-4 w-32 rounded bg-stone-200" />
         <div className="space-y-3">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="h-12 rounded-xl bg-stone-200/80" />
+            <div key={i} className="h-12 rounded-[10px] bg-stone-200/80" />
           ))}
         </div>
       </div>

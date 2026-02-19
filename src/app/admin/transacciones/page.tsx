@@ -18,31 +18,31 @@ export default async function AdminTransaccionesPage() {
         subtitle="Historial de movimientos económicos del sistema."
       />
 
-      <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm">
+      <div className="rounded-[10px] bg-[#f7f7f5] p-5">
         <div className="mb-4 flex flex-wrap items-center gap-3">
-          <p className="text-xs font-semibold text-stone-500">Últimas 100 transacciones (export hasta 2000)</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#6b6b6b]">Últimas 100 transacciones (export hasta 2000)</p>
           <a
             href="/api/admin/transactions/export"
-            className="min-h-[44px] inline-flex items-center rounded-xl border border-stone-300 px-4 py-2.5 text-sm font-bold text-stone-700 transition hover:bg-stone-100"
+            className="admin-btn inline-flex items-center border border-[#e8e8e4] bg-white px-3 py-1.5 text-[#1a1a1a] transition hover:bg-[#f7f7f5]"
             download
           >
             Exportar CSV
           </a>
         </div>
-        <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white">
-          <table className="w-full min-w-[480px] text-left text-sm">
+        <div className="admin-table-wrap overflow-x-auto rounded-[10px] bg-white">
+          <table className="admin-table w-full min-w-[480px] text-left text-sm">
             <thead>
-              <tr className="border-b border-stone-200 bg-stone-50 text-xs font-bold uppercase tracking-wide text-stone-500">
-                <th className="px-4 py-3 align-middle">Usuario</th>
-                <th className="px-4 py-3 align-middle">Descripción</th>
-                <th className="px-4 py-3 align-middle">Fecha</th>
-                <th className="px-4 py-3 align-middle text-right">Importe</th>
+              <tr className="border-b-2 border-[#e8e8e4]">
+                <th className="py-3">Usuario</th>
+                <th className="py-3">Descripción</th>
+                <th className="py-3">Fecha</th>
+                <th className="py-3 text-right">Importe</th>
               </tr>
             </thead>
             <tbody>
               {transactions?.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-4 py-12 text-center text-sm font-medium text-stone-500">
+                  <td colSpan={4} className="py-12 text-center text-sm font-medium text-[#6b6b6b]">
                     No hay transacciones registradas todavía.
                   </td>
                 </tr>
@@ -53,12 +53,12 @@ export default async function AdminTransaccionesPage() {
                     ? (profile as { full_name: string | null }).full_name
                     : null;
                   return (
-                    <tr key={tx.id} className="border-b border-stone-100 transition hover:bg-stone-50">
-                      <td className="px-4 py-3 align-middle font-bold text-stone-900">{name ?? 'Usuario'}</td>
-                      <td className="px-4 py-3 align-middle font-medium text-stone-800">{tx.description || getTransactionLabel(tx.type)}</td>
-                      <td className="px-4 py-3 align-middle text-xs font-medium text-stone-600 whitespace-nowrap">{formatDateTime(tx.created_at)}</td>
-                      <td className="px-4 py-3 align-middle text-right font-bold tabular-nums">
-                        <span className={`whitespace-nowrap ${tx.amount >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                    <tr key={tx.id} className="border-b border-[#e8e8e4] transition hover:bg-black/[0.02]">
+                      <td className="font-semibold text-[#1a1a1a]">{name ?? 'Usuario'}</td>
+                      <td className="font-medium text-[#1a1a1a]">{tx.description || getTransactionLabel(tx.type)}</td>
+                      <td className="whitespace-nowrap text-xs text-[#6b6b6b]">{formatDateTime(tx.created_at)}</td>
+                      <td className="text-right tabular-nums">
+                        <span className={`whitespace-nowrap ${tx.amount >= 0 ? 'admin-amount-positive' : 'font-semibold text-[#dc2626]'}`} style={tx.amount >= 0 ? { fontFamily: 'var(--font-space-grotesk)' } : undefined}>
                           {tx.amount >= 0 ? '+' : ''}{Number(tx.amount).toFixed(2)} €
                         </span>
                       </td>

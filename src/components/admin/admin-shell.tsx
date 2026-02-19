@@ -91,7 +91,7 @@ function SidebarContent({
       >
         ← Panel usuario
       </Link>
-      <div className="mb-6 rounded-xl border border-stone-200 bg-stone-50 p-4 text-sm">
+      <div className="mb-6 rounded-[10px] bg-[#f7f7f5] p-4 text-sm text-[#6b6b6b]">
         <p className="text-xs font-semibold text-stone-500">Conectado como</p>
         <p className="mt-1 text-sm font-bold text-stone-900">{displayName}</p>
       </div>
@@ -157,10 +157,10 @@ export function AdminShell({ displayName, children }: AdminShellProps) {
       </aside>
 
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-y-contain md:overflow-visible md:overscroll-none" style={{ WebkitOverflowScrolling: 'touch' }}>
-        <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-4 py-4 md:flex-row md:px-6 md:py-6 lg:px-8">
+        <div className="mx-auto flex w-full max-w-[1380px] flex-1 flex-col gap-6 px-4 py-4 md:flex-row md:px-6 md:py-6 lg:px-8" data-admin>
           <AdminSidebarDesktop />
 
-          <main className="min-w-0 flex-1 rounded-2xl border border-[#e8e8e4] bg-white p-4 shadow-[0_4px_12px_rgba(0,0,0,0.06)] md:p-8 lg:p-10">
+          <main className="min-w-0 max-w-[1100px] flex-1 rounded-2xl border border-[#e8e8e4] bg-white p-4 shadow-[0_4px_12px_rgba(0,0,0,0.06)] md:p-8 lg:p-10">
             {children}
           </main>
         </div>

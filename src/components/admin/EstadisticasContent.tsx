@@ -173,11 +173,11 @@ export default function EstadisticasContent() {
         />
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-24 rounded-xl border border-stone-200 bg-stone-50 animate-pulse" />
+            <div key={i} className="h-24 rounded-[10px] bg-[#f7f7f5] animate-pulse" />
           ))}
         </div>
-        <div className="h-64 rounded-xl border border-stone-200 bg-stone-50 animate-pulse" />
-        <div className="h-64 rounded-xl border border-stone-200 bg-stone-50 animate-pulse" />
+        <div className="h-64 rounded-[10px] bg-[#f7f7f5] animate-pulse" />
+        <div className="h-64 rounded-[10px] bg-[#f7f7f5] animate-pulse" />
       </div>
     );
   }
@@ -231,27 +231,27 @@ export default function EstadisticasContent() {
 
       {/* 4 tarjetas resumen */}
       <section className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <div className="rounded-xl border border-stone-200 bg-stone-50 p-4 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-wide text-stone-500">Total reservas</p>
-          <p className="mt-1 text-2xl font-bold text-stone-900">{totalReservas}</p>
+        <div className="admin-stat-card">
+          <p className="admin-stat-label">Total reservas</p>
+          <p className="admin-number mt-2 text-2xl text-[#1a1a1a]">{totalReservas}</p>
         </div>
-        <div className="rounded-xl border border-stone-200 bg-stone-50 p-4 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-wide text-stone-500">Tasa cancelación</p>
-          <p className="mt-1 text-2xl font-bold text-red-600">{tasaCancelacion.toFixed(1)} %</p>
+        <div className="admin-stat-card">
+          <p className="admin-stat-label">Tasa cancelación</p>
+          <p className="admin-number mt-2 text-2xl text-[#dc2626]">{tasaCancelacion.toFixed(1)} %</p>
         </div>
-        <div className="rounded-xl border border-stone-200 bg-stone-50 p-4 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-wide text-stone-500">Tasa no-show</p>
-          <p className="mt-1 text-2xl font-bold text-amber-600">{tasaNoshow.toFixed(1)} %</p>
+        <div className="admin-stat-card">
+          <p className="admin-stat-label">Tasa no-show</p>
+          <p className="admin-number mt-2 text-2xl text-[#ea580c]">{tasaNoshow.toFixed(1)} %</p>
         </div>
-        <div className="rounded-xl border border-stone-200 bg-stone-50 p-4 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-wide text-stone-500">Hora punta</p>
-          <p className="mt-1 text-2xl font-bold text-[#1d4ed8]">{horaPunta}</p>
+        <div className="admin-stat-card">
+          <p className="admin-stat-label">Hora punta</p>
+          <p className="admin-number mt-2 text-2xl text-[#1d4ed8]">{horaPunta}</p>
         </div>
       </section>
 
       {/* Reservas por hora */}
-      <section className="rounded-xl border border-stone-200 bg-white p-4 shadow-sm md:p-5">
-        <h2 className="mb-4 text-sm font-bold text-stone-900">Reservas por hora del día</h2>
+      <section className="rounded-[10px] bg-[#f7f7f5] p-4 md:p-5">
+        <h2 className="admin-stat-label mb-4">Reservas por hora del día</h2>
         <div className="h-[280px] w-full md:h-[320px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={hourChartData} margin={{ top: 8, right: 8, left: 0, bottom: 8 }}>
@@ -266,8 +266,8 @@ export default function EstadisticasContent() {
       </section>
 
       {/* Reservas por día de la semana */}
-      <section className="rounded-xl border border-stone-200 bg-white p-4 shadow-sm md:p-5">
-        <h2 className="mb-4 text-sm font-bold text-stone-900">Reservas por día de la semana</h2>
+      <section className="rounded-[10px] bg-[#f7f7f5] p-4 md:p-5">
+        <h2 className="admin-stat-label mb-4">Reservas por día de la semana</h2>
         <div className="h-[280px] w-full md:h-[320px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={dowChartData} margin={{ top: 8, right: 8, left: 0, bottom: 8 }}>
@@ -282,8 +282,8 @@ export default function EstadisticasContent() {
       </section>
 
       {/* Reservas por pista (horizontal) */}
-      <section className="rounded-xl border border-stone-200 bg-white p-4 shadow-sm md:p-5">
-        <h2 className="mb-4 text-sm font-bold text-stone-900">Reservas por pista</h2>
+      <section className="rounded-[10px] bg-[#f7f7f5] p-4 md:p-5">
+        <h2 className="admin-stat-label mb-4">Reservas por pista</h2>
         <div className="h-[240px] w-full md:h-[280px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
@@ -302,8 +302,8 @@ export default function EstadisticasContent() {
       </section>
 
       {/* Evolución diaria */}
-      <section className="rounded-xl border border-stone-200 bg-white p-4 shadow-sm md:p-5">
-        <h2 className="mb-4 text-sm font-bold text-stone-900">Evolución diaria de reservas</h2>
+      <section className="rounded-[10px] bg-[#f7f7f5] p-4 md:p-5">
+        <h2 className="admin-stat-label mb-4">Evolución diaria de reservas</h2>
         <div className="h-[280px] w-full md:h-[320px]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={evolutionData} margin={{ top: 8, right: 8, left: 0, bottom: 8 }}>
@@ -318,10 +318,10 @@ export default function EstadisticasContent() {
       </section>
 
       {/* Distribución por estado (tarta) */}
-      <section className="rounded-xl border border-stone-200 bg-white p-4 shadow-sm md:p-5">
-        <h2 className="mb-4 text-sm font-bold text-stone-900">Distribución por estado</h2>
+      <section className="rounded-[10px] bg-[#f7f7f5] p-4 md:p-5">
+        <h2 className="admin-stat-label mb-4">Distribución por estado</h2>
         {statusPieData.length === 0 ? (
-          <p className="py-8 text-center text-sm text-stone-500">Sin datos en este período</p>
+          <p className="py-8 text-center text-sm text-[#6b6b6b]">Sin datos en este período</p>
         ) : (
           <div className="mx-auto h-[260px] w-full max-w-sm md:h-[300px]">
             <ResponsiveContainer width="100%" height="100%">

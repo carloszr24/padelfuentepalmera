@@ -55,25 +55,25 @@ export default async function AdminUsuariosPage({
       </div>
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <div className="rounded-[10px] bg-[#f7f7f5] p-4">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#6b6b6b]">Total usuarios</p>
-          <p className="mt-1.5 text-2xl font-bold tracking-tight text-[#2563eb]" style={{ fontFamily: 'var(--font-space-grotesk)' }}>{total}</p>
+        <div className="admin-stat-card">
+          <p className="admin-stat-label">Total usuarios</p>
+          <p className="admin-number mt-2 text-2xl text-[#2563eb] md:text-[26px]">{total}</p>
         </div>
-        <div className="rounded-[10px] bg-[#f7f7f5] p-4">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#6b6b6b]">Socios activos</p>
-          <p className="mt-1.5 text-2xl font-bold tracking-tight text-[#059669]" style={{ fontFamily: 'var(--font-space-grotesk)' }}>{sociosActivos}</p>
+        <div className="admin-stat-card">
+          <p className="admin-stat-label">Socios activos</p>
+          <p className="admin-number mt-2 text-2xl text-[#059669] md:text-[26px]">{sociosActivos}</p>
         </div>
-        <div className="rounded-[10px] bg-[#f7f7f5] p-4">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#6b6b6b]">Con deuda</p>
-          <p className="mt-1.5 text-2xl font-bold tracking-tight text-[#dc2626]" style={{ fontFamily: 'var(--font-space-grotesk)' }}>{conDeuda}</p>
+        <div className="admin-stat-card">
+          <p className="admin-stat-label">Con deuda</p>
+          <p className="admin-number mt-2 text-2xl text-[#dc2626] md:text-[26px]">{conDeuda}</p>
         </div>
-        <div className="rounded-[10px] bg-[#f7f7f5] p-4">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#6b6b6b]">Saldo total</p>
-          <p className="mt-1.5 text-2xl font-bold tracking-tight text-[#ea580c]" style={{ fontFamily: 'var(--font-space-grotesk)' }}>{saldoTotal.toFixed(0)} €</p>
+        <div className="admin-stat-card">
+          <p className="admin-stat-label">Saldo total</p>
+          <p className="admin-number mt-2 text-2xl text-[#ea580c] md:text-[26px]">{saldoTotal.toFixed(0)} €</p>
         </div>
       </div>
 
-      <div className="rounded-[14px] border border-[#e8e8e4] bg-[#f7f7f5] p-5 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+      <div className="rounded-[10px] bg-[#f7f7f5] p-5">
         <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <form className="flex w-full flex-col gap-3 md:flex-row md:items-center md:gap-4 md:w-auto" method="get">
             <div className="relative flex-1">
@@ -98,10 +98,10 @@ export default async function AdminUsuariosPage({
           <p className="text-xs font-semibold text-stone-500">{total} registros en total</p>
         </div>
 
-        <div className="overflow-x-auto rounded-xl border border-[#e8e8e4] bg-white">
-          <table className="w-full min-w-[600px] text-left text-sm">
+        <div className="admin-table-wrap overflow-x-auto rounded-[10px] bg-white">
+          <table className="admin-table w-full min-w-[600px] text-left text-sm">
             <thead>
-              <tr className="border-b-2 border-[#e8e8e4] text-[11px] font-bold uppercase tracking-wide text-[#6b6b6b]">
+              <tr className="border-b-2 border-[#e8e8e4]">
                 <th className="px-4 py-3">Nombre</th>
                 <th className="px-4 py-3">Contacto</th>
                 <th className="px-4 py-3">Saldo</th>
@@ -141,11 +141,11 @@ export default async function AdminUsuariosPage({
                       </span>
                     </td>
                     <td className="px-4 py-3.5 font-medium text-[#6b6b6b]">—</td>
-                    <td className="px-3 py-2">
-                      <div className="flex flex-wrap items-center gap-1.5">
+                    <td>
+                      <div className="admin-action-group">
                         <Link
                           href={`/admin/usuarios/${p.id}`}
-                          className="inline-flex items-center justify-center rounded-md border border-[#e8e8e4] bg-white px-3 py-1.5 text-xs font-semibold text-[#1a1a1a] transition hover:bg-[#f7f7f5] hover:border-[#6b6b6b]"
+                          className="admin-btn inline-flex items-center justify-center border border-[#e8e8e4] bg-white text-[#1a1a1a] transition hover:bg-[#f7f7f5] hover:border-[#6b6b6b]"
                         >
                           Perfil
                         </Link>

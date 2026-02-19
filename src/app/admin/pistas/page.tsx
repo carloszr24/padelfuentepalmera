@@ -18,8 +18,8 @@ export default async function AdminPistasPage() {
         subtitle="Activa o desactiva pistas y gestiona sus horarios bloqueados."
       />
 
-      <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm">
-        <p className="mb-4 text-xs font-semibold text-stone-500">{courts?.length ?? 0} pistas</p>
+      <div className="rounded-[10px] bg-[#f7f7f5] p-5">
+        <p className="admin-stat-label mb-4">{courts?.length ?? 0} pistas</p>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {courts?.map((court) => (
             <AdminCourtCard
@@ -32,7 +32,7 @@ export default async function AdminPistasPage() {
           ))}
         </div>
         {courts?.length === 0 && (
-          <p className="py-12 text-center text-sm font-medium text-stone-500">
+          <p className="py-12 text-center text-sm font-medium text-[#6b6b6b]">
             No hay pistas creadas todavía.
           </p>
         )}

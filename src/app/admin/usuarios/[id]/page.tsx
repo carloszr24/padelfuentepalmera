@@ -75,40 +75,30 @@ export default async function AdminUsuarioPage({ params }: PageProps) {
       </div>
 
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-wider text-stone-500">Saldo actual</p>
-          <p className="mt-1 text-xl font-bold text-stone-900">
-            <span className="whitespace-nowrap">{Number(profile.wallet_balance ?? 0).toFixed(2)} €</span>
-          </p>
+        <div className="admin-stat-card">
+          <p className="admin-stat-label">Saldo actual</p>
+          <p className="admin-number mt-2 text-xl text-[#1a1a1a]"><span className="whitespace-nowrap">{Number(profile.wallet_balance ?? 0).toFixed(2)} €</span></p>
         </div>
-        <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-wider text-stone-500">Total recargado (histórico)</p>
-          <p className="mt-1 text-xl font-bold text-emerald-600">
-            <span className="whitespace-nowrap">+{totalRecargado.toFixed(2)} €</span>
-          </p>
+        <div className="admin-stat-card">
+          <p className="admin-stat-label">Total recargado (histórico)</p>
+          <p className="admin-number mt-2 text-xl text-[#059669]"><span className="whitespace-nowrap">+{totalRecargado.toFixed(2)} €</span></p>
         </div>
-        <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-wider text-stone-500">Total depósitos reservas</p>
-          <p className="mt-1 text-xl font-bold text-amber-600">
-            <span className="whitespace-nowrap">−{totalDepositos.toFixed(2)} €</span>
-          </p>
+        <div className="admin-stat-card">
+          <p className="admin-stat-label">Total depósitos reservas</p>
+          <p className="admin-number mt-2 text-xl text-[#ea580c]"><span className="whitespace-nowrap">−{totalDepositos.toFixed(2)} €</span></p>
         </div>
-        <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm">
-          <p className="text-xs font-bold uppercase tracking-wider text-stone-500">Reservas</p>
-          <p className="mt-1 text-xl font-bold text-stone-900">
-            {bookings?.length ?? 0}
-          </p>
+        <div className="admin-stat-card">
+          <p className="admin-stat-label">Reservas</p>
+          <p className="admin-number mt-2 text-xl text-[#1a1a1a]">{bookings?.length ?? 0}</p>
         </div>
       </section>
 
-      <section className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm">
-        <h2 className="mb-1 text-sm font-bold uppercase tracking-wider text-stone-800">
-          Reservas de este cliente
-        </h2>
-        <p className="mb-4 text-xs font-medium text-stone-500">
+      <section className="rounded-[10px] bg-[#f7f7f5] p-5">
+        <h2 className="admin-stat-label mb-1">Reservas de este cliente</h2>
+        <p className="mb-4 text-[13px] text-[#6b6b6b]">
           Marca &quot;Resto pagado&quot; cuando en el club se confirme que ha pagado el resto de la pista.
         </p>
-        <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white">
+        <div className="overflow-x-auto rounded-[10px] bg-white">
           {bookings && bookings.length > 0 ? (
             <ul className="divide-y divide-stone-200">
               {bookings.map((b) => (

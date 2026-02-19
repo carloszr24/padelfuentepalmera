@@ -55,7 +55,7 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
         <AdminCreateBookingTrigger courts={courtsList} users={usersList} />
       </div>
 
-      <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm">
+      <div className="rounded-[10px] bg-[#f7f7f5] p-5">
         <form
           method="get"
           className="mb-4 flex flex-col gap-3 md:flex-row md:flex-wrap md:items-end md:gap-4"

@@ -39,7 +39,7 @@ export function AdminSociosContent({ initialMembers, initialSearch }: AdminSocio
   }, [initialSearch]);
 
   return (
-    <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm">
+    <div className="rounded-[10px] bg-[#f7f7f5] p-5">
       <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <form
           className="flex w-full flex-col gap-3 md:flex-row md:items-center md:gap-4 md:w-auto"
@@ -74,7 +74,7 @@ export function AdminSociosContent({ initialMembers, initialSearch }: AdminSocio
       </div>
 
       {members.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-stone-200 bg-white py-16 text-center">
+        <div className="flex flex-col items-center justify-center rounded-[10px] bg-[#f7f7f5] py-16 text-center">
           <p className="text-4xl text-stone-300" aria-hidden>👤</p>
           <p className="mt-4 text-sm font-medium text-stone-600">No hay socios registrados</p>
           <button
@@ -86,10 +86,10 @@ export function AdminSociosContent({ initialMembers, initialSearch }: AdminSocio
           </button>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white">
-          <table className="w-full min-w-[640px] text-left text-sm">
+        <div className="admin-table-wrap overflow-x-auto rounded-[10px] bg-white">
+          <table className="admin-table w-full min-w-[640px] text-left text-sm">
             <thead>
-              <tr className="border-b border-stone-200 bg-stone-50 text-xs font-bold uppercase tracking-wide text-stone-500">
+              <tr className="border-b-2 border-[#e8e8e4]">
                 <th className="px-4 py-3 align-middle">Nombre</th>
                 <th className="px-4 py-3 align-middle">Contacto</th>
                 <th className="px-4 py-3 align-middle">Socio desde</th>
@@ -106,7 +106,7 @@ export function AdminSociosContent({ initialMembers, initialSearch }: AdminSocio
                 const contact = profile?.email ?? profile?.phone ?? '—';
                 const active = isActive(m.expiry_date);
                 return (
-                  <tr key={m.id} className="border-b border-stone-100 transition hover:bg-stone-50">
+                  <tr key={m.id} className="border-b border-[#e8e8e4] transition hover:bg-black/[0.02]">
                     <td className="px-4 py-3 align-middle font-bold text-stone-900">{name}</td>
                     <td className="max-w-[200px] truncate px-4 py-3 align-middle text-stone-800">{contact}</td>
                     <td className="px-4 py-3 align-middle font-medium text-stone-800">{formatDate(m.start_date)}</td>
@@ -129,19 +129,19 @@ export function AdminSociosContent({ initialMembers, initialSearch }: AdminSocio
                         {m.is_paid ? 'Sí' : 'No'}
                       </span>
                     </td>
-                    <td className="px-4 py-3 align-middle">
-                      <div className="flex gap-2">
+                    <td>
+                      <div className="admin-action-group">
                         <button
                           type="button"
                           onClick={() => setEditMember(m)}
-                          className="rounded-lg border border-stone-300 bg-stone-50 px-2.5 py-1.5 text-xs font-bold text-stone-700 transition hover:bg-stone-100"
+                          className="admin-btn border border-[#e8e8e4] bg-white text-[#1a1a1a] transition hover:bg-[#f7f7f5]"
                         >
                           Editar
                         </button>
                         <button
                           type="button"
                           onClick={() => setDeleteMember(m)}
-                          className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-xs font-bold text-red-700 transition hover:bg-red-100"
+                          className="admin-btn border border-red-200 bg-red-50 text-red-700 transition hover:bg-red-100"
                         >
                           Eliminar
                         </button>

@@ -1,6 +1,5 @@
 import { createSupabaseServiceClient } from '@/lib/supabase/server';
 import { getCachedAuth } from '@/lib/auth-server';
-import { AdminPageHeader } from '@/components/ui/admin-page-header';
 
 const DAYS_FINANCIAL = 14;
 
@@ -92,11 +91,10 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <AdminPageHeader
-        breadcrumbs={[{ label: 'Inicio', href: '/admin' }, { label: 'Dashboard' }]}
-        title="Resumen del club"
-        subtitle="Controla la actividad: ingresos, reservas, usuarios y estado de las pistas."
-      />
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight text-[#1a1a1a]" style={{ fontFamily: 'var(--font-space-grotesk)' }}>Resumen del club</h1>
+        <p className="mt-0.5 text-[13px] text-[#6b6b6b]">Controla la actividad: ingresos, reservas, usuarios y estado de las pistas.</p>
+      </div>
 
       <section className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <StatCard
@@ -126,14 +124,14 @@ export default async function AdminDashboardPage() {
         />
       </section>
 
-      <section className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm">
-        <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-stone-800">
+      <section className="rounded-[10px] bg-[#f7f7f5] p-5">
+        <h2 className="mb-4 text-[11px] font-bold uppercase tracking-[0.06em] text-[#6b6b6b]">
           Resumen día a día (últimos {DAYS_FINANCIAL} días)
         </h2>
-        <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white">
-          <table className="w-full min-w-[280px] text-left text-sm">
+        <div className="admin-table-wrap overflow-x-auto rounded-[10px] bg-white">
+          <table className="admin-table w-full min-w-[280px] text-left text-sm">
             <thead>
-              <tr className="border-b border-stone-200 text-xs font-bold uppercase tracking-wide text-stone-500">
+              <tr className="border-b-2 border-[#e8e8e4]">
                 <th className="px-4 py-3">Fecha</th>
                 <th className="px-4 py-3">Reservas</th>
                 <th className="px-4 py-3">Recargas (€)</th>
@@ -141,17 +139,19 @@ export default async function AdminDashboardPage() {
             </thead>
             <tbody>
               {dailyRows.map(([dateStr, row]) => (
-                <tr key={dateStr} className="border-b border-stone-100 text-stone-800 transition hover:bg-stone-50">
-                  <td className="px-4 py-3 font-medium">
+                <tr key={dateStr} className="border-b border-[#e8e8e4] text-[#1a1a1a] transition hover:bg-black/[0.02]">
+                  <td className="font-medium">
                     {new Date(dateStr).toLocaleDateString('es-ES', {
                       weekday: 'short',
                       day: '2-digit',
                       month: 'short',
                     })}
                   </td>
-                  <td className="px-4 py-3">{row.bookings}</td>
-                  <td className="px-4 py-3 font-bold text-emerald-600">
-                    <span className="whitespace-nowrap">{row.recharge > 0 ? `+${row.recharge.toFixed(2)} €` : '—'}</span>
+                  <td className="admin-number">{row.bookings}</td>
+                  <td>
+                    <span className={`whitespace-nowrap ${row.recharge > 0 ? 'admin-amount-positive' : 'text-[#6b6b6b]'}`}>
+                      {row.recharge > 0 ? `+${row.recharge.toFixed(2)} €` : '—'}
+                    </span>
                   </td>
                 </tr>
               ))}
@@ -161,11 +161,11 @@ export default async function AdminDashboardPage() {
       </section>
 
       <section className="grid gap-6 md:grid-cols-2">
-        <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm">
-          <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-stone-800">
+        <div className="rounded-[10px] bg-[#f7f7f5] p-5">
+          <h2 className="mb-4 text-[11px] font-bold uppercase tracking-[0.06em] text-[#6b6b6b]">
             Últimas reservas
           </h2>
-          <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white">
+          <div className="overflow-x-auto rounded-[10px] bg-white">
             {latestBookings && latestBookings.length > 0 ? (
               <ul className="divide-y divide-stone-200 text-sm">
                 {latestBookings.map((booking) => {
@@ -222,11 +222,11 @@ export default async function AdminDashboardPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm">
-          <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-stone-800">
+        <div className="rounded-[10px] bg-[#f7f7f5] p-5">
+          <h2 className="mb-4 text-[11px] font-bold uppercase tracking-[0.06em] text-[#6b6b6b]">
             Últimas transacciones
           </h2>
-          <div className="overflow-x-auto rounded-xl border border-stone-200 bg-white">
+          <div className="overflow-x-auto rounded-[10px] bg-white">
             {latestTransactions && latestTransactions.length > 0 ? (
               <ul className="divide-y divide-stone-200 text-sm">
                 {latestTransactions.map((tx) => {
@@ -251,9 +251,10 @@ export default async function AdminDashboardPage() {
                       </p>
                     </div>
                     <p
-                      className={`text-sm font-bold ${
-                        tx.amount >= 0 ? 'text-emerald-600' : 'text-red-600'
+                      className={`text-sm font-semibold tabular-nums ${
+                        tx.amount >= 0 ? 'admin-amount-positive' : 'text-[#dc2626]'
                       }`}
+                      style={tx.amount >= 0 ? { fontFamily: 'var(--font-space-grotesk)' } : undefined}
                     >
                       <span className="whitespace-nowrap">{tx.amount >= 0 ? '+' : ''}{Number(tx.amount).toFixed(2)} €</span>
                     </p>
@@ -281,11 +282,11 @@ type StatCardProps = {
 
 function StatCard({ label, value, helper }: StatCardProps) {
   return (
-    <div className="flex min-h-[140px] flex-col items-center justify-center rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm transition hover:border-stone-300 hover:bg-white text-center">
-      <p className="text-xs font-bold uppercase tracking-wide text-stone-500">{label}</p>
-      <p className="mt-2 text-2xl font-bold leading-tight text-stone-900 tabular-nums"><span className="whitespace-nowrap">{value}</span></p>
+    <div className="admin-stat-card flex min-h-[120px] flex-col justify-center text-center">
+      <p className="admin-stat-label">{label}</p>
+      <p className="admin-number mt-2 text-2xl leading-tight text-[#1a1a1a] tabular-nums md:text-[26px]"><span className="whitespace-nowrap">{value}</span></p>
       {helper ? (
-        <p className="mt-1 line-clamp-2 text-xs font-medium text-stone-500">{helper}</p>
+        <p className="mt-1 line-clamp-2 text-xs font-medium text-[#6b6b6b]">{helper}</p>
       ) : null}
     </div>
   );

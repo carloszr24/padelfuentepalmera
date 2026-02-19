@@ -191,7 +191,7 @@ export function HorariosContent({ initialWeekly, initialExceptions }: HorariosCo
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-stone-200 bg-stone-50 p-8 text-center text-sm text-stone-500">
+      <div className="rounded-[10px] bg-[#f7f7f5] p-8 text-center text-sm text-[#6b6b6b]">
         Cargando horarios…
       </div>
     );
@@ -200,27 +200,25 @@ export function HorariosContent({ initialWeekly, initialExceptions }: HorariosCo
   return (
     <div className="space-y-8">
       {/* Horario semanal */}
-      <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm">
-        <h2 className="mb-4 text-sm font-bold uppercase tracking-wide text-stone-600">
-          Horario semanal por defecto
-        </h2>
+      <div className="rounded-[10px] bg-[#f7f7f5] p-5">
+        <h2 className="admin-stat-label mb-4">Horario semanal por defecto</h2>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[400px] text-left text-sm">
+          <table className="admin-table w-full min-w-[400px] text-left text-sm">
             <thead>
-              <tr className="border-b border-stone-200 text-xs font-bold uppercase text-stone-500">
-                <th className="pb-2 pr-4">Día</th>
-                <th className="pb-2 pr-4">Cerrado</th>
-                <th className="pb-2 pr-4">Apertura</th>
-                <th className="pb-2">Cierre</th>
+              <tr>
+                <th>Día</th>
+                <th>Cerrado</th>
+                <th>Apertura</th>
+                <th>Cierre</th>
               </tr>
             </thead>
             <tbody>
               {weekly.map((row) => (
-                <tr key={row.day_of_week} className="border-b border-stone-100">
-                  <td className="py-3 pr-4 font-medium text-stone-900">
+                <tr key={row.day_of_week} className="border-b border-[#e8e8e4]">
+                  <td className="font-medium text-[#1a1a1a]">
                     {DAY_NAMES[row.day_of_week - 1]}
                   </td>
-                  <td className="py-3 pr-4">
+                  <td>
                     <label className="flex items-center gap-2">
                       <input
                         type="checkbox"
@@ -230,15 +228,15 @@ export function HorariosContent({ initialWeekly, initialExceptions }: HorariosCo
                         }
                         className="h-4 w-4 rounded border-stone-300"
                       />
-                      <span className="text-xs text-stone-600">Cerrado</span>
+                      <span className="text-xs text-[#6b6b6b]">Cerrado</span>
                     </label>
                   </td>
-                  <td className="py-3 pr-4">
+                  <td>
                     <select
                       value={row.open_time ?? '09:00'}
                       disabled={!row.is_open}
                       onChange={(e) => updateDay(row.day_of_week, { open_time: e.target.value })}
-                      className="rounded-lg border border-stone-300 bg-white px-2 py-1.5 text-stone-900 disabled:bg-stone-100 disabled:text-stone-400"
+                      className="rounded-lg border border-stone-300 bg-white px-2 py-1.5 text-[#1a1a1a] disabled:bg-stone-100 disabled:text-stone-400"
                     >
                       {TIME_OPTS.map((t) => (
                         <option key={t} value={t}>
@@ -247,12 +245,12 @@ export function HorariosContent({ initialWeekly, initialExceptions }: HorariosCo
                       ))}
                     </select>
                   </td>
-                  <td className="py-3">
+                  <td>
                     <select
                       value={row.close_time ?? '22:00'}
                       disabled={!row.is_open}
                       onChange={(e) => updateDay(row.day_of_week, { close_time: e.target.value })}
-                      className="rounded-lg border border-stone-300 bg-white px-2 py-1.5 text-stone-900 disabled:bg-stone-100 disabled:text-stone-400"
+                      className="rounded-lg border border-stone-300 bg-white px-2 py-1.5 text-[#1a1a1a] disabled:bg-stone-100 disabled:text-stone-400"
                     >
                       {TIME_OPTS.map((t) => (
                         <option key={t} value={t}>
@@ -266,7 +264,7 @@ export function HorariosContent({ initialWeekly, initialExceptions }: HorariosCo
             </tbody>
           </table>
         </div>
-        <div className="mt-4 flex items-center gap-4">
+        <div className="mt-4 flex flex-wrap items-center gap-4">
           <button
             type="button"
             onClick={handleSaveWeekly}
@@ -280,42 +278,40 @@ export function HorariosContent({ initialWeekly, initialExceptions }: HorariosCo
       </div>
 
       {/* Días especiales */}
-      <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm">
-        <h2 className="mb-4 text-sm font-bold uppercase tracking-wide text-stone-600">
-          Días especiales
-        </h2>
-        <p className="mb-4 text-xs text-stone-500">
+      <div className="rounded-[10px] bg-[#f7f7f5] p-5">
+        <h2 className="admin-stat-label mb-4">Días especiales</h2>
+        <p className="mb-4 text-[13px] text-[#6b6b6b]">
           Excepciones para fechas concretas (festivos, horario reducido, etc.).
         </p>
         <button
           type="button"
           onClick={() => setExceptionModalOpen(true)}
-          className="mb-4 rounded-xl border border-[#1d4ed8]/50 bg-[#1d4ed8]/10 px-4 py-2 text-sm font-bold text-[#1d4ed8] transition hover:bg-[#1d4ed8]/20"
+          className="admin-btn mb-4 rounded-lg border border-[#1d4ed8]/50 bg-[#1d4ed8]/10 font-semibold text-[#1d4ed8] transition hover:bg-[#1d4ed8]/20"
         >
           Añadir excepción
         </button>
         <ul className="space-y-2">
           {exceptions.length === 0 ? (
-            <li className="py-4 text-center text-sm text-stone-500">
+            <li className="py-4 text-center text-sm text-[#6b6b6b]">
               No hay excepciones. Añade una para un festivo o horario especial.
             </li>
           ) : (
             exceptions.map((ex) => (
               <li
                 key={ex.id}
-                className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-stone-200 bg-white px-4 py-3"
+                className="flex flex-wrap items-center justify-between gap-2 rounded-[10px] bg-white px-4 py-3"
               >
                 <div>
-                  <span className="font-medium text-stone-900">
+                  <span className="font-medium text-[#1a1a1a]">
                     {ex.exception_date}
                     {ex.end_date && ex.end_date !== ex.exception_date
                       ? ` – ${ex.end_date}`
                       : ''}
                   </span>
                   {ex.label && (
-                    <span className="ml-2 text-stone-500">({ex.label})</span>
+                    <span className="ml-2 text-[#6b6b6b]">({ex.label})</span>
                   )}
-                  <span className="ml-2 text-stone-600">
+                  <span className="ml-2 text-[#6b6b6b]">
                     {ex.is_open
                       ? ` ${String(ex.open_time).slice(0, 5)} – ${String(ex.close_time).slice(0, 5)}`
                       : ' Cerrado'}
@@ -324,7 +320,7 @@ export function HorariosContent({ initialWeekly, initialExceptions }: HorariosCo
                 <button
                   type="button"
                   onClick={() => deleteException(ex.id)}
-                  className="rounded-lg border border-red-200 bg-red-50 px-2 py-1 text-xs font-bold text-red-700 hover:bg-red-100"
+                  className="admin-btn rounded-lg border border-red-200 bg-red-50 font-semibold text-red-700 hover:bg-red-100"
                 >
                   Eliminar
                 </button>
@@ -337,7 +333,7 @@ export function HorariosContent({ initialWeekly, initialExceptions }: HorariosCo
       {/* Modal añadir excepción */}
       {exceptionModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-2xl border border-stone-200 bg-white p-6 shadow-xl">
+          <div className="w-full max-w-md rounded-[10px] border border-[#e8e8e4] bg-white p-6 shadow-xl">
             <h3 className="mb-4 text-lg font-bold text-stone-900">Añadir excepción</h3>
             <form onSubmit={addException} className="space-y-4">
               <div>

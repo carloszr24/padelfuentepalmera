@@ -18,30 +18,27 @@ export function AdminPageHeader({
 }: AdminPageHeaderProps) {
   return (
     <header className="space-y-1">
-      <nav className="flex items-center gap-1.5 text-xs font-semibold text-stone-500">
+      <nav className="flex items-center gap-1.5 text-xs font-semibold text-[#6b6b6b]">
         {breadcrumbs.map((item, i) => (
           <span key={i} className="flex items-center gap-1.5">
             {item.href ? (
-              <Link
-                href={item.href}
-                className="transition hover:text-stone-900"
-              >
+              <Link href={item.href} className="transition hover:text-[#1a1a1a]">
                 {item.label}
               </Link>
             ) : (
-              <span className="text-stone-700">{item.label}</span>
+              <span className="text-[#1a1a1a]">{item.label}</span>
             )}
             {i < breadcrumbs.length - 1 && (
-              <span className="text-stone-400">/</span>
+              <span className="text-[#a3a3a3]">/</span>
             )}
           </span>
         ))}
       </nav>
-      <h1 className="text-xl font-bold tracking-tight text-stone-900 md:text-2xl">
+      <h1 className="text-xl font-bold tracking-tight text-[#1a1a1a] md:text-2xl" style={{ fontFamily: 'var(--font-space-grotesk)' }}>
         {title}
       </h1>
       {subtitle && (
-        <p className="max-w-2xl text-sm text-stone-500">
+        <p className="max-w-2xl text-[13px] text-[#6b6b6b]">
           {subtitle}
         </p>
       )}

@@ -196,33 +196,33 @@ export default function FinanzasContent() {
       </div>
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <div className="flex min-h-[140px] flex-col items-center justify-center rounded-2xl border border-emerald-200 bg-emerald-50 p-5 shadow-sm text-center">
-          <p className="text-xs font-bold uppercase tracking-wide text-emerald-700">Ingresos totales</p>
-          <p className="mt-2 text-2xl font-bold text-emerald-800"><span className="whitespace-nowrap">{formatEur(totals.totalIncome)}</span></p>
+        <div className="admin-stat-card text-center">
+          <p className="admin-stat-label text-emerald-700">Ingresos totales</p>
+          <p className="admin-number mt-2 text-2xl text-emerald-800 md:text-[26px]"><span className="whitespace-nowrap">{formatEur(totals.totalIncome)}</span></p>
         </div>
-        <div className="flex min-h-[140px] flex-col items-center justify-center rounded-2xl border border-red-200 bg-red-50 p-5 shadow-sm text-center">
-          <p className="text-xs font-bold uppercase tracking-wide text-red-700">Comisiones Stripe</p>
-          <p className="mt-2 text-2xl font-bold text-red-800"><span className="whitespace-nowrap">{formatEur(totals.totalStripeFees)}</span></p>
+        <div className="admin-stat-card text-center">
+          <p className="admin-stat-label text-red-700">Comisiones Stripe</p>
+          <p className="admin-number mt-2 text-2xl text-red-800 md:text-[26px]"><span className="whitespace-nowrap">{formatEur(totals.totalStripeFees)}</span></p>
         </div>
-        <div className="flex min-h-[140px] flex-col items-center justify-center rounded-2xl border border-[#1d4ed8]/20 bg-[#1d4ed8]/5 p-5 shadow-sm text-center">
-          <p className="text-xs font-bold uppercase tracking-wide text-[#1d4ed8]">Beneficio neto</p>
-          <p className="mt-2 text-2xl font-bold text-[#1d4ed8]"><span className="whitespace-nowrap">{formatEur(totals.totalNet)}</span></p>
+        <div className="admin-stat-card text-center">
+          <p className="admin-stat-label text-[#2563eb]">Beneficio neto</p>
+          <p className="admin-number mt-2 text-2xl text-[#2563eb] md:text-[26px]"><span className="whitespace-nowrap">{formatEur(totals.totalNet)}</span></p>
         </div>
-        <div className="flex min-h-[140px] flex-col items-center justify-center rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm text-center">
-          <p className="text-xs font-bold uppercase tracking-wide text-stone-600">Transacciones</p>
-          <p className="mt-2 text-2xl font-bold text-stone-900">{totals.txCount}</p>
+        <div className="admin-stat-card text-center">
+          <p className="admin-stat-label">Transacciones</p>
+          <p className="admin-number mt-2 text-2xl text-[#1a1a1a] md:text-[26px]">{totals.txCount}</p>
         </div>
       </div>
 
       {isDayView && (
-        <div className="rounded-2xl border border-stone-200 bg-white shadow-sm">
-          <h2 className="border-b border-stone-200 px-5 py-4 text-base font-bold text-stone-900">
+        <div className="rounded-[10px] bg-white">
+          <h2 className="admin-stat-label border-b border-[#e8e8e4] px-5 py-4 text-[#1a1a1a]">
             Transacciones del {filterDate ? formatDay(filterDate) : ''}
           </h2>
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[400px] text-left text-sm">
+          <div className="admin-table-wrap overflow-x-auto">
+            <table className="admin-table w-full min-w-[400px] text-left text-sm">
               <thead>
-                <tr className="border-b border-stone-200 bg-stone-50 text-xs font-bold uppercase tracking-wide text-stone-500">
+                <tr className="border-b-2 border-[#e8e8e4]">
                   <th className="px-4 py-3 align-middle">Hora</th>
                   <th className="px-4 py-3 align-middle">Usuario</th>
                   <th className="px-4 py-3 align-middle">Tipo</th>
@@ -239,7 +239,7 @@ export default function FinanzasContent() {
                   </tr>
                 ) : (
                   (dayTransactions ?? []).map((tx, i) => (
-                    <tr key={i} className="border-b border-stone-100 hover:bg-stone-50">
+                    <tr key={i} className="border-b border-[#e8e8e4] hover:bg-black/[0.02]">
                       <td className="px-4 py-3.5 tabular-nums text-stone-700">{formatTime(tx.created_at)}</td>
                       <td className="px-4 py-3.5 font-medium text-stone-900">{tx.full_name ?? '—'}</td>
                       <td className="px-4 py-3.5 text-stone-700">{tx.type}</td>
@@ -255,8 +255,8 @@ export default function FinanzasContent() {
       )}
 
       {!isDayView && barData.length > 0 && (
-        <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm md:p-5">
-          <h2 className="mb-4 text-sm font-bold text-stone-900 md:text-base">Ingresos y comisiones por mes</h2>
+        <div className="rounded-[10px] bg-[#f7f7f5] p-4 md:p-5">
+          <h2 className="admin-stat-label mb-4">Ingresos y comisiones por mes</h2>
           <div className="h-[250px] w-full md:h-[350px]">
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart data={barData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
@@ -275,8 +275,8 @@ export default function FinanzasContent() {
       )}
 
       {!isDayView && daily.length > 0 && (
-        <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm md:p-5">
-          <h2 className="mb-4 text-sm font-bold text-stone-900 md:text-base">Evolución diaria (últimos 30 días)</h2>
+        <div className="rounded-[10px] bg-[#f7f7f5] p-4 md:p-5">
+          <h2 className="admin-stat-label mb-4">Evolución diaria (últimos 30 días)</h2>
           <div className="h-[250px] w-full md:h-[350px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={daily} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
@@ -298,14 +298,14 @@ export default function FinanzasContent() {
       )}
 
       {!isDayView && (
-      <div className="rounded-2xl border border-stone-200 bg-white shadow-sm">
-        <h2 className="border-b border-stone-200 px-5 py-4 text-base font-bold text-stone-900">
+      <div className="rounded-[10px] bg-white">
+        <h2 className="admin-stat-label border-b border-[#e8e8e4] px-5 py-4 text-[#1a1a1a]">
           Desglose por mes
         </h2>
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[400px] text-left text-sm">
+        <div className="admin-table-wrap overflow-x-auto">
+          <table className="admin-table w-full min-w-[400px] text-left text-sm">
             <thead>
-              <tr className="border-b border-stone-200 bg-stone-50 text-xs font-bold uppercase tracking-wide text-stone-500">
+              <tr className="border-b-2 border-[#e8e8e4]">
                 <th className="px-4 py-3 align-middle">Mes</th>
                 <th className="px-4 py-3 align-middle text-right">Recargas Stripe</th>
                 <th className="px-4 py-3 align-middle text-right">Recargas Admin</th>
@@ -322,7 +322,7 @@ export default function FinanzasContent() {
                 </tr>
               ) : (
                 months.map((m) => (
-                  <tr key={m.month} className="border-b border-stone-100 hover:bg-stone-50">
+                  <tr key={m.month} className="border-b border-[#e8e8e4] hover:bg-black/[0.02]">
                     <td className="px-4 py-3.5 font-medium text-stone-900">{formatMonth(m.month)}</td>
                     <td className="px-4 py-3.5 text-right tabular-nums text-emerald-700"><span className="whitespace-nowrap">{formatEur(m.stripeIncome)}</span></td>
                     <td className="px-4 py-3.5 text-right tabular-nums text-stone-700"><span className="whitespace-nowrap">{formatEur(m.adminIncome)}</span></td>

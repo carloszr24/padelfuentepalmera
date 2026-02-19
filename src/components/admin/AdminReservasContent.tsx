@@ -217,7 +217,7 @@ export function AdminReservasContent({ bookings, desde, hasta }: AdminReservasCo
 
       {/* Contenido agrupado por fecha */}
       {activeList.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-stone-200 bg-stone-50 py-16 text-center">
+        <div className="flex flex-col items-center justify-center rounded-[10px] bg-[#f7f7f5] py-16 text-center">
           <span className="mb-2 text-4xl text-stone-300" aria-hidden>📅</span>
           <p className="text-sm font-medium text-stone-500">{EMPTY_MESSAGES[activeTab]}</p>
         </div>
@@ -238,10 +238,10 @@ export function AdminReservasContent({ bookings, desde, hasta }: AdminReservasCo
                   </span>
                 )}
               </div>
-              <div className="overflow-x-auto rounded-b-xl border border-t-0 border-stone-200 bg-white">
-                <table className="w-full min-w-[600px] text-left text-sm">
+              <div className="admin-table-wrap overflow-x-auto rounded-b-[10px] bg-white">
+                <table className="admin-table w-full min-w-[600px] text-left text-sm">
                   <thead>
-                    <tr className="border-b border-stone-200 bg-stone-50 text-xs font-bold uppercase tracking-wide text-stone-500">
+                    <tr className="border-b-2 border-[#e8e8e4]">
                       <th className="px-4 py-3 align-middle">Pista</th>
                       <th className="px-4 py-3 align-middle">Usuario</th>
                       <th className="px-4 py-3 align-middle">Hora</th>
@@ -258,7 +258,7 @@ export function AdminReservasContent({ bookings, desde, hasta }: AdminReservasCo
                         (b.booking_date === todayMadrid && startTimeStr <= new Date().toLocaleTimeString('en-GB', { timeZone: 'Europe/Madrid', hour: '2-digit', minute: '2-digit', hour12: false }));
                       const showNoshow = b.status === 'confirmed' && isPast;
                       return (
-                        <tr key={b.id} className="border-b border-stone-100 transition hover:bg-stone-50">
+                        <tr key={b.id} className="border-b border-[#e8e8e4] transition hover:bg-black/[0.02]">
                           <td className="px-4 py-3 align-middle font-bold text-stone-900">
                             {getCourtName(b)}
                           </td>
