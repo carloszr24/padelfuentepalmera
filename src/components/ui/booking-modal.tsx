@@ -168,15 +168,15 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
 
       {open && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm md:bg-black/40 md:backdrop-blur-md"
           onClick={(e) => e.target === e.currentTarget && setOpen(false)}
         >
-<div
-          className="w-full max-w-[calc(100vw-32px)] max-w-4xl rounded-3xl border border-stone-200 bg-white shadow-2xl"
-          onClick={(e) => e.stopPropagation()}
-        >
+          <div
+            className="flex w-full max-w-[calc(100vw-32px)] flex-col rounded-3xl border border-stone-200 bg-white shadow-2xl md:max-h-[80vh] md:max-w-[640px] md:overflow-hidden md:rounded-2xl md:shadow-[0_8px_30px_rgba(0,0,0,0.12)]"
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Header */}
-            <div className="relative border-b border-stone-200 px-4 pt-6 pb-4 sm:px-8 sm:pt-8 sm:pb-6">
+            <div className="relative shrink-0 border-b border-stone-200 px-4 pt-6 pb-4 sm:px-8 sm:pt-8 sm:pb-6">
               <span
                 className="inline-block rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-white"
                 style={{ backgroundColor: ACCENT }}
@@ -201,7 +201,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
               </button>
             </div>
 
-            <div className="p-4 sm:p-8">
+            <div className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-8">
               {step === 'choose' && (
                 <div className="space-y-8">
                   {courts.length === 0 ? (
