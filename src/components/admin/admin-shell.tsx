@@ -1,23 +1,35 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import {
+  LayoutDashboard,
+  Users,
+  UserCheck,
+  Calendar,
+  BarChart3,
+  LayoutGrid,
+  Clock,
+  Wallet,
+  ArrowLeftRight,
+  DollarSign,
+  type LucideIcon,
+} from 'lucide-react';
 import { LogoutButton } from '@/components/ui/logout-button';
 
-const NAV_LINKS = [
-  { href: '/admin', label: 'Dashboard', icon: 'M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z' },
-  { href: '/admin/usuarios', label: 'Usuarios', icon: 'M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z' },
-  { href: '/admin/socios', label: 'Socios', icon: 'M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z' },
-  { href: '/admin/reservas', label: 'Reservas', icon: 'M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z' },
-  { href: '/admin/estadisticas', label: 'Estadísticas', icon: 'M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z' },
-  { href: '/admin/pistas', label: 'Pistas', icon: 'M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z' },
-  { href: '/admin/horarios', label: 'Horarios', icon: 'M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z' },
-  { href: '/admin/monederos', label: 'Monederos', icon: 'M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z' },
-  { href: '/admin/transacciones', label: 'Transacciones', icon: 'M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z' },
-  { href: '/admin/finanzas', label: 'Finanzas', icon: 'M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z' },
-] as const;
+const NAV_LINKS: { href: string; label: string; Icon: LucideIcon }[] = [
+  { href: '/admin', label: 'Dashboard', Icon: LayoutDashboard },
+  { href: '/admin/usuarios', label: 'Usuarios', Icon: Users },
+  { href: '/admin/socios', label: 'Socios', Icon: UserCheck },
+  { href: '/admin/reservas', label: 'Reservas', Icon: Calendar },
+  { href: '/admin/estadisticas', label: 'Estadísticas', Icon: BarChart3 },
+  { href: '/admin/pistas', label: 'Pistas', Icon: LayoutGrid },
+  { href: '/admin/horarios', label: 'Horarios', Icon: Clock },
+  { href: '/admin/monederos', label: 'Monederos', Icon: Wallet },
+  { href: '/admin/transacciones', label: 'Transacciones', Icon: ArrowLeftRight },
+  { href: '/admin/finanzas', label: 'Finanzas', Icon: DollarSign },
+];
 
 type AdminShellProps = {
   displayName: string;
@@ -39,7 +51,7 @@ function AdminSidebarDesktop() {
         <p className="text-[15px] font-semibold text-white">Fuente Palmera</p>
       </div>
       <nav className="flex flex-1 flex-col gap-0.5">
-        {NAV_LINKS.map(({ href, label, icon }) => {
+        {NAV_LINKS.map(({ href, label, Icon }) => {
           const isActive = pathname === href || (href !== '/admin' && pathname.startsWith(href));
           return (
             <Link
@@ -50,16 +62,14 @@ function AdminSidebarDesktop() {
               }`}
               style={{ color: isActive ? 'white' : SIDEBAR_TEXT }}
             >
-              <svg className={`h-[18px] w-[18px] shrink-0 ${isActive ? 'opacity-100' : 'opacity-60'}`} fill="currentColor" viewBox="0 0 20 20" aria-hidden>
-                <path fillRule="evenodd" d={icon} clipRule="evenodd" />
-              </svg>
+              <Icon className={`h-[18px] w-[18px] shrink-0 ${isActive ? 'opacity-100' : 'opacity-80'}`} strokeWidth={2} aria-hidden />
               <span>{label}</span>
             </Link>
           );
         })}
       </nav>
-      <div className="mt-6 border-t border-white/[0.08] pt-4">
-        <LogoutButton />
+      <div className="mt-auto border-t border-white/[0.08] pt-4">
+        <LogoutButton variant="adminSidebar" />
       </div>
     </aside>
   );
@@ -96,7 +106,7 @@ function SidebarContent({
         <p className="mt-1 text-sm font-bold text-stone-900">{displayName}</p>
       </div>
       <nav className="flex flex-1 flex-col gap-0.5 text-sm">
-        {NAV_LINKS.map(({ href, label, icon }) => {
+        {NAV_LINKS.map(({ href, label, Icon }) => {
           const isActive = pathname === href || (href !== '/admin' && pathname.startsWith(href));
           return (
             <Link
@@ -108,16 +118,14 @@ function SidebarContent({
               }`}
               style={isActive ? undefined : { color: SIDEBAR_TEXT }}
             >
-              <svg className="h-[18px] w-[18px] shrink-0 opacity-60" fill="currentColor" viewBox="0 0 20 20" aria-hidden>
-                <path fillRule="evenodd" d={icon} clipRule="evenodd" />
-              </svg>
+              <Icon className="h-[18px] w-[18px] shrink-0 opacity-80" strokeWidth={2} aria-hidden />
               <span>{label}</span>
             </Link>
           );
         })}
       </nav>
-      <div className="mt-6 border-t border-stone-200 pt-4">
-        <LogoutButton />
+      <div className="mt-auto border-t border-white/[0.08] pt-4">
+        <LogoutButton variant="adminSidebar" />
       </div>
     </>
   );
@@ -161,6 +169,20 @@ export function AdminShell({ displayName, children }: AdminShellProps) {
           <AdminSidebarDesktop />
 
           <main className="min-w-0 max-w-[1100px] flex-1 rounded-2xl border border-[#e8e8e4] bg-white p-4 shadow-[0_4px_12px_rgba(0,0,0,0.06)] md:p-8 lg:p-10">
+            <div className="mb-6 flex flex-wrap items-center justify-end gap-2 border-b border-[#e8e8e4] pb-4">
+              <Link
+                href="/"
+                className="rounded-lg border border-[#e8e8e4] bg-white px-4 py-2 text-[13px] font-medium text-[#404040] transition hover:border-[#d4d4d4] hover:bg-[#fafafa]"
+              >
+                ← Volver a la web
+              </Link>
+              <Link
+                href="/panel"
+                className="rounded-lg border border-[#e8e8e4] bg-white px-4 py-2 text-[13px] font-medium text-[#404040] transition hover:border-[#d4d4d4] hover:bg-[#fafafa]"
+              >
+                ← Panel cliente
+              </Link>
+            </div>
             {children}
           </main>
         </div>

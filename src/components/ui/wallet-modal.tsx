@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 
 const ACCENT = '#1d4ed8';
 const QUICK_AMOUNTS = [10, 20, 30, 50, 75, 100];
@@ -14,10 +15,15 @@ type WalletModalProps = {
 };
 
 export function WalletModal({ open, onClose, trigger }: WalletModalProps) {
+  const [mounted, setMounted] = useState(false);
   const [customAmount, setCustomAmount] = useState('');
   const [selectedQuick, setSelectedQuick] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setMounted(typeof document !== 'undefined');
+  }, []);
 
   const amount =
     selectedQuick !== null
@@ -65,17 +71,20 @@ export function WalletModal({ open, onClose, trigger }: WalletModalProps) {
     return trigger ? <>{trigger}</> : null;
   }
 
-  return (
+  const modalContent = (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4"
       onClick={(e) => e.target === e.currentTarget && onClose()}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="wallet-modal-title"
     >
       <div
         className="w-full max-w-md rounded-2xl border border-stone-200 bg-white p-6 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-stone-900">Recargar monedero</h2>
+          <h2 id="wallet-modal-title" className="text-xl font-bold text-stone-900">Recargar monedero</h2>
           <button
             type="button"
             onClick={onClose}
@@ -159,4 +168,9 @@ export function WalletModal({ open, onClose, trigger }: WalletModalProps) {
       </div>
     </div>
   );
+
+  if (mounted && typeof document !== 'undefined') {
+    return createPortal(modalContent, document.body);
+  }
+  return null;
 }
