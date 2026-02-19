@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { createSupabaseServiceClient } from '@/lib/supabase/server';
-import { AdminPageHeader } from '@/components/ui/admin-page-header';
 import { AdminWalletRechargeButton } from '@/components/ui/admin-wallet-recharge-button';
 import { AdminCreateUserTrigger } from '@/components/ui/admin-create-user-trigger';
 
@@ -41,16 +40,40 @@ export default async function AdminUsuariosPage({
   const activeMemberIds = new Set((membersRes.data ?? []).map((m: { user_id: string }) => m.user_id));
 
   const total = profiles?.length ?? 0;
+  const sociosActivos = activeMemberIds.size;
+  const conDeuda = profiles?.filter((p: { has_debt?: boolean }) => p.has_debt).length ?? 0;
+  const saldoTotal = profiles?.reduce((s: number, p: { wallet_balance?: number | null }) => s + Number(p.wallet_balance ?? 0), 0) ?? 0;
 
   return (
     <div className="space-y-6">
-      <AdminPageHeader
-        breadcrumbs={[{ label: 'Inicio', href: '/admin' }, { label: 'Usuarios' }]}
-        title="Usuarios"
-        subtitle="Gestiona los usuarios del club: datos, reservas y monedero."
-      />
+      <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-[#1a1a1a]" style={{ fontFamily: 'var(--font-space-grotesk)' }}>Usuarios</h1>
+          <p className="mt-0.5 text-[13px] text-[#6b6b6b]">{total} usuarios registrados</p>
+        </div>
+        <AdminCreateUserTrigger />
+      </div>
 
-      <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5 shadow-sm">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        <div className="rounded-[10px] bg-[#f7f7f5] p-4">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#6b6b6b]">Total usuarios</p>
+          <p className="mt-1.5 text-2xl font-bold tracking-tight text-[#2563eb]" style={{ fontFamily: 'var(--font-space-grotesk)' }}>{total}</p>
+        </div>
+        <div className="rounded-[10px] bg-[#f7f7f5] p-4">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#6b6b6b]">Socios activos</p>
+          <p className="mt-1.5 text-2xl font-bold tracking-tight text-[#059669]" style={{ fontFamily: 'var(--font-space-grotesk)' }}>{sociosActivos}</p>
+        </div>
+        <div className="rounded-[10px] bg-[#f7f7f5] p-4">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#6b6b6b]">Con deuda</p>
+          <p className="mt-1.5 text-2xl font-bold tracking-tight text-[#dc2626]" style={{ fontFamily: 'var(--font-space-grotesk)' }}>{conDeuda}</p>
+        </div>
+        <div className="rounded-[10px] bg-[#f7f7f5] p-4">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-[#6b6b6b]">Saldo total</p>
+          <p className="mt-1.5 text-2xl font-bold tracking-tight text-[#ea580c]" style={{ fontFamily: 'var(--font-space-grotesk)' }}>{saldoTotal.toFixed(0)} €</p>
+        </div>
+      </div>
+
+      <div className="rounded-[14px] border border-[#e8e8e4] bg-[#f7f7f5] p-5 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
         <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <form className="flex w-full flex-col gap-3 md:flex-row md:items-center md:gap-4 md:w-auto" method="get">
             <div className="relative flex-1">
@@ -62,7 +85,7 @@ export default async function AdminUsuariosPage({
                 name="q"
                 defaultValue={q}
                 placeholder="Buscar por nombre, email..."
-                className="min-h-[44px] w-full rounded-xl border border-stone-300 bg-white py-2.5 pl-9 pr-4 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#1d4ed8] focus:ring-1 focus:ring-[#1d4ed8]"
+                className="min-h-[44px] w-full rounded-xl border border-stone-300 bg-white py-2.5 pl-9 pr-4 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb]"
               />
             </div>
             <button
@@ -72,83 +95,70 @@ export default async function AdminUsuariosPage({
               Buscar
             </button>
           </form>
-          <div className="flex flex-wrap items-center gap-3">
-            <p className="text-xs font-semibold text-stone-500">{total} registros en total</p>
-            <AdminCreateUserTrigger />
-          </div>
+          <p className="text-xs font-semibold text-stone-500">{total} registros en total</p>
         </div>
 
-        <div className="overflow-x-hidden rounded-xl border border-stone-200 bg-white">
-          <table className="w-full table-fixed text-left text-sm">
+        <div className="overflow-x-auto rounded-xl border border-[#e8e8e4] bg-white">
+          <table className="w-full min-w-[600px] text-left text-sm">
             <thead>
-              <tr className="border-b border-stone-200 bg-stone-50 text-xs font-bold uppercase tracking-wide text-stone-500">
-                <th className="w-[22%] px-4 py-3 align-middle">Nombre</th>
-                <th className="w-[26%] px-4 py-3 align-middle">Contacto</th>
-                <th className="w-[18%] px-4 py-3 align-middle">Saldo</th>
-                <th className="w-[8%] px-4 py-3 align-middle">Reservas</th>
-                <th className="w-[26%] px-4 py-3 align-middle">Acciones</th>
+              <tr className="border-b-2 border-[#e8e8e4] text-[11px] font-bold uppercase tracking-wide text-[#6b6b6b]">
+                <th className="px-4 py-3">Nombre</th>
+                <th className="px-4 py-3">Contacto</th>
+                <th className="px-4 py-3">Saldo</th>
+                <th className="px-4 py-3">Reservas</th>
+                <th className="px-4 py-3">Acciones</th>
               </tr>
             </thead>
             <tbody>
-          {profiles?.length === 0 ? (
-            <tr>
-              <td colSpan={5} className="px-4 py-12 text-center text-sm font-medium text-stone-500">
-                No se han encontrado usuarios.
-              </td>
-            </tr>
-          ) : (
-            profiles?.map((p) => (
-            <tr
-              key={p.id}
-              className="border-b border-stone-100 transition hover:bg-stone-50"
-            >
-              <td className="px-4 py-3 align-middle">
-                <div className="flex flex-wrap items-center gap-2">
-                  <p className="font-bold leading-tight text-stone-900">
-                    {p.full_name || 'Sin nombre'}
-                  </p>
-                  {activeMemberIds.has(p.id) && (
-                    <span className="inline-flex rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800">
-                      Socio
-                    </span>
-                  )}
-                </div>
-                <p className="mt-0.5 max-w-[120px] truncate text-[11px] leading-tight text-stone-500">{p.id.slice(0, 8)}…</p>
-              </td>
-              <td className="px-4 py-3.5 align-middle font-medium text-stone-800">
-                <p className="max-w-[180px] truncate leading-tight">{p.email || '-'}</p>
-                <p className="mt-0.5 text-[11px] leading-tight text-stone-500">{p.phone || '-'}</p>
-              </td>
-              <td className="px-4 py-3 align-middle">
-                <span className="whitespace-nowrap font-bold tabular-nums text-emerald-600">
-                  {Number(p.wallet_balance ?? 0).toFixed(2)} €
-                </span>
-                {(p as { has_debt?: boolean }).has_debt && (
-                  <span className="ml-2 inline-flex rounded-full px-3 py-1.5 text-xs font-bold text-red-700 bg-red-100">
-                    Deuda: <span className="whitespace-nowrap">{Number((p as { debt_amount?: number }).debt_amount ?? 0).toFixed(2).replace('.', ',')} €</span>
-                  </span>
-                )}
-              </td>
-              <td className="px-4 py-3.5 align-middle font-medium text-stone-600">
-                —
-              </td>
-              <td className="px-3 py-2 align-middle">
-                <div className="flex flex-col gap-1.5">
-                  <Link
-                    href={`/admin/usuarios/${p.id}`}
-                    className="inline-flex items-center justify-center rounded-lg border border-[#1d4ed8]/50 bg-[#1d4ed8]/10 px-2.5 py-1.5 text-xs font-bold text-[#1d4ed8] transition hover:bg-[#1d4ed8]/20"
-                  >
-                    Ver perfil
-                  </Link>
-                  <AdminWalletRechargeButton
-                    userId={p.id}
-                    userName={p.full_name || p.email || 'Usuario'}
-                    compact
-                  />
-                </div>
-              </td>
-            </tr>
-          )))}
+              {profiles?.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="px-4 py-12 text-center text-sm font-medium text-stone-500">
+                    No se han encontrado usuarios.
+                  </td>
+                </tr>
+              ) : (
+                profiles?.map((p) => (
+                  <tr key={p.id} className="border-b border-[#e8e8e4] transition hover:bg-black/[0.02]">
+                    <td className="px-4 py-3.5">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-semibold text-[#1a1a1a]">{p.full_name || 'Sin nombre'}</span>
+                        {activeMemberIds.has(p.id) && (
+                          <span className="inline-flex rounded-full bg-[#ecfdf5] px-2 py-0.5 text-[10px] font-bold text-[#059669]">Socio</span>
+                        )}
+                        {(p as { has_debt?: boolean }).has_debt && (
+                          <span className="inline-flex rounded-full bg-[#fef2f2] px-2 py-0.5 text-[10px] font-bold text-[#dc2626]">Deuda</span>
+                        )}
+                      </div>
+                      <p className="mt-0.5 max-w-[120px] truncate text-[11px] text-stone-500">{p.id.slice(0, 8)}…</p>
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <p className="max-w-[180px] truncate font-medium text-[#1a1a1a]">{p.email || '-'}</p>
+                      <p className="mt-0.5 text-[12px] text-[#6b6b6b]">{p.phone || '-'}</p>
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <span className={`whitespace-nowrap font-semibold tabular-nums ${(p as { has_debt?: boolean }).has_debt ? 'text-[#dc2626]' : 'text-[#059669]'}`}>
+                        {Number(p.wallet_balance ?? 0).toFixed(2).replace('.', ',')} €
+                      </span>
+                    </td>
+                    <td className="px-4 py-3.5 font-medium text-[#6b6b6b]">—</td>
+                    <td className="px-3 py-2">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <Link
+                          href={`/admin/usuarios/${p.id}`}
+                          className="inline-flex items-center justify-center rounded-md border border-[#e8e8e4] bg-white px-3 py-1.5 text-xs font-semibold text-[#1a1a1a] transition hover:bg-[#f7f7f5] hover:border-[#6b6b6b]"
+                        >
+                          Perfil
+                        </Link>
+                        <AdminWalletRechargeButton
+                          userId={p.id}
+                          userName={p.full_name || p.email || 'Usuario'}
+                          compact
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

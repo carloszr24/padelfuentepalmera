@@ -24,6 +24,7 @@ type Court = { id: string; name: string };
 type BookingModalProps = {
   courts: Court[];
   triggerLabel?: string;
+  triggerClassName?: string;
   onSuccess?: () => void;
 };
 
@@ -44,7 +45,7 @@ function buildDateStrip(count: number): { date: string; label: string; dayShort:
   return out;
 }
 
-export function BookingModal({ courts, triggerLabel = 'Nueva reserva', onSuccess }: BookingModalProps) {
+export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerClassName, onSuccess }: BookingModalProps) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<'choose' | 'slots' | 'confirm'>('choose');
   const [courtId, setCourtId] = useState('');
@@ -160,7 +161,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', onSuccess
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="min-h-[44px] min-w-[44px] rounded-full bg-[#1d4ed8] px-4 py-2 text-sm font-bold text-white shadow-lg shadow-[#1d4ed8]/30 transition hover:scale-[1.02] hover:bg-[#2563eb] active:scale-[0.98]"
+        className={triggerClassName ?? 'min-h-[44px] min-w-[44px] rounded-full bg-[#1d4ed8] px-4 py-2 text-sm font-bold text-white shadow-lg shadow-[#1d4ed8]/30 transition hover:scale-[1.02] hover:bg-[#2563eb] active:scale-[0.98]'}
       >
         {triggerLabel}
       </button>

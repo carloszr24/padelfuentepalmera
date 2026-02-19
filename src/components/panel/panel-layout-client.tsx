@@ -21,8 +21,10 @@ export function PanelLayoutClient({
 }: PanelLayoutClientProps) {
   return (
     <PanelUserProvider initialUser={initialUser} initialProfile={initialProfile}>
-      <PanelLayoutInner>{children}</PanelLayoutInner>
-      <PanelMobileNav />
+      <div data-panel className="min-h-[100dvh]">
+        <PanelLayoutInner>{children}</PanelLayoutInner>
+        <PanelMobileNav />
+      </div>
     </PanelUserProvider>
   );
 }
