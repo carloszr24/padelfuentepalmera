@@ -5,6 +5,7 @@
   "scripts": {
     "favicons": "node scripts/generate-favicons.mjs",
     "seed:load": "node --env-file=.env.local scripts/seed-load-test.mjs",
+    "seed:socios": "node --env-file=.env.local scripts/seed-socios-demo.mjs",
     "dev": "next dev",
     "dev:lan": "next dev --hostname 0.0.0.0",
     "build": "next build",

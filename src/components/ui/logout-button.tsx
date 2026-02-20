@@ -6,10 +6,11 @@ import { LogOut } from 'lucide-react';
 import { getBrowserSupabaseClient } from '@/lib/supabase/client';
 
 type LogoutButtonProps = {
-  variant?: 'default' | 'adminSidebar';
+  variant?: 'default' | 'adminSidebar' | 'dropdown';
+  className?: string;
 };
 
-export function LogoutButton({ variant = 'default' }: LogoutButtonProps) {
+export function LogoutButton({ variant = 'default', className }: LogoutButtonProps) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
@@ -29,6 +30,20 @@ export function LogoutButton({ variant = 'default' }: LogoutButtonProps) {
         onClick={handleLogout}
         disabled={isPending}
         className="flex w-full items-center justify-center gap-2 rounded-lg py-2 text-[13px] font-medium text-[#a3a3a3] transition hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        <LogOut className="h-4 w-4 shrink-0" strokeWidth={2} aria-hidden />
+        <span>{isPending ? 'Cerrando sesión...' : 'Cerrar sesión'}</span>
+      </button>
+    );
+  }
+
+  if (variant === 'dropdown') {
+    return (
+      <button
+        type="button"
+        onClick={handleLogout}
+        disabled={isPending}
+        className={`flex w-full items-center gap-2 rounded-lg px-4 py-2.5 text-left text-sm font-medium text-stone-700 transition hover:bg-stone-100 disabled:cursor-not-allowed disabled:opacity-60 ${className ?? ''}`}
       >
         <LogOut className="h-4 w-4 shrink-0" strokeWidth={2} aria-hidden />
         <span>{isPending ? 'Cerrando sesión...' : 'Cerrar sesión'}</span>

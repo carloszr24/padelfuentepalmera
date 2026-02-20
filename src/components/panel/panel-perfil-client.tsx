@@ -35,7 +35,13 @@ export function PanelPerfilClient() {
         >
           ← Volver al inicio
         </Link>
-
+        <Link
+          href="/"
+          className="flex min-h-[44px] items-center justify-center rounded-[var(--panel-radius)] border border-[var(--panel-border)] bg-white px-4 py-2.5 text-sm font-bold text-[var(--panel-text)] transition hover:bg-[var(--panel-bg)]"
+          prefetch
+        >
+          Volver a la web
+        </Link>
         {isAdmin && (
           <Link
             href="/admin"
@@ -46,7 +52,6 @@ export function PanelPerfilClient() {
             Panel administrador
           </Link>
         )}
-
         <LogoutButton />
       </div>
     </div>
