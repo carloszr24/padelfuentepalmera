@@ -95,6 +95,9 @@ export function PanelInicioClient() {
     const supabase = getBrowserSupabaseClient();
     const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().slice(0, 10);
 
+    const perfLog = typeof window !== 'undefined' && (process.env.NODE_ENV === 'development' || (window as unknown as { __PANEL_PERF?: string }).__PANEL_PERF === '1');
+
+    if (perfLog) console.time('[panel] dashboard Promise.all (courts, bookings, transactions, monthCount)');
     Promise.all([
       supabase.from('courts').select('id, name').eq('is_active', true).order('name'),
       supabase
@@ -117,6 +120,7 @@ export function PanelInicioClient() {
         .gte('booking_date', startOfMonth)
         .lte('booking_date', today()),
     ]).then(([courtsRes, bookingsRes, txRes, monthRes]) => {
+      if (perfLog) console.timeEnd('[panel] dashboard Promise.all (courts, bookings, transactions, monthCount)');
       if (cancelled) return;
       setCourts((courtsRes.data ?? []).map((c) => ({ id: String(c.id), name: c.name ?? '' })));
       setBookings(bookingsRes.data ?? []);

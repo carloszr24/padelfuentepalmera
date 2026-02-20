@@ -11,6 +11,7 @@ type Profile = {
 } | null;
 
 const PROFILE_CACHE_SECONDS = 60;
+const PERF_LOG = process.env.NODE_ENV === 'development' || process.env.PANEL_PERF_LOG === '1';
 
 /**
  * Obtiene email_confirmed_at y perfil usando service role.
@@ -20,6 +21,7 @@ async function getProfileAndEmailConfirmed(userId: string): Promise<{
   emailConfirmed: string | null;
   profile: Profile;
 }> {
+  if (PERF_LOG) console.time('[panel] getProfileAndEmailConfirmed (parallel)');
   const service = createSupabaseServiceClient();
   const [userRes, profileRes] = await Promise.all([
     service.auth.admin.getUserById(userId),
@@ -29,6 +31,7 @@ async function getProfileAndEmailConfirmed(userId: string): Promise<{
       .eq('id', userId)
       .single(),
   ]);
+  if (PERF_LOG) console.timeEnd('[panel] getProfileAndEmailConfirmed (parallel)');
   const emailConfirmed = userRes.data?.user?.email_confirmed_at ?? null;
   const profile = (profileRes.data ?? null) as Profile;
   return { emailConfirmed, profile };
@@ -45,20 +48,32 @@ function getCachedProfileAndEmail(userId: string) {
 
 /**
  * Auth + perfil en caché por request (layout + page) y por usuario (60s).
- * Una sola llamada getUser() por navegación; perfil/email desde cache cuando sea posible.
+ * Usa getSession() primero (rápido, desde cookie) y solo getUser() si no hay sesión (validación en servidor).
  */
 export const getCachedAuth = cache(async () => {
   const supabase = await createServerSupabaseClient();
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
 
-  if (error || !user) {
-    return { user: null, profile: null, supabase };
+  if (PERF_LOG) console.time('[panel] auth getSession');
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
+  if (PERF_LOG) console.timeEnd('[panel] auth getSession');
+
+  let user = session?.user ?? null;
+  if (sessionError || !user) {
+    if (PERF_LOG) console.time('[panel] auth getUser (fallback)');
+    const { data: { user: refreshedUser }, error } = await supabase.auth.getUser();
+    if (PERF_LOG) console.timeEnd('[panel] auth getUser (fallback)');
+    user = refreshedUser ?? null;
+    if (error || !user) {
+      return { user: null, profile: null, supabase };
+    }
   }
 
+  if (PERF_LOG) console.time('[panel] auth getCachedProfileAndEmail');
   const cached = await getCachedProfileAndEmail(user.id);
+  if (PERF_LOG) console.timeEnd('[panel] auth getCachedProfileAndEmail');
 
   return {
     user: { ...user, email_confirmed_at: cached.emailConfirmed },
