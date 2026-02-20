@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { createPortal } from 'react-dom';
 
 const ACCENT = '#1d4ed8';
@@ -15,15 +16,26 @@ type WalletModalProps = {
 };
 
 export function WalletModal({ open, onClose, trigger }: WalletModalProps) {
+  const searchParams = useSearchParams();
   const [mounted, setMounted] = useState(false);
   const [customAmount, setCustomAmount] = useState('');
   const [selectedQuick, setSelectedQuick] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const fromStripeSuccess = searchParams?.get('success') === '1' || (searchParams?.get('session_id') ?? '').length > 10;
+  const fromStripeCancel = searchParams?.get('cancel') === '1';
+
   useEffect(() => {
     setMounted(typeof document !== 'undefined');
   }, []);
+
+  useEffect(() => {
+    if (open && (fromStripeSuccess || fromStripeCancel)) {
+      setLoading(false);
+      onClose();
+    }
+  }, [open, fromStripeSuccess, fromStripeCancel, onClose]);
 
   const amount =
     selectedQuick !== null

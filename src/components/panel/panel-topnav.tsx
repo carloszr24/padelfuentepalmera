@@ -38,12 +38,15 @@ export function PanelTopnav() {
       aria-label="Navegación principal"
     >
       <div className="flex items-center gap-3.5">
-        <div
-          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[10px] text-[15px] font-bold text-white"
-          style={{ background: 'var(--panel-accent)' }}
-        >
-          FP
-        </div>
+        <Link href="/panel" className="flex flex-shrink-0 items-center" aria-label="Inicio" prefetch>
+          <img
+            src="/logo-transparent.png"
+            alt="Fuente Palmera Pádel"
+            className="h-10 w-auto object-contain"
+            width={40}
+            height={40}
+          />
+        </Link>
         <span className="text-[15px] font-semibold tracking-tight text-white">
           Fuente Palmera <span className="ml-1 font-normal text-[var(--panel-sidebar-text)] text-[13px]">Pádel Club</span>
         </span>

@@ -10,19 +10,19 @@ type Props = {
 };
 
 /**
- * Al volver de Stripe con success=1 y session_id, llama a confirm-session para acreditar
- * el saldo (plan B si el webhook no ha funcionado). Luego refresca para mostrar el saldo.
+ * Al volver de Stripe con success=1 y session_id: muestra confirmación al instante.
+ * Llama a confirm-session en segundo plano (plan B si el webhook no ha llegado).
+ * No bloquea la UI; cuando confirm-session responde, actualiza el saldo.
  */
 export function StripeSuccessCredit({ success, sessionId, onCredited }: Props) {
   const router = useRouter();
-  const [status, setStatus] = useState<'idle' | 'loading' | 'ok' | 'error'>('idle');
+  const [credited, setCredited] = useState(false);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     if (!success || !sessionId || sessionId.length < 10) return;
 
     let cancelled = false;
-    setStatus('loading');
-
     fetch('/api/stripe/confirm-session', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -31,15 +31,15 @@ export function StripeSuccessCredit({ success, sessionId, onCredited }: Props) {
       .then((res) => {
         if (cancelled) return;
         if (res.ok) {
-          setStatus('ok');
+          setCredited(true);
           onCredited?.();
           router.refresh();
         } else {
-          setStatus('error');
+          setError(true);
         }
       })
       .catch(() => {
-        if (!cancelled) setStatus('error');
+        if (!cancelled) setError(true);
       });
 
     return () => {
@@ -47,15 +47,7 @@ export function StripeSuccessCredit({ success, sessionId, onCredited }: Props) {
     };
   }, [success, sessionId, router, onCredited]);
 
-  if (status === 'loading') {
-    return (
-      <div className="rounded-2xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-semibold text-blue-800">
-        Acreditando saldo…
-      </div>
-    );
-  }
-
-  if (status === 'error') {
+  if (error) {
     return (
       <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
         No se pudo acreditar automáticamente. Refresca la página o contacta con el club.
@@ -63,13 +55,9 @@ export function StripeSuccessCredit({ success, sessionId, onCredited }: Props) {
     );
   }
 
-  if (status === 'ok') {
-    return (
-      <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">
-        Pago completado. Saldo acreditado.
-      </div>
-    );
-  }
-
-  return null;
+  return (
+    <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">
+      {credited ? 'Pago completado. Saldo acreditado.' : 'Pago completado. Tu saldo se actualizará en unos segundos.'}
+    </div>
+  );
 }
