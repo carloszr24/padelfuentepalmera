@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { useState } from 'react';
 import { CLUB_LOGO_PATH } from '@/lib/club-logo';
 
@@ -57,25 +56,14 @@ export function LandingHeader({ isLoggedIn = false }: LandingHeaderProps) {
           </button>
         </div>
 
-        {/* Centro: logo solo, sin borde ni fondo */}
-        <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-shrink-0 overflow-hidden rounded-lg bg-transparent [&_img]:!border-0 [&_img]:!shadow-none [&_img]:!outline-none [&_img]:!ring-0">
-          <a
-            href="/"
-            className="block h-14 w-14 transition hover:opacity-90 sm:h-16 sm:w-16"
-            aria-label="Fuente Palmera Pádel - Inicio"
-          >
-            <Image
-              src={CLUB_LOGO_PATH}
-              alt="Fuente Palmera Pádel"
-              width={64}
-              height={64}
-              className="h-full w-full rounded-full border-0 object-contain object-center outline-none ring-0 bg-transparent"
-              style={{ mixBlendMode: 'lighten' }}
-              unoptimized
-              priority
-            />
-          </a>
-        </div>
+        {/* Centro: logo transparente, sin contenedor con fondo */}
+        <a
+          href="/"
+          className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-shrink-0 items-center transition hover:opacity-90"
+          aria-label="Fuente Palmera Pádel - Inicio"
+        >
+          <img src={CLUB_LOGO_PATH} alt="Fuente Palmera Pádel" className="h-14 w-auto object-contain sm:h-16" width={64} height={64} />
+        </a>
 
         {/* Derecha: acciones */}
         <div className="flex flex-1 items-center justify-end gap-2 sm:gap-3">
