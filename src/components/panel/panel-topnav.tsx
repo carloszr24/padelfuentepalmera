@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { CLUB_LOGO_PATH } from '@/lib/club-logo';
 import { usePathname } from 'next/navigation';
 import { useRef, useEffect, useState } from 'react';
 import { usePanelUser } from '@/contexts/panel-user-context';
@@ -40,7 +41,7 @@ export function PanelTopnav() {
       <div className="flex items-center gap-3.5">
         <Link href="/panel" className="flex flex-shrink-0 items-center" aria-label="Inicio" prefetch>
           <img
-            src="/logo-transparent.png"
+            src={CLUB_LOGO_PATH}
             alt="Fuente Palmera Pádel"
             className="h-10 w-auto object-contain"
             width={40}

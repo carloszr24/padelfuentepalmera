@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
+import { CLUB_LOGO_PATH } from '@/lib/club-logo';
 
 const NAV_LINKS = [
   { href: '#que-te-ofrecemos', label: 'Qué te ofrecemos' },
@@ -64,7 +65,7 @@ export function LandingHeader({ isLoggedIn = false }: LandingHeaderProps) {
             aria-label="Fuente Palmera Pádel - Inicio"
           >
             <Image
-              src="/logo-transparent.png"
+              src={CLUB_LOGO_PATH}
               alt="Fuente Palmera Pádel"
               width={64}
               height={64}

@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { CLUB_LOGO_PATH } from '@/lib/club-logo';
 import { getCachedAuth } from '@/lib/auth-server';
 import { LandingHeader } from '@/components/ui/landing-header';
 
@@ -193,7 +194,7 @@ export default async function Home() {
         <div className="mx-auto flex max-w-5xl flex-col gap-8 px-5 sm:flex-row sm:items-start sm:justify-between sm:px-8">
           <div className="flex flex-col gap-4">
             <Link href="/" className="inline-flex w-fit">
-              <img src="/logo-transparent.png" alt="Fuente Palmera Padel Club" className="h-14 w-14 object-contain object-left sm:h-16 sm:w-16" width={64} height={64} />
+              <img src={CLUB_LOGO_PATH} alt="Fuente Palmera Padel Club" className="h-14 w-14 object-contain object-left sm:h-16 sm:w-16" width={64} height={64} />
             </Link>
             <p className="font-semibold text-stone-900">Fuente Palmera Padel Club</p>
             <p className="mt-1">
