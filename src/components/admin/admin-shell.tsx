@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard,
   Users,
@@ -41,6 +41,7 @@ const SIDEBAR_TEXT = '#a3a3a3';
 
 function AdminSidebarDesktop() {
   const pathname = usePathname();
+  const router = useRouter();
   return (
     <aside
       className="hidden w-[240px] flex-shrink-0 flex-col overflow-hidden rounded-[14px] border border-[#e8e8e4] p-4 shadow-[0_4px_12px_rgba(0,0,0,0.06)] md:flex"
@@ -57,6 +58,8 @@ function AdminSidebarDesktop() {
             <Link
               key={href}
               href={href}
+              prefetch={true}
+              onMouseEnter={() => router.prefetch(href)}
               className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
                 isActive ? 'bg-white/10 text-white' : 'hover:bg-white/[0.06] hover:text-white'
               }`}
@@ -83,6 +86,7 @@ function SidebarContent({
   onLinkClick?: () => void;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
 
   return (
     <>
@@ -96,6 +100,7 @@ function SidebarContent({
       </div>
       <Link
         href="/panel"
+        prefetch={true}
         onClick={onLinkClick}
         className="mb-4 inline-flex min-h-[44px] min-w-[44px] items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold text-stone-600 transition hover:bg-stone-100 hover:text-stone-900"
       >
@@ -112,6 +117,8 @@ function SidebarContent({
             <Link
               key={href}
               href={href}
+              prefetch={true}
+              onMouseEnter={() => router.prefetch(href)}
               onClick={onLinkClick}
               className={`flex min-h-[44px] min-w-[44px] items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
                 isActive ? 'bg-white/10 text-white' : 'text-[var(--panel-sidebar-text)] hover:bg-white/[0.06] hover:text-white'

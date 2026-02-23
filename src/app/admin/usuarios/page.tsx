@@ -1,11 +1,42 @@
 import Link from 'next/link';
+import { unstable_cache } from 'next/cache';
 import { createSupabaseServiceClient } from '@/lib/supabase/server';
 import { AdminWalletRechargeButton } from '@/components/ui/admin-wallet-recharge-button';
 import { AdminCreateUserTrigger } from '@/components/ui/admin-create-user-trigger';
 
+const ADMIN_USUARIOS_CACHE_SECONDS = 45;
+
 type AdminUsuariosPageProps = {
   searchParams?: Promise<{ q?: string }> | { q?: string };
 };
+
+async function getCachedUsuariosData(q: string) {
+  return unstable_cache(
+    async () => {
+      const supabase = createSupabaseServiceClient();
+      let query = supabase
+        .from('profiles')
+        .select('id, full_name, email, phone, wallet_balance, has_debt, debt_amount')
+        .order('full_name', { ascending: true });
+      if (q.length >= 1) {
+        const term = q.replace(/%/g, '\\%').replace(/_/g, '\\_');
+        const pattern = `%${term}%`;
+        query = query.or(`full_name.ilike."${pattern}",email.ilike."${pattern}",phone.ilike."${pattern}"`);
+      }
+      const today = new Date().toISOString().slice(0, 10);
+      const [profilesRes, membersRes] = await Promise.all([
+        query,
+        supabase.from('members').select('user_id').gte('expiry_date', today),
+      ]);
+      return {
+        profiles: profilesRes.data ?? [],
+        activeMemberIdsList: (membersRes.data ?? []).map((m: { user_id: string }) => m.user_id),
+      };
+    },
+    ['admin-usuarios', q],
+    { revalidate: ADMIN_USUARIOS_CACHE_SECONDS }
+  )();
+}
 
 export default async function AdminUsuariosPage({
   searchParams,
@@ -18,26 +49,8 @@ export default async function AdminUsuariosPage({
   const raw = (resolved?.q ?? '').trim();
   const q = raw.slice(0, 100).replace(/[^\w\s@.\-áéíóúñüÁÉÍÓÚÑÜ]/g, '');
 
-  const supabase = createSupabaseServiceClient();
-
-  let query = supabase
-    .from('profiles')
-    .select('id, full_name, email, phone, wallet_balance, has_debt, debt_amount')
-    .order('full_name', { ascending: true });
-
-  if (q.length >= 1) {
-    const term = q.replace(/%/g, '\\%').replace(/_/g, '\\_');
-    const pattern = `%${term}%`;
-    query = query.or(`full_name.ilike."${pattern}",email.ilike."${pattern}",phone.ilike."${pattern}"`);
-  }
-
-  const today = new Date().toISOString().slice(0, 10);
-  const [profilesRes, membersRes] = await Promise.all([
-    query,
-    supabase.from('members').select('user_id').gte('expiry_date', today),
-  ]);
-  const { data: profiles } = profilesRes;
-  const activeMemberIds = new Set((membersRes.data ?? []).map((m: { user_id: string }) => m.user_id));
+  const { profiles, activeMemberIdsList } = await getCachedUsuariosData(q);
+  const activeMemberIds = new Set(activeMemberIdsList);
 
   const total = profiles?.length ?? 0;
   const sociosActivos = activeMemberIds.size;

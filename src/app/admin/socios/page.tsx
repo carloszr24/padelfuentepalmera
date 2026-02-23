@@ -1,6 +1,9 @@
+import { unstable_cache } from 'next/cache';
 import { createSupabaseServiceClient } from '@/lib/supabase/server';
 import { AdminPageHeader } from '@/components/ui/admin-page-header';
 import { AdminSociosContent } from '@/components/admin/AdminSociosContent';
+
+const ADMIN_SOCIOS_CACHE_SECONDS = 45;
 
 export type MemberWithProfile = {
   id: string;
@@ -15,33 +18,42 @@ type PageProps = {
   searchParams: Promise<{ search?: string }> | { search?: string };
 };
 
+async function getCachedSociosData(search: string) {
+  return unstable_cache(
+    async () => {
+      const service = createSupabaseServiceClient();
+      let query = service
+        .from('members')
+        .select('id, user_id, start_date, expiry_date, is_paid, profiles!members_user_id_fkey(full_name, email, phone)')
+        .order('expiry_date', { ascending: false });
+      if (search.length >= 1) {
+        const { data: ids } = await service
+          .from('profiles')
+          .select('id')
+          .or(`full_name.ilike.%${search}%,email.ilike.%${search}%,phone.ilike.%${search}%`);
+        const userIds = (ids ?? []).map((r: { id: string }) => r.id);
+        if (userIds.length > 0) {
+          query = query.in('user_id', userIds);
+        } else {
+          query = query.eq('user_id', '00000000-0000-0000-0000-000000000000');
+        }
+      }
+      const { data: members } = await query;
+      return members ?? [];
+    },
+    ['admin-socios', search],
+    { revalidate: ADMIN_SOCIOS_CACHE_SECONDS }
+  )();
+}
+
 export default async function AdminSociosPage({ searchParams }: PageProps) {
   const resolved = typeof (searchParams as Promise<unknown>).then === 'function'
     ? await (searchParams as Promise<{ search?: string }>)
     : (searchParams as { search?: string });
   const search = (resolved?.search ?? '').trim().slice(0, 100);
 
-  const service = createSupabaseServiceClient();
-  let query = service
-    .from('members')
-    .select('id, user_id, start_date, expiry_date, is_paid, profiles!members_user_id_fkey(full_name, email, phone)')
-    .order('expiry_date', { ascending: false });
-
-  if (search.length >= 1) {
-    const { data: ids } = await service
-      .from('profiles')
-      .select('id')
-      .or(`full_name.ilike.%${search}%,email.ilike.%${search}%,phone.ilike.%${search}%`);
-    const userIds = (ids ?? []).map((r) => r.id);
-    if (userIds.length > 0) {
-      query = query.in('user_id', userIds);
-    } else {
-      query = query.eq('user_id', '00000000-0000-0000-0000-000000000000'); // no results
-    }
-  }
-
-  const { data: members } = await query;
-  const raw = (members ?? []) as Array<{
+  const members = await getCachedSociosData(search);
+  const raw = members as Array<{
     id: string;
     user_id: string;
     start_date: string;

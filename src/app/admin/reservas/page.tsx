@@ -1,12 +1,44 @@
 import Link from 'next/link';
+import { unstable_cache } from 'next/cache';
 import { createSupabaseServiceClient } from '@/lib/supabase/server';
 import { AdminPageHeader } from '@/components/ui/admin-page-header';
 import { AdminCreateBookingTrigger } from '@/components/ui/admin-create-booking-trigger';
 import { AdminReservasContent, type BookingRow } from '@/components/admin/AdminReservasContent';
 
+const ADMIN_RESERVAS_CACHE_SECONDS = 30;
+
 type PageProps = {
   searchParams: Promise<{ desde?: string; hasta?: string }> | { desde?: string; hasta?: string };
 };
+
+async function getCachedReservasData(desde: string, hasta: string) {
+  return unstable_cache(
+    async () => {
+      const supabase = createSupabaseServiceClient();
+      let bookingsQuery = supabase
+        .from('bookings')
+        .select(
+          'id, booking_date, start_time, end_time, status, deposit_paid, remaining_paid_at, profiles!bookings_user_id_fkey(full_name), courts(name)'
+        )
+        .order('booking_date', { ascending: false })
+        .order('start_time', { ascending: false });
+      if (desde) bookingsQuery = bookingsQuery.gte('booking_date', desde);
+      if (hasta) bookingsQuery = bookingsQuery.lte('booking_date', hasta);
+      const [
+        { data: bookings },
+        { data: courts },
+        { data: profiles },
+      ] = await Promise.all([
+        bookingsQuery,
+        supabase.from('courts').select('id, name').eq('is_active', true).order('name'),
+        supabase.from('profiles').select('id, full_name, email').order('full_name'),
+      ]);
+      return { bookings: bookings ?? [], courts: courts ?? [], profiles: profiles ?? [] };
+    },
+    ['admin-reservas', desde, hasta],
+    { revalidate: ADMIN_RESERVAS_CACHE_SECONDS }
+  )();
+}
 
 export default async function AdminReservasPage({ searchParams }: PageProps) {
   const params =
@@ -14,35 +46,14 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
       ? await (searchParams as Promise<{ desde?: string; hasta?: string }>)
       : (searchParams as { desde?: string; hasta?: string });
 
-  const desde = params?.desde?.trim().slice(0, 10);
-  const hasta = params?.hasta?.trim().slice(0, 10);
+  const desde = params?.desde?.trim().slice(0, 10) ?? '';
+  const hasta = params?.hasta?.trim().slice(0, 10) ?? '';
 
-  const supabase = createSupabaseServiceClient();
+  const { bookings, courts, profiles } = await getCachedReservasData(desde, hasta);
 
-  let bookingsQuery = supabase
-    .from('bookings')
-    .select(
-      'id, booking_date, start_time, end_time, status, deposit_paid, remaining_paid_at, profiles!bookings_user_id_fkey(full_name), courts(name)'
-    )
-    .order('booking_date', { ascending: false })
-    .order('start_time', { ascending: false });
-
-  if (desde) bookingsQuery = bookingsQuery.gte('booking_date', desde);
-  if (hasta) bookingsQuery = bookingsQuery.lte('booking_date', hasta);
-
-  const [
-    { data: bookings },
-    { data: courts },
-    { data: profiles },
-  ] = await Promise.all([
-    bookingsQuery,
-    supabase.from('courts').select('id, name').eq('is_active', true).order('name'),
-    supabase.from('profiles').select('id, full_name, email').order('full_name'),
-  ]);
-
-  const courtsList = courts ?? [];
-  const usersList = profiles ?? [];
-  const bookingsList = (bookings ?? []) as BookingRow[];
+  const courtsList = courts;
+  const usersList = profiles;
+  const bookingsList = bookings as BookingRow[];
 
   return (
     <div className="space-y-6">
