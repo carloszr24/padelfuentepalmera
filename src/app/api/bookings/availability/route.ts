@@ -47,9 +47,14 @@ export async function GET(request: Request) {
 
   const supabase = createSupabaseServiceClient();
 
+  // day_of_week: 1 = Lunes, 7 = Domingo (ISO)
+  const d = new Date(date + 'T12:00:00');
+  const dayOfWeek = d.getDay() === 0 ? 7 : d.getDay();
+
   const [
     { data: bookings },
     { data: blocks },
+    { data: recurringBlocks },
   ] = await Promise.all([
     supabase
       .from('bookings')
@@ -62,6 +67,11 @@ export async function GET(request: Request) {
       .select('start_time, end_time')
       .eq('court_id', courtId)
       .eq('blocked_date', date),
+    supabase
+      .from('recurring_blocks')
+      .select('start_time, end_time')
+      .eq('court_id', courtId)
+      .eq('day_of_week', dayOfWeek),
   ]);
 
   const occupied: { start: string; end: string }[] = [];
@@ -75,6 +85,12 @@ export async function GET(request: Request) {
     occupied.push({
       start: b.start_time?.slice(0, 5) ?? '00:00',
       end: b.end_time?.slice(0, 5) ?? '00:00',
+    });
+  }
+  for (const b of recurringBlocks ?? []) {
+    occupied.push({
+      start: String(b.start_time).slice(0, 5),
+      end: String(b.end_time).slice(0, 5),
     });
   }
 
