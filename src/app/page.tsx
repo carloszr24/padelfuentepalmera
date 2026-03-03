@@ -214,7 +214,6 @@ export default async function Home() {
             </div>
             <div className="flex flex-col gap-2">
               <a href="https://www.instagram.com/fuentepalmerapadel/" target="_blank" rel="noopener noreferrer" className="hover:text-stone-900">Instagram</a>
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-stone-900">Facebook</a>
             </div>
           </div>
         </div>
