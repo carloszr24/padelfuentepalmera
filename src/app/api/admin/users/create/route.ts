@@ -29,7 +29,12 @@ export async function POST(request: Request) {
   const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
   const password = typeof body.password === 'string' ? body.password : '';
   const full_name = typeof body.full_name === 'string' ? body.full_name.trim().slice(0, 200) : '';
-  const phone = typeof body.phone === 'string' ? body.phone.trim().slice(0, 50) : '';
+  const rawPhone = typeof body.phone === 'string' ? body.phone.trim() : '';
+  const phoneDigits = rawPhone.replace(/\D/g, '');
+  if (rawPhone && (phoneDigits.length > 9 || phoneDigits.length !== rawPhone.length)) {
+    return NextResponse.json({ message: 'El teléfono debe tener 9 dígitos.' }, { status: 400 });
+  }
+  const phone = phoneDigits.slice(0, 9) || null;
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return NextResponse.json({ message: 'Email obligatorio y válido' }, { status: 400 });
@@ -66,7 +71,7 @@ export async function POST(request: Request) {
     .from('profiles')
     .update({
       full_name: full_name || newUser.user.email?.split('@')[0] || null,
-      phone: phone || null,
+      phone,
     })
     .eq('id', newUser.user.id);
 

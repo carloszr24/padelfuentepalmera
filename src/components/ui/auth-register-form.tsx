@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 import { getBrowserSupabaseClient } from '@/lib/supabase/client';
 
@@ -9,6 +10,9 @@ export function AuthRegisterForm() {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [registeredEmail, setRegisteredEmail] = useState<string | null>(null);
@@ -18,14 +22,32 @@ export function AuthRegisterForm() {
   const [resendSent, setResendSent] = useState(false);
   const [resendError, setResendError] = useState<string | null>(null);
 
+  const PHONE_MAX_LENGTH = 9;
+  const phoneDigitsOnly = phone.replace(/\D/g, '');
+  const phoneValid = phone.length === 0 || (phoneDigitsOnly.length <= PHONE_MAX_LENGTH && phoneDigitsOnly.length === phone.length);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setAlreadyHasAccount(false);
 
+    if (phone.trim()) {
+      const digits = phone.replace(/\D/g, '');
+      if (digits.length > PHONE_MAX_LENGTH || digits.length !== phone.replace(/\s/g, '').length) {
+        setError('El teléfono debe tener 9 dígitos.');
+        return;
+      }
+    }
+
+    if (password !== confirmPassword) {
+      setError('Las contraseñas no coinciden.');
+      return;
+    }
+
     try {
       setLoading(true);
       const supabase = getBrowserSupabaseClient();
+      const phoneToSend = phoneDigitsOnly.slice(0, PHONE_MAX_LENGTH) || undefined;
 
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email,
@@ -33,7 +55,7 @@ export function AuthRegisterForm() {
         options: {
           data: {
             full_name: fullName,
-            phone: phone || undefined,
+            phone: phoneToSend,
           },
         },
       });
@@ -210,11 +232,19 @@ export function AuthRegisterForm() {
         <input
           id="phone"
           type="tel"
+          inputMode="numeric"
+          autoComplete="tel"
+          maxLength={9}
+          pattern="[0-9]{0,9}"
           value={phone}
-          onChange={(e) => setPhone(e.target.value)}
+          onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 9))}
           className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
-          placeholder="Ej. 634 50 07 53"
+          placeholder="9 dígitos, sin espacio ni +34"
+          title="Solo números, máximo 9 dígitos"
         />
+        {phone.length > 0 && !phoneValid ? (
+          <p className="text-xs font-medium text-red-600">El teléfono debe tener 9 dígitos.</p>
+        ) : null}
       </div>
 
       <div className="space-y-1">
@@ -224,16 +254,57 @@ export function AuthRegisterForm() {
         >
           Contraseña
         </label>
-        <input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          minLength={6}
-          className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
-          placeholder="Mínimo 6 caracteres"
-        />
+        <div className="relative">
+          <input
+            id="password"
+            type={showPassword ? 'text' : 'password'}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            minLength={6}
+            className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 pr-10 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
+            placeholder="Mínimo 6 caracteres"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-stone-400 transition hover:bg-stone-100 hover:text-stone-600"
+            aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+            tabIndex={-1}
+          >
+            {showPassword ? <EyeOff className="h-4 w-4" aria-hidden /> : <Eye className="h-4 w-4" aria-hidden />}
+          </button>
+        </div>
+      </div>
+
+      <div className="space-y-1">
+        <label
+          htmlFor="confirmPassword"
+          className="text-xs font-bold text-stone-700"
+        >
+          Confirmar contraseña
+        </label>
+        <div className="relative">
+          <input
+            id="confirmPassword"
+            type={showConfirmPassword ? 'text' : 'password'}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+            minLength={6}
+            className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 pr-10 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
+            placeholder="Repite la contraseña"
+          />
+          <button
+            type="button"
+            onClick={() => setShowConfirmPassword((prev) => !prev)}
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-stone-400 transition hover:bg-stone-100 hover:text-stone-600"
+            aria-label={showConfirmPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+            tabIndex={-1}
+          >
+            {showConfirmPassword ? <EyeOff className="h-4 w-4" aria-hidden /> : <Eye className="h-4 w-4" aria-hidden />}
+          </button>
+        </div>
       </div>
 
       {error ? (
