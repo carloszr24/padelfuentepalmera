@@ -250,7 +250,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
                       </div>
 
                       {/* Horarios (preview o ir a ver slots) */}
-                      <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+                      <div className="-mt-1 flex flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
                         <p className="text-sm font-medium text-stone-600">
                           {courtId && date
                             ? loadingSlots
