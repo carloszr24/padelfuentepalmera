@@ -2,17 +2,21 @@ import { NextResponse } from 'next/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/server';
 import { getOpeningForDate } from '@/lib/club-schedule';
 
-// Horario club: 10-11:30, 11:30-13:00 | 16:30-18, 18-19:30, 19:30-21, 21-22:30 (se filtran por apertura)
-const SLOT_STARTS = ['10:00', '11:30', '16:30', '18:00', '19:30', '21:00'];
+// Horarios fijos por día: solo estos slots existen. day_of_week 1 = Lunes, 7 = Domingo.
+const SLOTS_WEEKDAY = ['16:30', '18:00', '19:30', '21:00', '22:30'] as const; // Lunes–Viernes (solo tardes)
+const SLOTS_WEEKEND = ['09:30', '11:00', '12:30', '14:00', '16:30', '18:00', '19:30', '21:00', '22:30'] as const; // Sábado–Domingo
 
-function slotEnd(start: string): string {
+function getSlotStartsForDay(dayOfWeek: number): readonly string[] {
+  return dayOfWeek >= 1 && dayOfWeek <= 5 ? SLOTS_WEEKDAY : SLOTS_WEEKEND;
+}
+
+// Duración reserva: 90 minutos (pádel)
+function slotEnd(start: string, durationMinutes = 90): string {
   const [h, m] = start.split(':').map(Number);
-  let endM = m + 30;
-  let endH = h + 1;
-  if (endM >= 60) {
-    endM -= 60;
-    endH += 1;
-  }
+  const totalMins = h * 60 + m + durationMinutes;
+  if (totalMins >= 24 * 60) return '24:00'; // fin de día para solapamientos
+  const endH = Math.floor(totalMins / 60);
+  const endM = totalMins % 60;
   return `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`;
 }
 
@@ -23,6 +27,7 @@ function timesOverlap(
   endTime: string
 ): boolean {
   const toMins = (t: string) => {
+    if (t === '24:00') return 24 * 60;
     const [h, m] = t.slice(0, 5).split(':').map(Number);
     return h * 60 + m;
   };
@@ -99,13 +104,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ available: [], closed: true, label: opening.label ?? undefined });
   }
 
-  const openTime = opening.openTime ?? '00:00';
-  const closeTime = opening.closeTime ?? '23:59';
-  const slotsInRange = SLOT_STARTS.filter((slotStart) => {
-    const end = slotEnd(slotStart);
-    const slotEndM = end.slice(0, 5);
-    return slotStart >= openTime && slotEndM <= closeTime;
-  });
+  const slotStarts = getSlotStartsForDay(dayOfWeek);
 
   const now = new Date();
   const todayMadrid = now.toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' });
@@ -116,7 +115,7 @@ export async function GET(request: Request) {
     hour12: false,
   });
 
-  const available = slotsInRange.filter((slotStart) => {
+  const available = slotStarts.filter((slotStart) => {
     if (date === todayMadrid && slotStart <= timeMadrid) return false;
     const end = slotEnd(slotStart);
     const overlaps = occupied.some((o) =>
