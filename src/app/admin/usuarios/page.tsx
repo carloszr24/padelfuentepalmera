@@ -17,7 +17,8 @@ async function getCachedUsuariosData(q: string) {
       let query = supabase
         .from('profiles')
         .select('id, full_name, email, phone, wallet_balance, has_debt, debt_amount')
-        .order('full_name', { ascending: true });
+        .order('full_name', { ascending: true })
+        .limit(5000);
       if (q.length >= 1) {
         const term = q.replace(/%/g, '\\%').replace(/_/g, '\\_');
         const pattern = `%${term}%`;
@@ -28,6 +29,10 @@ async function getCachedUsuariosData(q: string) {
         query,
         supabase.from('members').select('user_id').gte('expiry_date', today),
       ]);
+      if (profilesRes.error) {
+        console.error('[admin/usuarios] profiles error:', profilesRes.error.message, profilesRes.error.code);
+        throw new Error(profilesRes.error.message);
+      }
       return {
         profiles: profilesRes.data ?? [],
         activeMemberIdsList: (membersRes.data ?? []).map((m: { user_id: string }) => m.user_id),
