@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import { AlertTriangle } from 'lucide-react';
 
 // Horario club: 10-11:30, 11:30-13:00 | 16:30-18, 18-19:30, 19:30-21, 21-22:30
 const SLOT_STARTS = ['10:00', '11:30', '16:30', '18:00', '19:30', '21:00'];
@@ -347,6 +348,18 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
                     </p>
                   </div>
                   {error && <p className="text-base font-medium text-red-600">{error}</p>}
+                  <div
+                    className="mb-4 flex gap-3 rounded-r-lg border-l-[3px] py-3 pl-4 pr-4 text-sm text-stone-700"
+                    style={{ backgroundColor: '#fefce8', borderLeftColor: '#f59e0b' }}
+                  >
+                    <AlertTriangle className="h-5 w-5 shrink-0 text-amber-500" aria-hidden style={{ color: '#f59e0b' }} />
+                    <div>
+                      <p className="font-semibold text-stone-800">Política de cancelación</p>
+                      <p className="mt-1 leading-snug">
+                        Si cancelas con menos de 24 horas de antelación, perderás el depósito de la señal (4,50 €) y deberás abonar el importe restante (13,50 €) antes de poder realizar nuevas reservas.
+                      </p>
+                    </div>
+                  </div>
                   <div className="flex min-h-[44px] flex-col gap-2 sm:flex-row sm:gap-3">
                     <button
                       type="button"
