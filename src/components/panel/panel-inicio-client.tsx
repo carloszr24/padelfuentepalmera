@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { Trophy } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { BookingModal } from '@/components/ui/booking-modal';
 import { CancelBookingButton } from '@/components/ui/cancel-booking-button';
@@ -163,6 +164,7 @@ export function PanelInicioClient() {
     tabReservas === 'proximas' ? proximasBookings : tabReservas === 'pasadas' ? pasadasBookings : canceladasBookings;
   const groupedReservas = groupByDate(reservasForTab);
   const recentMovements = (transactions ?? []).slice(0, 5);
+  const partidosJugados = (bookings ?? []).filter((b) => b.status === 'completed').length;
 
   if (bookings === null) {
     return <PanelPageSkeleton />;
@@ -250,9 +252,12 @@ export function PanelInicioClient() {
               <span className="font-semibold text-[var(--panel-text)]" style={{ fontFamily: 'var(--font-space-grotesk)', fontSize: '15px' }}>{stats?.lastRechargeDate ?? '—'}</span>
             </div>
             <div className="flex justify-between border-t border-[var(--panel-border)] py-2.5">
-              <span className="text-[13px] text-[var(--panel-text-secondary)]">Gasto total</span>
+              <span className="flex items-center gap-1.5 text-[13px] text-[var(--panel-text-secondary)]">
+                <Trophy className="h-4 w-4 shrink-0" aria-hidden />
+                Partidos jugados
+              </span>
               <span className="font-semibold text-[var(--panel-text)]" style={{ fontFamily: 'var(--font-space-grotesk)', fontSize: '15px' }}>
-                {stats ? `${stats.gastoTotal.toFixed(2).replace('.', ',')} €` : '—'}
+                {partidosJugados}
               </span>
             </div>
           </div>
@@ -442,8 +447,11 @@ export function PanelInicioClient() {
             <p className="text-[11px] font-medium text-[var(--panel-text-secondary)]">Últ. recarga</p>
           </div>
           <div className="rounded-[12px] border border-[var(--panel-border)] bg-[var(--panel-card)] p-3.5 text-center shadow-[var(--panel-shadow-sm)]">
-            <p className="font-bold tracking-tight text-[var(--panel-text)]" style={{ fontFamily: 'var(--font-space-grotesk)', fontSize: '22px' }}>{stats ? `${stats.gastoTotal.toFixed(0)} €` : '—'}</p>
-            <p className="text-[11px] font-medium text-[var(--panel-text-secondary)]">Gasto mes</p>
+            <p className="font-bold tracking-tight text-[var(--panel-text)]" style={{ fontFamily: 'var(--font-space-grotesk)', fontSize: '22px' }}>{partidosJugados}</p>
+            <p className="flex items-center justify-center gap-1 text-[11px] font-medium text-[var(--panel-text-secondary)]">
+              <Trophy className="h-3.5 w-3.5 shrink-0" aria-hidden />
+              Partidos jugados
+            </p>
           </div>
         </div>
 
