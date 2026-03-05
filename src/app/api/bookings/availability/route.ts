@@ -2,6 +2,12 @@ import { NextResponse } from 'next/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/server';
 import { getOpeningForDate } from '@/lib/club-schedule';
 
+// Orden de filtrado (imposible reservar fuera de horario):
+// 1. club_schedule (getOpeningForDate): si is_open=false → ningún slot; si true → solo slots entre open_time y close_time (sesión termina antes de cierre).
+// 2. schedule_exceptions: getOpeningForDate ya aplica excepciones (festivos, cierres puntuales) sobre el horario semanal.
+// 3. recurring_blocks: franjas bloqueadas semanalmente por pista → se eliminan.
+// 4. court_schedules + bookings: reservas y bloqueos puntuales → lo que queda es lo disponible.
+
 // Horarios fijos por día: solo estos slots existen. day_of_week 1 = Lunes, 7 = Domingo.
 const SLOTS_WEEKDAY = ['16:30', '18:00', '19:30', '21:00'] as const; // Lunes–Viernes (solo tardes). Última 21:00, cierre 22:30
 const SLOTS_WEEKEND = ['09:30', '11:00', '12:30', '14:00', '16:30', '18:00', '19:30', '21:00'] as const; // Sábado–Domingo. Última 21:00
@@ -105,7 +111,21 @@ export async function GET(request: Request) {
     return NextResponse.json({ available: [], closed: true, label: opening.label ?? undefined });
   }
 
-  const slotStarts = getSlotStartsForDay(dayOfWeek);
+  let slotStarts = getSlotStartsForDay(dayOfWeek);
+
+  // Respetar horario del club: no ofrecer slots que empiecen antes de apertura o que terminen después de cierre
+  const toMins = (t: string) => {
+    const [h, m] = t.slice(0, 5).split(':').map(Number);
+    return h * 60 + m;
+  };
+  if (opening.openTime) {
+    const openMins = toMins(opening.openTime);
+    slotStarts = slotStarts.filter((start) => toMins(start) >= openMins);
+  }
+  if (opening.closeTime) {
+    const closeMins = toMins(opening.closeTime);
+    slotStarts = slotStarts.filter((start) => toMins(slotEnd(start)) <= closeMins);
+  }
 
   const now = new Date();
   const todayMadrid = now.toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' });
