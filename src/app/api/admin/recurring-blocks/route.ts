@@ -88,7 +88,7 @@ export async function POST(request: Request) {
   if (day_of_week < 1 || day_of_week > 7) {
     return NextResponse.json({ message: 'day_of_week debe ser 1-7' }, { status: 400 });
   }
-  const validStarts = ['09:30', '11:00', '12:30', '14:00', '16:30', '18:00', '19:30', '21:00', '22:30'];
+  const validStarts = ['09:30', '11:00', '12:30', '14:00', '16:30', '18:00', '19:30', '21:00'];
   const startNormalized = start_time.length === 5 ? start_time : start_time.slice(0, 5);
   if (!validStarts.includes(startNormalized)) {
     return NextResponse.json({ message: 'start_time no válido' }, { status: 400 });

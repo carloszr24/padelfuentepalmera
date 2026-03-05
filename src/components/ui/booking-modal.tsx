@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { AlertTriangle } from 'lucide-react';
 
-// Horario club: 10-11:30, 11:30-13:00 | 16:30-18, 18-19:30, 19:30-21, 21-22:30
+// Horario club: última reserva 21:00 (sesión hasta 22:30, cierre)
 const SLOT_STARTS = ['10:00', '11:30', '16:30', '18:00', '19:30', '21:00'];
 
 const ACCENT = '#1d4ed8'; // azul del club
