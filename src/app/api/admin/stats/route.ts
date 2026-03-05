@@ -3,13 +3,6 @@ import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/server';
 import { checkRateLimit } from '@/lib/rate-limit';
 
-const STRIPE_FEE_RATE = 0.015;
-const STRIPE_FEE_FIXED = 0.25;
-
-function stripeFee(amount: number): number {
-  return amount * STRIPE_FEE_RATE + STRIPE_FEE_FIXED;
-}
-
 type PeriodKey = '7d' | '1m' | '3m' | '6m' | '1y' | 'all';
 
 function sinceDate(period: PeriodKey): Date | null {
@@ -116,9 +109,7 @@ export async function GET(request: Request) {
     let totalFees = 0;
     const transactions = list.map((tx) => {
       const amount = Number(tx.amount);
-      const fee = tx.type === 'recharge' ? stripeFee(amount) : 0;
       totalIncome += amount;
-      totalFees += fee;
       const profile = tx.profiles;
       const full_name = Array.isArray(profile) ? profile[0]?.full_name ?? null : (profile?.full_name ?? null);
       return {
@@ -126,7 +117,7 @@ export async function GET(request: Request) {
         full_name: full_name ?? null,
         type: tx.type === 'recharge' ? 'Stripe' : 'Admin',
         amount: Math.round(amount * 100) / 100,
-        fee: Math.round(fee * 100) / 100,
+        fee: 0,
       };
     });
 
@@ -135,8 +126,8 @@ export async function GET(request: Request) {
       daily: [],
       totals: {
         totalIncome: Math.round(totalIncome * 100) / 100,
-        totalStripeFees: Math.round(totalFees * 100) / 100,
-        totalNet: Math.round((totalIncome - totalFees) * 100) / 100,
+        totalStripeFees: 0,
+        totalNet: Math.round(totalIncome * 100) / 100,
         txCount: list.length,
       },
       date: dateParam,
@@ -168,9 +159,9 @@ export async function GET(request: Request) {
 
   const monthMap: Record<
     string,
-    { stripeIncome: number; adminIncome: number; stripeFees: number; txCount: number }
+    { stripeIncome: number; adminIncome: number; txCount: number }
   > = {};
-  const dayMap: Record<string, { income: number; fees: number }> = {};
+  const dayMap: Record<string, { income: number }> = {};
 
   const monthKeys: string[] = [];
   const dayKeys: string[] = [];
@@ -182,20 +173,18 @@ export async function GET(request: Request) {
     const dayKey = date.toISOString().slice(0, 10);
 
     if (!monthMap[monthKey]) {
-      monthMap[monthKey] = { stripeIncome: 0, adminIncome: 0, stripeFees: 0, txCount: 0 };
+      monthMap[monthKey] = { stripeIncome: 0, adminIncome: 0, txCount: 0 };
       monthKeys.push(monthKey);
     }
     if (!dayMap[dayKey]) {
-      dayMap[dayKey] = { income: 0, fees: 0 };
+      dayMap[dayKey] = { income: 0 };
       dayKeys.push(dayKey);
     }
 
     if (tx.type === 'recharge') {
       monthMap[monthKey].stripeIncome += amount;
-      monthMap[monthKey].stripeFees += stripeFee(amount);
       monthMap[monthKey].txCount += 1;
       dayMap[dayKey].income += amount;
-      dayMap[dayKey].fees += stripeFee(amount);
     } else if (tx.type === 'admin_recharge') {
       monthMap[monthKey].adminIncome += amount;
       monthMap[monthKey].txCount += 1;
@@ -206,13 +195,12 @@ export async function GET(request: Request) {
   const months = [...new Set(monthKeys)].sort().map((month) => {
     const m = monthMap[month];
     const totalIncome = m.stripeIncome + m.adminIncome;
-    const netProfit = totalIncome - m.stripeFees;
     return {
       month,
       stripeIncome: Math.round(m.stripeIncome * 100) / 100,
       adminIncome: Math.round(m.adminIncome * 100) / 100,
-      stripeFees: Math.round(m.stripeFees * 100) / 100,
-      netProfit: Math.round(netProfit * 100) / 100,
+      stripeFees: 0,
+      netProfit: Math.round(totalIncome * 100) / 100,
       txCount: m.txCount,
     };
   });
@@ -221,15 +209,14 @@ export async function GET(request: Request) {
     const end = new Date();
     const start = new Date(end);
     start.setDate(start.getDate() - 29);
-    const out: { date: string; income: number; fees: number; net: number }[] = [];
+    const out: { date: string; income: number; net: number }[] = [];
     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
       const key = d.toISOString().slice(0, 10);
-      const day = dayMap[key] ?? { income: 0, fees: 0 };
+      const day = dayMap[key] ?? { income: 0 };
       out.push({
         date: key,
         income: Math.round(day.income * 100) / 100,
-        fees: Math.round(day.fees * 100) / 100,
-        net: Math.round((day.income - day.fees) * 100) / 100,
+        net: Math.round(day.income * 100) / 100,
       });
     }
     return out;
@@ -238,14 +225,13 @@ export async function GET(request: Request) {
   const totals = months.reduce(
     (acc, m) => ({
       totalIncome: acc.totalIncome + m.stripeIncome + m.adminIncome,
-      totalStripeFees: acc.totalStripeFees + m.stripeFees,
-      totalNet: acc.totalNet + m.netProfit,
+      totalStripeFees: 0,
+      totalNet: acc.totalNet + m.stripeIncome + m.adminIncome,
       txCount: acc.txCount + m.txCount,
     }),
     { totalIncome: 0, totalStripeFees: 0, totalNet: 0, txCount: 0 }
   );
   totals.totalIncome = Math.round(totals.totalIncome * 100) / 100;
-  totals.totalStripeFees = Math.round(totals.totalStripeFees * 100) / 100;
   totals.totalNet = Math.round(totals.totalNet * 100) / 100;
 
   return NextResponse.json({
