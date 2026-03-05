@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
@@ -10,6 +10,12 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://fuentepalmerapadel.com";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
 
 export const metadata: Metadata = {
   title: { default: "Fuente Palmera Pádel", template: "%s | Fuente Palmera Pádel" },
