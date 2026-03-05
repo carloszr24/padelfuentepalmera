@@ -230,18 +230,18 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
                         </div>
                       </div>
 
-                      {/* Botones de pista */}
+                      {/* Botones de pista: 3 columnas para que quepan en una fila en móvil */}
                       <div>
                         <p className="mb-3 text-sm font-bold uppercase tracking-wider text-stone-500">
                           Pista
                         </p>
-                        <div className="flex flex-wrap gap-3">
+                        <div className="grid grid-cols-3 gap-2 sm:gap-3">
                           {courts.map((c) => (
                             <button
                               key={String(c.id)}
                               type="button"
                               onClick={() => setCourtId(String(c.id))}
-                              className={`min-h-[44px] rounded-xl border px-6 py-3 text-base font-bold transition ${courtId === String(c.id) ? 'border-[#1d4ed8] bg-[#1d4ed8] text-white' : 'border-stone-300 bg-stone-50 text-stone-700 hover:bg-stone-100'}`}
+                              className={`min-h-[44px] rounded-xl border px-3 py-3 text-sm font-bold transition sm:px-6 sm:text-base ${courtId === String(c.id) ? 'border-[#1d4ed8] bg-[#1d4ed8] text-white' : 'border-stone-300 bg-stone-50 text-stone-700 hover:bg-stone-100'}`}
                             >
                               {c.name}
                             </button>
