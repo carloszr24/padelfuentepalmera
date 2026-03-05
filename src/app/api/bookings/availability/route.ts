@@ -74,7 +74,7 @@ export async function GET(request: Request) {
       .eq('blocked_date', date),
     supabase
       .from('recurring_blocks')
-      .select('start_time, end_time')
+      .select('start_time')
       .eq('court_id', courtId)
       .eq('day_of_week', dayOfWeek),
   ]);
@@ -93,9 +93,10 @@ export async function GET(request: Request) {
     });
   }
   for (const b of recurringBlocks ?? []) {
+    const start = String(b.start_time).slice(0, 5);
     occupied.push({
-      start: String(b.start_time).slice(0, 5),
-      end: String(b.end_time).slice(0, 5),
+      start,
+      end: slotEnd(start),
     });
   }
 

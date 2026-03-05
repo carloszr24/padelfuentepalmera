@@ -49,7 +49,22 @@ Para que la **verificación de email** y la **recuperación de contraseña** fun
 ## 3. Plantillas de email en español
 
 1. **Authentication** → **Email Templates**.
-2. Para cada plantilla que uses, cambia el texto al español:
+2. Para cada plantilla que uses, cambia el texto al español.
+
+### Logo en las plantillas
+
+Para que aparezca el logo del club al inicio del correo, añade al **principio del Body** (en el HTML) este bloque. La app sirve un logo pensado solo para correos en `/logo-email.png`:
+
+```html
+<p style="margin-bottom: 1.5em;">
+  <img src="{{ .SiteURL }}/logo-email.png" alt="Fuente Palmera Pádel Club" width="120" height="120" style="display:block;max-width:120px;height:auto;" />
+</p>
+```
+
+- **Para correos (recomendado):** `{{ .SiteURL }}/logo-email.png` — logo circular actual para las plantillas de Supabase.
+- **Alternativas:** `{{ .SiteURL }}/logo-mitico.png` (panel) o `{{ .SiteURL }}/logo-transparent.png` (web).
+
+`{{ .SiteURL }}` lo sustituye Supabase por la **Site URL** del proyecto (ej. `https://fuentepalmerapadel.com`), así el logo se carga correctamente en los correos.
 
 ### Confirm signup (Confirmar registro)
 - **Subject**: `Confirma tu cuenta - Fuente Palmera Pádel`

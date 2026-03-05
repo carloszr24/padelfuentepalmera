@@ -1,5 +1,6 @@
 import { AdminPageHeader } from '@/components/ui/admin-page-header';
 import { HorariosContent } from '@/components/admin/HorariosContent';
+import { RecurringBlocksSection } from '@/components/admin/RecurringBlocksSection';
 import { createSupabaseServiceClient } from '@/lib/supabase/server';
 
 export default async function AdminHorariosPage() {
@@ -45,6 +46,7 @@ export default async function AdminHorariosPage() {
         subtitle="Configura los horarios de apertura del club."
       />
       <HorariosContent initialWeekly={initialWeekly} initialExceptions={initialExceptions} />
+      <RecurringBlocksSection />
     </div>
   );
 }
