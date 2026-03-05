@@ -19,15 +19,19 @@ const TIME_OPTS = timeOptions();
 type WeeklyRow = {
   day_of_week: number;
   is_open: boolean;
-  open_time: string | null;
-  close_time: string | null;
+  morning_open: string | null;
+  morning_close: string | null;
+  afternoon_open: string | null;
+  afternoon_close: string | null;
 };
 
 const DEFAULT_WEEKLY: WeeklyRow[] = [1, 2, 3, 4, 5, 6, 7].map((d) => ({
   day_of_week: d,
   is_open: true,
-  open_time: d <= 5 ? '09:00' : '10:00',
-  close_time: d <= 5 ? '22:00' : '21:00',
+  morning_open: d <= 5 ? '10:00' : '10:00',
+  morning_close: d <= 5 ? '14:00' : '14:00',
+  afternoon_open: d <= 5 ? '16:30' : '16:30',
+  afternoon_close: d <= 5 ? '22:00' : '21:00',
 }));
 
 type ExceptionRow = {
@@ -83,8 +87,10 @@ export function HorariosContent({ initialWeekly, initialExceptions }: HorariosCo
           w.map((r: WeeklyRow) => ({
             day_of_week: r.day_of_week,
             is_open: r.is_open,
-            open_time: r.open_time ? String(r.open_time).slice(0, 5) : null,
-            close_time: r.close_time ? String(r.close_time).slice(0, 5) : null,
+            morning_open: r.morning_open ? String(r.morning_open).slice(0, 5) : null,
+            morning_close: r.morning_close ? String(r.morning_close).slice(0, 5) : null,
+            afternoon_open: r.afternoon_open ? String(r.afternoon_open).slice(0, 5) : null,
+            afternoon_close: r.afternoon_close ? String(r.afternoon_close).slice(0, 5) : null,
           }))
         );
       }
@@ -112,8 +118,10 @@ export function HorariosContent({ initialWeekly, initialExceptions }: HorariosCo
           weekly: weekly.map((r) => ({
             day_of_week: r.day_of_week,
             is_open: r.is_open,
-            open_time: r.is_open ? r.open_time ?? '09:00' : undefined,
-            close_time: r.is_open ? r.close_time ?? '22:00' : undefined,
+            morning_open: r.is_open ? r.morning_open ?? null : null,
+            morning_close: r.is_open ? r.morning_close ?? null : null,
+            afternoon_open: r.is_open ? r.afternoon_open ?? null : null,
+            afternoon_close: r.is_open ? r.afternoon_close ?? null : null,
           })),
         }),
       });
@@ -199,15 +207,26 @@ export function HorariosContent({ initialWeekly, initialExceptions }: HorariosCo
 
   return (
     <div className="space-y-8">
-      {/* Horario semanal */}
+      {/* Horario semanal: mañana y tarde por día */}
       <div className="rounded-[10px] bg-[#f7f7f5] p-5">
         <h2 className="admin-stat-label mb-4">Horario semanal por defecto</h2>
+        <p className="mb-4 text-[13px] text-[#6b6b6b]">
+          Define apertura y cierre de la franja mañana y de la franja tarde para cada día. Si dejas una franja vacía, no habrá reservas en ese tramo.
+        </p>
         <div className="overflow-x-auto">
-          <table className="admin-table w-full min-w-[400px] text-left text-sm">
+          <table className="admin-table w-full min-w-[640px] text-left text-sm">
             <thead>
               <tr>
                 <th>Día</th>
                 <th>Cerrado</th>
+                <th colSpan={2}>Mañana</th>
+                <th colSpan={2}>Tarde</th>
+              </tr>
+              <tr className="text-[11px] text-[#6b6b6b]">
+                <th aria-hidden />
+                <th aria-hidden />
+                <th>Apertura</th>
+                <th>Cierre</th>
                 <th>Apertura</th>
                 <th>Cierre</th>
               </tr>
@@ -233,29 +252,53 @@ export function HorariosContent({ initialWeekly, initialExceptions }: HorariosCo
                   </td>
                   <td>
                     <select
-                      value={row.open_time ?? '09:00'}
+                      value={row.morning_open ?? ''}
                       disabled={!row.is_open}
-                      onChange={(e) => updateDay(row.day_of_week, { open_time: e.target.value })}
-                      className="rounded-lg border border-stone-300 bg-white px-2 py-1.5 text-[#1a1a1a] disabled:bg-stone-100 disabled:text-stone-400"
+                      onChange={(e) => updateDay(row.day_of_week, { morning_open: e.target.value || null })}
+                      className="rounded-lg border border-stone-300 bg-white px-2 py-1.5 text-[#1a1a1a] disabled:bg-stone-100 disabled:text-stone-400 min-w-[4rem]"
                     >
+                      <option value="">—</option>
                       {TIME_OPTS.map((t) => (
-                        <option key={t} value={t}>
-                          {t}
-                        </option>
+                        <option key={t} value={t}>{t}</option>
                       ))}
                     </select>
                   </td>
                   <td>
                     <select
-                      value={row.close_time ?? '22:00'}
+                      value={row.morning_close ?? ''}
                       disabled={!row.is_open}
-                      onChange={(e) => updateDay(row.day_of_week, { close_time: e.target.value })}
-                      className="rounded-lg border border-stone-300 bg-white px-2 py-1.5 text-[#1a1a1a] disabled:bg-stone-100 disabled:text-stone-400"
+                      onChange={(e) => updateDay(row.day_of_week, { morning_close: e.target.value || null })}
+                      className="rounded-lg border border-stone-300 bg-white px-2 py-1.5 text-[#1a1a1a] disabled:bg-stone-100 disabled:text-stone-400 min-w-[4rem]"
                     >
+                      <option value="">—</option>
                       {TIME_OPTS.map((t) => (
-                        <option key={t} value={t}>
-                          {t}
-                        </option>
+                        <option key={t} value={t}>{t}</option>
+                      ))}
+                    </select>
+                  </td>
+                  <td>
+                    <select
+                      value={row.afternoon_open ?? ''}
+                      disabled={!row.is_open}
+                      onChange={(e) => updateDay(row.day_of_week, { afternoon_open: e.target.value || null })}
+                      className="rounded-lg border border-stone-300 bg-white px-2 py-1.5 text-[#1a1a1a] disabled:bg-stone-100 disabled:text-stone-400 min-w-[4rem]"
+                    >
+                      <option value="">—</option>
+                      {TIME_OPTS.map((t) => (
+                        <option key={t} value={t}>{t}</option>
+                      ))}
+                    </select>
+                  </td>
+                  <td>
+                    <select
+                      value={row.afternoon_close ?? ''}
+                      disabled={!row.is_open}
+                      onChange={(e) => updateDay(row.day_of_week, { afternoon_close: e.target.value || null })}
+                      className="rounded-lg border border-stone-300 bg-white px-2 py-1.5 text-[#1a1a1a] disabled:bg-stone-100 disabled:text-stone-400 min-w-[4rem]"
+                    >
+                      <option value="">—</option>
+                      {TIME_OPTS.map((t) => (
+                        <option key={t} value={t}>{t}</option>
                       ))}
                     </select>
                   </td>

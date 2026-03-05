@@ -20,7 +20,7 @@ export async function GET() {
 
   const { data: weekly, error: weeklyError } = await supabase
     .from('club_schedule')
-    .select('day_of_week, is_open, open_time, close_time')
+    .select('day_of_week, is_open, morning_open, morning_close, afternoon_open, afternoon_close')
     .order('day_of_week', { ascending: true });
 
   if (weeklyError) {
@@ -47,7 +47,16 @@ export async function PUT(request: Request) {
     return NextResponse.json({ message: 'Solo administradores' }, { status: 403 });
   }
 
-  let body: { weekly?: { day_of_week: number; is_open: boolean; open_time?: string; close_time?: string }[] };
+  let body: {
+    weekly?: {
+      day_of_week: number;
+      is_open: boolean;
+      morning_open?: string | null;
+      morning_close?: string | null;
+      afternoon_open?: string | null;
+      afternoon_close?: string | null;
+    }[];
+  };
   try {
     body = await request.json();
   } catch {
@@ -70,8 +79,10 @@ export async function PUT(request: Request) {
         {
           day_of_week: day,
           is_open: Boolean(row.is_open),
-          open_time: row.is_open && row.open_time ? row.open_time : null,
-          close_time: row.is_open && row.close_time ? row.close_time : null,
+          morning_open: row.morning_open && row.morning_close ? row.morning_open : null,
+          morning_close: row.morning_open && row.morning_close ? row.morning_close : null,
+          afternoon_open: row.afternoon_open && row.afternoon_close ? row.afternoon_open : null,
+          afternoon_close: row.afternoon_open && row.afternoon_close ? row.afternoon_close : null,
         },
         { onConflict: 'day_of_week' }
       );

@@ -75,15 +75,16 @@ export async function POST(request: Request) {
   const endNorm = String(endTime).slice(0, 5);
 
   const opening = await getOpeningForDate(bookingDate);
-  if (!opening.isOpen) {
+  if (!opening.isOpen || opening.ranges.length === 0) {
     return NextResponse.json(
       { message: 'Club cerrado ese día.' },
       { status: 400 }
     );
   }
-  const openT = opening.openTime ?? '00:00';
-  const closeT = opening.closeTime ?? '23:59';
-  if (startNorm < openT || endNorm > closeT) {
+  const fitsInSomeRange = opening.ranges.some(
+    (r) => startNorm >= r.openTime && endNorm <= r.closeTime
+  );
+  if (!fitsInSomeRange) {
     return NextResponse.json(
       { message: 'La franja horaria no está dentro del horario de apertura.' },
       { status: 400 }

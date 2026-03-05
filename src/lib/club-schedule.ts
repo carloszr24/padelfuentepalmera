@@ -1,15 +1,22 @@
 import { createSupabaseServiceClient } from '@/lib/supabase/server';
 
+export type TimeRange = { openTime: string; closeTime: string };
+
 export type OpeningForDate = {
   isOpen: boolean;
-  openTime: string | null;
-  closeTime: string | null;
+  /** Rangos horarios (mañana y/o tarde). Vacío si cerrado. */
+  ranges: TimeRange[];
   label: string | null;
 };
 
+function toHHMM(t: string | null): string | null {
+  if (!t) return null;
+  return String(t).slice(0, 5);
+}
+
 /**
  * Devuelve el horario de apertura para una fecha (yyyy-mm-dd).
- * Primero busca excepción (fecha única o rango), luego horario semanal.
+ * Primero busca excepción (fecha única o rango), luego horario semanal (mañana + tarde).
  */
 export async function getOpeningForDate(date: string): Promise<OpeningForDate> {
   const supabase = createSupabaseServiceClient();
@@ -27,28 +34,45 @@ export async function getOpeningForDate(date: string): Promise<OpeningForDate> {
   const exception = (exceptions ?? []).length > 0 ? exceptions![0] : null;
 
   if (exception) {
+    const ranges: TimeRange[] = [];
+    if (exception.is_open && exception.open_time && exception.close_time) {
+      ranges.push({
+        openTime: toHHMM(exception.open_time)!,
+        closeTime: toHHMM(exception.close_time)!,
+      });
+    }
     return {
       isOpen: exception.is_open,
-      openTime: exception.open_time ? String(exception.open_time).slice(0, 5) : null,
-      closeTime: exception.close_time ? String(exception.close_time).slice(0, 5) : null,
+      ranges,
       label: exception.label ?? null,
     };
   }
 
   const { data: weekly } = await supabase
     .from('club_schedule')
-    .select('is_open, open_time, close_time')
+    .select('is_open, morning_open, morning_close, afternoon_open, afternoon_close')
     .eq('day_of_week', dayOfWeek)
     .single();
 
-  if (!weekly) {
-    return { isOpen: false, openTime: null, closeTime: null, label: null };
+  if (!weekly || !weekly.is_open) {
+    return { isOpen: false, ranges: [], label: null };
+  }
+
+  const ranges: TimeRange[] = [];
+  const mOpen = toHHMM(weekly.morning_open);
+  const mClose = toHHMM(weekly.morning_close);
+  if (mOpen && mClose) {
+    ranges.push({ openTime: mOpen, closeTime: mClose });
+  }
+  const aOpen = toHHMM(weekly.afternoon_open);
+  const aClose = toHHMM(weekly.afternoon_close);
+  if (aOpen && aClose) {
+    ranges.push({ openTime: aOpen, closeTime: aClose });
   }
 
   return {
-    isOpen: weekly.is_open,
-    openTime: weekly.open_time ? String(weekly.open_time).slice(0, 5) : null,
-    closeTime: weekly.close_time ? String(weekly.close_time).slice(0, 5) : null,
+    isOpen: ranges.length > 0,
+    ranges,
     label: null,
   };
 }

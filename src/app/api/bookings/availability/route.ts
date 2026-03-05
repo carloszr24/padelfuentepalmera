@@ -107,25 +107,26 @@ export async function GET(request: Request) {
   }
 
   const opening = await getOpeningForDate(date);
-  if (!opening.isOpen) {
+  if (!opening.isOpen || opening.ranges.length === 0) {
     return NextResponse.json({ available: [], closed: true, label: opening.label ?? undefined });
   }
 
   let slotStarts = getSlotStartsForDay(dayOfWeek);
 
-  // Respetar horario del club: no ofrecer slots que empiecen antes de apertura o que terminen después de cierre
+  // Respetar horario del club (mañana y/o tarde): slot debe caber entero en algún rango
   const toMins = (t: string) => {
     const [h, m] = t.slice(0, 5).split(':').map(Number);
     return h * 60 + m;
   };
-  if (opening.openTime) {
-    const openMins = toMins(opening.openTime);
-    slotStarts = slotStarts.filter((start) => toMins(start) >= openMins);
-  }
-  if (opening.closeTime) {
-    const closeMins = toMins(opening.closeTime);
-    slotStarts = slotStarts.filter((start) => toMins(slotEnd(start)) <= closeMins);
-  }
+  slotStarts = slotStarts.filter((start) => {
+    const startMins = toMins(start);
+    const endMins = toMins(slotEnd(start));
+    return opening.ranges.some((r) => {
+      const openMins = toMins(r.openTime);
+      const closeMins = toMins(r.closeTime);
+      return startMins >= openMins && endMins <= closeMins;
+    });
+  });
 
   const now = new Date();
   const todayMadrid = now.toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' });

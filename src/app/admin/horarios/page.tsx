@@ -11,7 +11,7 @@ export default async function AdminHorariosPage() {
   ] = await Promise.all([
     supabase
       .from('club_schedule')
-      .select('day_of_week, is_open, open_time, close_time')
+      .select('day_of_week, is_open, morning_open, morning_close, afternoon_open, afternoon_close')
       .order('day_of_week', { ascending: true }),
     supabase
       .from('schedule_exceptions')
@@ -24,8 +24,10 @@ export default async function AdminHorariosPage() {
       ? weeklyRows.map((r) => ({
           day_of_week: r.day_of_week,
           is_open: r.is_open ?? true,
-          open_time: r.open_time ? String(r.open_time).slice(0, 5) : null,
-          close_time: r.close_time ? String(r.close_time).slice(0, 5) : null,
+          morning_open: r.morning_open ? String(r.morning_open).slice(0, 5) : null,
+          morning_close: r.morning_close ? String(r.morning_close).slice(0, 5) : null,
+          afternoon_open: r.afternoon_open ? String(r.afternoon_open).slice(0, 5) : null,
+          afternoon_close: r.afternoon_close ? String(r.afternoon_close).slice(0, 5) : null,
         }))
       : undefined;
   const initialExceptions = (exceptionRows ?? []).map((e) => ({
