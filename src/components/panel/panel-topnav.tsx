@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { CLUB_LOGO_PATH } from '@/lib/club-logo';
+import { PANEL_LOGO_PATH } from '@/lib/club-logo';
 import { usePathname } from 'next/navigation';
 import { useRef, useEffect, useState } from 'react';
 import { usePanelUser } from '@/contexts/panel-user-context';
@@ -39,11 +39,11 @@ export function PanelTopnav() {
       aria-label="Navegación principal"
     >
       <div className="flex items-center gap-3.5">
-        <Link href="/panel" className="flex flex-shrink-0 items-center" aria-label="Inicio" prefetch>
+        <Link href="/panel" className="flex flex-shrink-0 items-center" aria-label="Fuente Palmera Pádel Club - Inicio" prefetch>
           <img
-            src={CLUB_LOGO_PATH}
-            alt="Fuente Palmera Pádel"
-            className="h-10 w-auto object-contain"
+            src={PANEL_LOGO_PATH}
+            alt="Fuente Palmera Pádel Club"
+            className="h-10 w-10 rounded-full object-contain"
             width={40}
             height={40}
           />
