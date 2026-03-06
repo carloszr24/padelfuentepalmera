@@ -10,19 +10,16 @@
     "dev:lan": "next dev --hostname 0.0.0.0",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "stripe:webhook": "stripe listen --forward-to localhost:3000/api/stripe/webhook"
+    "lint": "eslint"
   },
   "dependencies": {
-    "lucide-react": "^0.468.0",
-    "@stripe/stripe-js": "^8.7.0",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.95.3",
+    "lucide-react": "^0.468.0",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "recharts": "^3.7.0",
-    "stripe": "^20.3.1"
+    "recharts": "^3.7.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

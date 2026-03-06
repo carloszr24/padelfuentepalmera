@@ -34,7 +34,7 @@ export default function PrivacidadPage() {
             <p>
               Recogemos los datos necesarios para gestionar su cuenta: nombre, correo electrónico y, opcionalmente,
               teléfono. Para las reservas y el monedero almacenamos el historial de reservas y de transacciones
-              (recargas, depósitos, reembolsos). Los pagos con tarjeta se procesan a través de Stripe; no almacenamos
+              (recargas, depósitos, reembolsos). Los pagos con tarjeta se procesan a través de nuestra pasarela de pago; no almacenamos
               datos de tarjeta en nuestros servidores.
             </p>
           </section>
@@ -53,7 +53,7 @@ export default function PrivacidadPage() {
               Conservamos los datos mientras mantenga una cuenta activa y, tras la baja, durante el tiempo que exijan
               las obligaciones legales (fiscal, contable). Aplicamos medidas técnicas y organizativas para proteger
               sus datos (acceso restringido, conexiones seguras, proveedores con garantías adecuadas como Supabase
-              y Stripe).
+              y la pasarela de pago).
             </p>
           </section>
           <section>

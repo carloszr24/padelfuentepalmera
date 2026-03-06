@@ -23,19 +23,19 @@ export function WalletModal({ open, onClose, trigger }: WalletModalProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fromStripeSuccess = searchParams?.get('success') === '1' || (searchParams?.get('session_id') ?? '').length > 10;
-  const fromStripeCancel = searchParams?.get('cancel') === '1';
+  const fromPaymentSuccess = searchParams?.get('success') === '1' || (searchParams?.get('session_id') ?? '').length > 10;
+  const fromPaymentCancel = searchParams?.get('cancel') === '1';
 
   useEffect(() => {
     setMounted(typeof document !== 'undefined');
   }, []);
 
   useEffect(() => {
-    if (open && (fromStripeSuccess || fromStripeCancel)) {
+    if (open && (fromPaymentSuccess || fromPaymentCancel)) {
       setLoading(false);
       onClose();
     }
-  }, [open, fromStripeSuccess, fromStripeCancel, onClose]);
+  }, [open, fromPaymentSuccess, fromPaymentCancel, onClose]);
 
   const amount =
     selectedQuick !== null
@@ -56,26 +56,8 @@ export function WalletModal({ open, onClose, trigger }: WalletModalProps) {
     if (!valid || loading) return;
     setLoading(true);
     setError(null);
-    try {
-      const res = await fetch('/api/stripe/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        setError(data.error || 'Error al crear el pago');
-        setLoading(false);
-        return;
-      }
-      if (data.url) {
-        window.location.href = data.url;
-        return;
-      }
-      setError('No se recibió la URL de pago');
-    } catch {
-      setError('Error de conexión');
-    }
+    // Recarga con tarjeta: se integrará con Redsys
+      setError('Recarga con tarjeta disponible próximamente.');
     setLoading(false);
   }
 
@@ -110,7 +92,7 @@ export function WalletModal({ open, onClose, trigger }: WalletModalProps) {
         </div>
 
         <p className="mb-4 text-sm font-medium text-stone-600">
-          Recarga mínima {MIN_EUR} €. Serás redirigido a Stripe para pagar con tarjeta.
+          Recarga mínima {MIN_EUR} €. Serás redirigido a la pasarela de pago para pagar con tarjeta (próximamente).
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">

@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { PanelMonederoSkeleton } from '@/components/ui/panel-page-skeleton';
-import { StripeSuccessCredit } from '@/components/ui/stripe-success-credit';
 import { WalletRechargeButton } from '@/components/ui/wallet-recharge-button';
 import { usePanelUser } from '@/contexts/panel-user-context';
 import { getBrowserSupabaseClient } from '@/lib/supabase/client';
@@ -79,7 +78,6 @@ export function PanelMonederoClient({ initialTransactions }: PanelMonederoClient
 
   return (
     <div className="min-w-0 max-w-full space-y-6 overflow-x-hidden">
-      {success && sessionId && <StripeSuccessCredit success={true} sessionId={sessionId} onCredited={refreshProfile} />}
       {success && !sessionId && (
         <div className="rounded-[var(--panel-radius)] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">
           Pago completado. Si no ves el saldo actualizado, refresca la página.
@@ -117,7 +115,7 @@ export function PanelMonederoClient({ initialTransactions }: PanelMonederoClient
               Recarga para saldar la deuda y poder reservar de nuevo.
             </p>
           )}
-          <p className="mt-1.5 text-[11px] font-medium text-[var(--panel-text-secondary)]">Recarga con tarjeta (Stripe). Mínimo 10 €.</p>
+          <p className="mt-1.5 text-[11px] font-medium text-[var(--panel-text-secondary)]">Recarga con tarjeta. Mínimo 10 €.</p>
           <div className="mt-4">
             <WalletRechargeButton />
           </div>

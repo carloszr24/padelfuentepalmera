@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 /**
- * Página estática ultraligera tras el pago con Stripe.
+ * Página estática ultraligera tras el pago con la pasarela.
  * Sin queries a Supabase. Muestra mensaje y redirige a /panel/monedero en 2s
  * pasando session_id para que allí se acredite el saldo si hace falta.
  */

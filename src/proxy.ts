@@ -77,7 +77,7 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // No ejecutar proxy en API routes (webhook Stripe y resto) ni en estáticos
+    // No ejecutar proxy en API routes ni en estáticos
     '/((?!_next/static|_next/image|favicon.ico|api/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };

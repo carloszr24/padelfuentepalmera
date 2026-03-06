@@ -115,7 +115,7 @@ export async function GET(request: Request) {
       return {
         created_at: tx.created_at,
         full_name: full_name ?? null,
-        type: tx.type === 'recharge' ? 'Stripe' : 'Admin',
+        type: tx.type === 'recharge' ? 'Tarjeta' : 'Admin',
         amount: Math.round(amount * 100) / 100,
         fee: 0,
       };
@@ -126,7 +126,7 @@ export async function GET(request: Request) {
       daily: [],
       totals: {
         totalIncome: Math.round(totalIncome * 100) / 100,
-        totalStripeFees: 0,
+        totalCardFees: 0,
         totalNet: Math.round(totalIncome * 100) / 100,
         txCount: list.length,
       },
@@ -159,7 +159,7 @@ export async function GET(request: Request) {
 
   const monthMap: Record<
     string,
-    { stripeIncome: number; adminIncome: number; txCount: number }
+    { cardIncome: number; adminIncome: number; txCount: number }
   > = {};
   const dayMap: Record<string, { income: number }> = {};
 
@@ -173,7 +173,7 @@ export async function GET(request: Request) {
     const dayKey = date.toISOString().slice(0, 10);
 
     if (!monthMap[monthKey]) {
-      monthMap[monthKey] = { stripeIncome: 0, adminIncome: 0, txCount: 0 };
+      monthMap[monthKey] = { cardIncome: 0, adminIncome: 0, txCount: 0 };
       monthKeys.push(monthKey);
     }
     if (!dayMap[dayKey]) {
@@ -182,7 +182,7 @@ export async function GET(request: Request) {
     }
 
     if (tx.type === 'recharge') {
-      monthMap[monthKey].stripeIncome += amount;
+      monthMap[monthKey].cardIncome += amount;
       monthMap[monthKey].txCount += 1;
       dayMap[dayKey].income += amount;
     } else if (tx.type === 'admin_recharge') {
@@ -194,12 +194,12 @@ export async function GET(request: Request) {
 
   const months = [...new Set(monthKeys)].sort().map((month) => {
     const m = monthMap[month];
-    const totalIncome = m.stripeIncome + m.adminIncome;
+    const totalIncome = m.cardIncome + m.adminIncome;
     return {
       month,
-      stripeIncome: Math.round(m.stripeIncome * 100) / 100,
+      cardIncome: Math.round(m.cardIncome * 100) / 100,
       adminIncome: Math.round(m.adminIncome * 100) / 100,
-      stripeFees: 0,
+      cardFees: 0,
       netProfit: Math.round(totalIncome * 100) / 100,
       txCount: m.txCount,
     };
@@ -224,12 +224,12 @@ export async function GET(request: Request) {
 
   const totals = months.reduce(
     (acc, m) => ({
-      totalIncome: acc.totalIncome + m.stripeIncome + m.adminIncome,
-      totalStripeFees: 0,
-      totalNet: acc.totalNet + m.stripeIncome + m.adminIncome,
+      totalIncome: acc.totalIncome + m.cardIncome + m.adminIncome,
+      totalCardFees: 0,
+      totalNet: acc.totalNet + m.cardIncome + m.adminIncome,
       txCount: acc.txCount + m.txCount,
     }),
-    { totalIncome: 0, totalStripeFees: 0, totalNet: 0, txCount: 0 }
+    { totalIncome: 0, totalCardFees: 0, totalNet: 0, txCount: 0 }
   );
   totals.totalIncome = Math.round(totals.totalIncome * 100) / 100;
   totals.totalNet = Math.round(totals.totalNet * 100) / 100;
@@ -239,7 +239,7 @@ export async function GET(request: Request) {
     daily: last30Days,
     totals: {
       totalIncome: totals.totalIncome,
-      totalStripeFees: totals.totalStripeFees,
+      totalCardFees: totals.totalCardFees,
       totalNet: totals.totalNet,
       txCount: totals.txCount,
     },
