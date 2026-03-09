@@ -60,11 +60,22 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       cecaStatus: res.status,
       cecaBodyLength: body.length,
-      cecaBodyPreview: body.slice(0, 4000),
-      cecaBodyEnd: body.length > 1500 ? body.slice(-1500) : body,
+      cecaBodyPreview: body.slice(0, 400),
       cifrado: result.formFields.Cifrado,
       formAction: result.formAction,
-      paramsSent: Object.keys(result.formFields),
+      params: {
+        MerchantID: result.formFields.MerchantID,
+        AcquirerBIN: result.formFields.AcquirerBIN,
+        TerminalID: result.formFields.TerminalID,
+        Num_operacion: result.formFields.Num_operacion,
+        Importe: result.formFields.Importe,
+        TipoMoneda: result.formFields.TipoMoneda,
+        Exponente: result.formFields.Exponente,
+        Cifrado: result.formFields.Cifrado,
+        URL_OK: result.formFields.URL_OK,
+        URL_NOK: result.formFields.URL_NOK,
+        Firma: result.formFields.Firma,
+      },
     });
   } catch (err) {
     return NextResponse.json(
