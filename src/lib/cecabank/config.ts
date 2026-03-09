@@ -43,6 +43,9 @@ export function getCecaConfig(): {
 }
 
 export function isCecaConfigured(): boolean {
-  const c = getCecaConfig();
-  return !!(c.merchantId && c.acquirerBin && c.terminal && c.secretKey);
+  const merchantId = process.env.CECA_MERCHANT_ID ?? process.env.REDSYS_MERCHANT_CODE ?? '';
+  const acquirerBin = process.env.CECA_ACQUIRER_BIN ?? process.env.REDSYS_ACQUIRER_BIN ?? '';
+  const terminal = process.env.CECA_TERMINAL ?? process.env.REDSYS_TERMINAL ?? '';
+  const secretKey = process.env.CECA_SECRET_KEY ?? process.env.REDSYS_SECRET_KEY ?? '';
+  return !!(merchantId && acquirerBin && terminal && secretKey);
 }
