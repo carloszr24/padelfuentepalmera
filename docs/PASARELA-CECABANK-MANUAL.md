@@ -122,3 +122,13 @@ En Ceca (portal) debes configurar la **URL de comunicación on-line** apuntando 
 Para que el callback sepa a qué usuario e importe corresponde cada `Num_operacion`, se puede usar una tabla `wallet_operations_pending`: el checkout inserta una fila al generar el pago; el callback la consulta por `Num_operacion` y obtiene `user_id` y `amount_euros`. Si no existe la tabla o la fila, el callback puede usar el JSON del campo `Descripcion` como respaldo.
 
 Script SQL: `supabase/wallet_operations_pending.sql`.
+
+---
+
+## 8. Diagnóstico si la pantalla de Ceca sale en blanco
+
+1. **Comprobar variables:** Abre en el navegador `https://tudominio.com/api/ceca/status`. Debe devolver `configured: true` y `formAction` con la URL del TPV. Si `configured: false`, revisa en Vercel que existan `CECA_MERCHANT_ID`, `CECA_ACQUIRER_BIN`, `CECA_TERMINAL`, `CECA_SECRET_KEY`.
+
+2. **Ver qué responde Ceca:** En Vercel añade la variable `CECA_DEBUG_SECRET` (valor que elijas, ej. `mi-clave-debug`). Redeploy. Luego abre en el navegador:
+   `https://tudominio.com/api/ceca/debug?secret=mi-clave-debug&amount=10`
+   La respuesta JSON incluye `cecaStatus`, `cecaBodyPreview` (primeros ~4000 caracteres del HTML que devuelve Ceca). Ahí puede aparecer un mensaje de error (firma incorrecta, parámetro faltante, etc.). Si el body sigue vacío o solo con un script en `<head>`, conviene enviar esa captura a Ceca (tpv@cecabank.es) y preguntar qué significa.
