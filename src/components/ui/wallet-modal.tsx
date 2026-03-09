@@ -73,30 +73,6 @@ export function WalletModal({ open, onClose, trigger }: WalletModalProps) {
         return;
       }
       if (data.formAction && data.formFields && typeof data.formFields === 'object') {
-        // #region agent log
-        fetch('http://127.0.0.1:7543/ingest/b946c3ce-2e52-4378-b9f6-afbd4bfaf00a', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '68ad37' },
-          body: JSON.stringify({
-            sessionId: '68ad37',
-            location: 'wallet-modal.tsx:76',
-            message: 'form about to submit',
-            data: {
-              formAction: data.formAction,
-              fieldKeys: Object.keys(data.formFields),
-              MerchantID: data.formFields.MerchantID,
-              AcquirerBIN: data.formFields.AcquirerBIN,
-              TerminalID: data.formFields.TerminalID,
-              Num_operacion: data.formFields.Num_operacion,
-              Importe: data.formFields.Importe,
-              Cifrado: data.formFields.Cifrado,
-              firmaDefined: !!data.formFields.Firma,
-            },
-            timestamp: Date.now(),
-            hypothesisId: 'A,B,C',
-          }),
-        }).catch(() => {});
-        // #endregion
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = data.formAction;
