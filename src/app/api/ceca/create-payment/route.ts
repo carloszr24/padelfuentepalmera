@@ -100,6 +100,37 @@ export async function POST(request: Request) {
     console.warn('[Ceca create-payment] wallet_operations_pending:', err);
   }
 
+  // #region agent log
+  const logPayload = {
+    sessionId: '68ad37',
+    location: 'create-payment/route.ts:103',
+    message: 'create-payment result',
+    data: {
+      formAction: result.formAction,
+      fieldKeys: Object.keys(result.formFields),
+      MerchantID: result.formFields.MerchantID,
+      AcquirerBIN: result.formFields.AcquirerBIN,
+      TerminalID: result.formFields.TerminalID,
+      Num_operacion: result.formFields.Num_operacion,
+      Importe: result.formFields.Importe,
+      TipoMoneda: result.formFields.TipoMoneda,
+      Exponente: result.formFields.Exponente,
+      Cifrado: result.formFields.Cifrado,
+      firmaDefined: !!result.formFields.Firma,
+      firmaLength: result.formFields.Firma?.length ?? 0,
+      urlOk: result.formFields.URL_OK,
+      urlNok: result.formFields.URL_NOK,
+    },
+    timestamp: Date.now(),
+    hypothesisId: 'A,B,C,D,E',
+  };
+  fetch('http://127.0.0.1:7543/ingest/b946c3ce-2e52-4378-b9f6-afbd4bfaf00a', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '68ad37' },
+    body: JSON.stringify(logPayload),
+  }).catch(() => {});
+  // #endregion
+
   return NextResponse.json({
     formAction: result.formAction,
     formFields: result.formFields,

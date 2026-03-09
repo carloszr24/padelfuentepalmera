@@ -12,8 +12,9 @@ import {
   isCecaConfigured,
 } from '@/lib/cecabank';
 
-const OK_RESPONSE = '$*OKY*$';
-const NOK_RESPONSE = '$*NOK*$';
+// Manual v8.31 sección 3.3.1: patrones exactos requeridos
+const OK_RESPONSE = '$*$OKY$*$';
+const NOK_RESPONSE = '$*$NOK$*$';
 
 export async function GET() {
   return new NextResponse('Callback Cecabank. La comunicación on-line usa POST.', {

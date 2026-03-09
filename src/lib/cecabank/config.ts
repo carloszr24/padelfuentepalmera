@@ -12,7 +12,6 @@ export function getCecaConfig(): {
   terminal: string;
   secretKey: string;
   formAction: string;
-  useHmac: boolean;
 } {
   const merchantId =
     process.env.CECA_MERCHANT_ID ?? process.env.REDSYS_MERCHANT_CODE ?? '';
@@ -32,8 +31,6 @@ export function getCecaConfig(): {
     configuredUrl ||
     (isProd ? CECABANK_URL_PROD : CECABANK_URL_TEST);
 
-  const useHmac = process.env.CECA_USE_HMAC === '1';
-
   const terminal8 = terminal.replace(/\D/g, '').padStart(8, '0').slice(-8);
 
   return {
@@ -42,7 +39,6 @@ export function getCecaConfig(): {
     terminal: terminal8,
     secretKey,
     formAction,
-    useHmac,
   };
 }
 

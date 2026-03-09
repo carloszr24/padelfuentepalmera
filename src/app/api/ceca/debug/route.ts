@@ -34,7 +34,6 @@ export async function GET(request: NextRequest) {
   }
 
   const amount = Math.max(1, Math.min(500, Number(amountParam) || 10));
-  const forceSha2 = request.nextUrl.searchParams.get('cifrado') === 'sha2';
   const numOperacion = Date.now().toString().replace(/\D/g, '').padStart(12, '0').slice(-12);
   const urlOk = `${FALLBACK_BASE}/panel/monedero/exito?order=${numOperacion}&amount=${amount}`;
   const urlNok = `${FALLBACK_BASE}/panel/monedero?error=1`;
@@ -45,7 +44,6 @@ export async function GET(request: NextRequest) {
     urlOk,
     urlNok,
     descripcion: { debug: true, amount },
-    forceSha2,
   });
 
   if (!result) {
@@ -64,7 +62,7 @@ export async function GET(request: NextRequest) {
       cecaBodyLength: body.length,
       cecaBodyPreview: body.slice(0, 4000),
       cecaBodyEnd: body.length > 1500 ? body.slice(-1500) : body,
-      cifrado: result.formFields.Cifrado || (forceSha2 ? 'SHA2' : 'HMAC'),
+      cifrado: result.formFields.Cifrado,
       formAction: result.formAction,
       paramsSent: Object.keys(result.formFields),
     });
