@@ -12,7 +12,7 @@ export async function GET() {
   return NextResponse.json({
     configured,
     formAction: config.formAction,
-    useHmac: config.useHmac,
+    cifrado: 'HMAC',
     env: {
       hasMerchantId: !!config.merchantId,
       hasAcquirerBin: !!config.acquirerBin,
