@@ -53,11 +53,46 @@ export function WalletModal({ open, onClose, trigger }: WalletModalProps) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!valid || loading) return;
+    if (!valid || loading || amount === null) return;
     setLoading(true);
     setError(null);
-    // Recarga con tarjeta: se integrará con Redsys
-      setError('Recarga con tarjeta disponible próximamente.');
+    try {
+      const payload = {
+        amount,
+        origin: typeof window !== 'undefined' ? window.location.origin : undefined,
+      };
+      const res = await fetch('/api/ceca/create-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(data.error || `Error ${res.status}`);
+        setLoading(false);
+        return;
+      }
+      if (data.formAction && data.formFields && typeof data.formFields === 'object') {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = data.formAction;
+        form.setAttribute('enctype', 'application/x-www-form-urlencoded');
+        for (const [name, value] of Object.entries(data.formFields)) {
+          if (value == null) continue;
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = name;
+          input.value = String(value);
+          form.appendChild(input);
+        }
+        document.body.appendChild(form);
+        form.submit();
+        return;
+      }
+      setError('No se recibieron los datos de pago');
+    } catch {
+      setError('Error de conexión');
+    }
     setLoading(false);
   }
 
@@ -92,7 +127,7 @@ export function WalletModal({ open, onClose, trigger }: WalletModalProps) {
         </div>
 
         <p className="mb-4 text-sm font-medium text-stone-600">
-          Recarga mínima {MIN_EUR} €. Serás redirigido a la pasarela de pago para pagar con tarjeta (próximamente).
+          Recarga mínima {MIN_EUR} €. Serás redirigido a la pasarela de pago para pagar con tarjeta.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
