@@ -57,10 +57,14 @@ export async function GET(request: NextRequest) {
       body: new URLSearchParams(result.formFields).toString(),
     });
     const body = await res.text();
+    const eudaMatch = body.match(/src=["']([^"']*euda[^"']*)["']/i);
+    const scriptMatches = [...body.matchAll(/src=["']([^"']+\.js[^"']*)["']/gi)].map(m => m[1]);
     return NextResponse.json({
       cecaStatus: res.status,
       cecaBodyLength: body.length,
-      cecaBodyPreview: body.slice(0, 400),
+      cecaBodyPreview: body.slice(0, 800),
+      eudaScriptUrl: eudaMatch ? eudaMatch[1] : null,
+      allScripts: scriptMatches,
       cifrado: result.formFields.Cifrado,
       formAction: result.formAction,
       params: {
