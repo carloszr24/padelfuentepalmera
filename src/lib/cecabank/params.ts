@@ -14,6 +14,8 @@ export type BuildPaymentParamsInput = {
   urlOk: string;
   urlNok: string;
   descripcion: Record<string, unknown>;
+  /** Para diagnóstico: forzar SHA2 en lugar de HMAC */
+  forceSha2?: boolean;
 };
 
 export function buildPaymentParams(input: BuildPaymentParamsInput): {
@@ -30,7 +32,7 @@ export function buildPaymentParams(input: BuildPaymentParamsInput): {
     return null;
   }
 
-  const { amount, numOperacion, urlOk, urlNok, descripcion } = input;
+  const { amount, numOperacion, urlOk, urlNok, descripcion, forceSha2 } = input;
   if (amount < 0.01) return null;
 
   const numOp = numOperacion.replace(/\D/g, '').padStart(12, '0').slice(-12);
@@ -38,7 +40,7 @@ export function buildPaymentParams(input: BuildPaymentParamsInput): {
 
   const importeCents = Math.round(amount * 100);
   const importeVal = importeCents.toString();
-  let cifrado: string = config.useHmac ? 'HMAC' : 'SHA2';
+  let cifrado: string = forceSha2 || !config.useHmac ? 'SHA2' : 'HMAC';
 
   const cadenaParams =
     config.merchantId +
@@ -54,7 +56,7 @@ export function buildPaymentParams(input: BuildPaymentParamsInput): {
   const cadenaCompleta = config.secretKey + cadenaParams;
 
   let firma: string;
-  if (config.useHmac) {
+  if (config.useHmac && !forceSha2) {
     try {
       firma = generateSignatureHmac(config.secretKey, numOp, cadenaCompleta);
     } catch {
