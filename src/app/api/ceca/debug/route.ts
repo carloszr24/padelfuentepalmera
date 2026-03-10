@@ -43,7 +43,6 @@ export async function GET(request: NextRequest) {
     numOperacion,
     urlOk,
     urlNok,
-    descripcion: { debug: true, amount },
   });
 
   if (!result) {
