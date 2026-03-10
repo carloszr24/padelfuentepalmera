@@ -16,11 +16,9 @@ export default function MonederoExitoPage() {
   useEffect(() => {
     const t = setTimeout(() => {
       const params = new URLSearchParams();
-      if (sessionId) {
-        params.set('success', '1');
-        params.set('session_id', sessionId);
-      }
-      router.replace(`/panel/monedero${params.toString() ? `?${params.toString()}` : ''}`);
+      params.set('success', '1');
+      if (sessionId) params.set('session_id', sessionId);
+      router.replace(`/panel/monedero?${params.toString()}`);
     }, 2000);
     return () => clearTimeout(t);
   }, [router, sessionId]);

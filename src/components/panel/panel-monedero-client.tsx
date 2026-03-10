@@ -71,19 +71,26 @@ export function PanelMonederoClient({ initialTransactions }: PanelMonederoClient
 
   useEffect(() => {
     if (!success) return;
-    let cancelled = false;
-    refreshProfile();
-    getBrowserSupabaseClient()
-      .from('transactions')
-      .select('id, created_at, amount, type, description')
-      .order('created_at', { ascending: false })
-      .limit(30)
-      .then(({ data }) => {
-        if (!cancelled) setTransactions(data ?? []);
-      });
-    return () => {
-      cancelled = true;
+    let active = true;
+    let attempts = 0;
+    const MAX = 6;
+    const INTERVAL = 1500;
+
+    const poll = async () => {
+      if (!active) return;
+      await refreshProfile();
+      const { data } = await getBrowserSupabaseClient()
+        .from('transactions')
+        .select('id, created_at, amount, type, description')
+        .order('created_at', { ascending: false })
+        .limit(30);
+      if (active && data) setTransactions(data);
+      attempts++;
+      if (active && attempts < MAX) setTimeout(poll, INTERVAL);
     };
+
+    poll();
+    return () => { active = false; };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [success]);
 
