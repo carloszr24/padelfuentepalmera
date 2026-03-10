@@ -100,6 +100,12 @@ export async function POST(request: Request) {
     console.warn('[Ceca create-payment] wallet_operations_pending:', err);
   }
 
+  // #region agent log
+  const logFields = { ...result.formFields };
+  if (logFields.Firma) logFields.Firma = `[${logFields.Firma.length}chars]`;
+  console.log('[Ceca create-payment] result:', { formAction: result.formAction, fields: logFields });
+  // #endregion
+
   return NextResponse.json({
     formAction: result.formAction,
     formFields: result.formFields,
