@@ -45,7 +45,6 @@ export async function GET() {
     numOperacion,
     urlOk,
     urlNok,
-    descripcion: { debug: true },
   });
 
   if (!result) {

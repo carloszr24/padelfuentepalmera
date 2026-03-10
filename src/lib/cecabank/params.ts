@@ -14,7 +14,6 @@ export type BuildPaymentParamsInput = {
   numOperacion: string;
   urlOk: string;
   urlNok: string;
-  descripcion: Record<string, unknown>;
 };
 
 export function buildPaymentParams(input: BuildPaymentParamsInput): {
@@ -31,7 +30,7 @@ export function buildPaymentParams(input: BuildPaymentParamsInput): {
     return null;
   }
 
-  const { amount, numOperacion, urlOk, urlNok, descripcion } = input;
+  const { amount, numOperacion, urlOk, urlNok } = input;
   if (amount < 0.01) return null;
 
   const numOp = numOperacion.replace(/\D/g, '').padStart(12, '0').slice(-12);
@@ -64,8 +63,6 @@ export function buildPaymentParams(input: BuildPaymentParamsInput): {
     return null;
   }
 
-  const descripcionStr = JSON.stringify(descripcion);
-
   const rawFields: Record<string, string> = {
     MerchantID: config.merchantId,
     AcquirerBIN: config.acquirerBin,
@@ -79,7 +76,6 @@ export function buildPaymentParams(input: BuildPaymentParamsInput): {
     Firma: firma,
     Cifrado: cifrado,
     Idioma: '1',
-    Descripcion: descripcionStr,
   };
 
   const formFields: Record<string, string> = {};

@@ -101,7 +101,6 @@ export async function POST(request: Request) {
     numOperacion,
     urlOk,
     urlNok,
-    descripcion: { user_id: user.id, amount },
   });
 
   if (!result) {
