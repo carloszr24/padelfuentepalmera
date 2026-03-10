@@ -69,6 +69,24 @@ export function PanelMonederoClient({ initialTransactions }: PanelMonederoClient
     };
   }, [initialTransactions]);
 
+  useEffect(() => {
+    if (!success) return;
+    let cancelled = false;
+    refreshProfile();
+    getBrowserSupabaseClient()
+      .from('transactions')
+      .select('id, created_at, amount, type, description')
+      .order('created_at', { ascending: false })
+      .limit(30)
+      .then(({ data }) => {
+        if (!cancelled) setTransactions(data ?? []);
+      });
+    return () => {
+      cancelled = true;
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [success]);
+
   if (transactions === null) {
     return <PanelMonederoSkeleton />;
   }
@@ -78,9 +96,9 @@ export function PanelMonederoClient({ initialTransactions }: PanelMonederoClient
 
   return (
     <div className="min-w-0 max-w-full space-y-6 overflow-x-hidden">
-      {success && !sessionId && (
+      {success && (
         <div className="rounded-[var(--panel-radius)] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">
-          Pago completado. Si no ves el saldo actualizado, refresca la página.
+          ¡Pago completado! Tu saldo ha sido actualizado.
         </div>
       )}
       {cancel && (
