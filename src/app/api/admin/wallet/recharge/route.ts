@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/server';
 import { checkRateLimit } from '@/lib/rate-limit';
@@ -104,6 +105,11 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
+
+  revalidatePath('/admin/monederos');
+  revalidatePath('/admin/usuarios');
+  revalidatePath(`/admin/usuarios/${userId}`);
+  revalidatePath('/admin/transacciones');
 
   return NextResponse.json({ ok: true });
 }
