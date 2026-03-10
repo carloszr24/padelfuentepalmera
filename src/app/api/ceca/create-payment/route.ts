@@ -7,6 +7,18 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient, createSupabaseServiceClient } from '@/lib/supabase/server';
 import { buildPaymentParams, isCecaConfigured } from '@/lib/cecabank';
+import { checkRateLimit } from '@/lib/rate-limit';
+
+const MIN_AMOUNT = 1;
+const MAX_AMOUNT = 500;
+
+const ALLOWED_HOSTS = new Set([
+  'www.padelfuentepalmera.com',
+  'padelfuentepalmera.com',
+  ...(process.env.NEXT_PUBLIC_SITE_URL
+    ? [new URL(process.env.NEXT_PUBLIC_SITE_URL).hostname]
+    : []),
+].filter(Boolean));
 
 const FALLBACK_BASE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ||
@@ -29,21 +41,25 @@ function getBaseUrl(request: Request): string {
   return FALLBACK_BASE_URL;
 }
 
-function isAllowedOrigin(origin: string, request: Request): boolean {
+function isAllowedOrigin(origin: string): boolean {
   try {
     const o = new URL(origin);
     if (o.protocol !== 'https:' && o.protocol !== 'http:') return false;
-    const serverHost = new URL(getBaseUrl(request)).hostname;
-    if (o.hostname === serverHost) return true;
-    if (o.hostname.endsWith('.vercel.app')) return true;
-    if (o.hostname === new URL(FALLBACK_BASE_URL).hostname) return true;
+    return ALLOWED_HOSTS.has(o.hostname);
   } catch {
     return false;
   }
-  return false;
 }
 
 export async function POST(request: Request) {
+  const ip =
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    request.headers.get('x-real-ip') ??
+    'unknown';
+  if (!checkRateLimit('checkout', ip)) {
+    return NextResponse.json({ error: 'Demasiadas solicitudes' }, { status: 429 });
+  }
+
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },
@@ -63,17 +79,21 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}));
   const amount = body.amount as number | undefined;
   const clientOrigin = typeof body.origin === 'string' ? body.origin.trim() : undefined;
-  if (amount == null || amount < 1) {
-    return NextResponse.json({ error: 'Cantidad mínima 1€' }, { status: 400 });
+
+  if (amount == null || amount < MIN_AMOUNT) {
+    return NextResponse.json({ error: `Cantidad mínima ${MIN_AMOUNT}€` }, { status: 400 });
+  }
+  if (amount > MAX_AMOUNT) {
+    return NextResponse.json({ error: `Cantidad máxima ${MAX_AMOUNT}€` }, { status: 400 });
   }
 
   const baseUrl =
-    clientOrigin && isAllowedOrigin(clientOrigin, request)
+    clientOrigin && isAllowedOrigin(clientOrigin)
       ? clientOrigin.replace(/\/$/, '')
       : getBaseUrl(request);
 
   const numOperacion = Date.now().toString().replace(/\D/g, '').padStart(12, '0').slice(-12);
-  const urlOk = `${baseUrl}/panel/monedero/exito?order=${numOperacion}&amount=${amount}&user_id=${user.id}`;
+  const urlOk = `${baseUrl}/panel/monedero/exito?order=${numOperacion}&amount=${amount}`;
   const urlNok = `${baseUrl}/panel/monedero?error=1`;
 
   const result = buildPaymentParams({
@@ -99,12 +119,6 @@ export async function POST(request: Request) {
   } catch (err) {
     console.warn('[Ceca create-payment] wallet_operations_pending:', err);
   }
-
-  // #region agent log
-  const logFields = { ...result.formFields };
-  if (logFields.Firma) logFields.Firma = `[${logFields.Firma.length}chars]`;
-  console.log('[Ceca create-payment] result:', { formAction: result.formAction, fields: logFields });
-  // #endregion
 
   return NextResponse.json({
     formAction: result.formAction,

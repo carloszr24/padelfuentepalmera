@@ -4,7 +4,7 @@
  * - Webhook: siempre SHA2 (hex).
  */
 
-import { createHash, createHmac, createCipheriv } from 'node:crypto';
+import { createHash, createHmac, createCipheriv, timingSafeEqual } from 'node:crypto';
 
 /** SHA2: SHA-256 de la cadena, resultado en hexadecimal minúsculas (manual). */
 export function generateSignature(cadena: string): string {
@@ -52,9 +52,16 @@ export function generateSignatureHmac(
   return createHmac('sha256', hmacKey).update(cadena, 'utf8').digest('base64');
 }
 
-/** Valida firma SHA2 del webhook (comparación con firma recibida). */
+/** Valida firma SHA2 del webhook con comparación timing-safe para evitar ataques de temporización. */
 export function validateSignature(cadena: string, firmaRecibida: string): boolean {
   if (!firmaRecibida) return false;
   const esperada = generateSignature(cadena);
-  return firmaRecibida.toLowerCase() === esperada.toLowerCase();
+  try {
+    const a = Buffer.from(esperada.toLowerCase(), 'utf8');
+    const b = Buffer.from(firmaRecibida.toLowerCase(), 'utf8');
+    if (a.length !== b.length) return false;
+    return timingSafeEqual(a, b);
+  } catch {
+    return false;
+  }
 }

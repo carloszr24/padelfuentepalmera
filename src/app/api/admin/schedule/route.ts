@@ -1,7 +1,15 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { checkRateLimit } from '@/lib/rate-limit';
 
-export async function GET() {
+export async function GET(request: Request) {
+  const ip =
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    request.headers.get('x-real-ip') ??
+    'unknown';
+  if (!checkRateLimit('admin', ip)) {
+    return NextResponse.json({ message: 'Too Many Requests' }, { status: 429 });
+  }
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },
@@ -31,6 +39,13 @@ export async function GET() {
 }
 
 export async function PUT(request: Request) {
+  const ip =
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    request.headers.get('x-real-ip') ??
+    'unknown';
+  if (!checkRateLimit('admin', ip)) {
+    return NextResponse.json({ message: 'Too Many Requests' }, { status: 429 });
+  }
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },

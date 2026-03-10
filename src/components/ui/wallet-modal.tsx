@@ -85,13 +85,7 @@ export function WalletModal({ open, onClose, trigger }: WalletModalProps) {
           input.value = String(value);
           form.appendChild(input);
         }
-        // #region agent log
-        fetch('http://127.0.0.1:7543/ingest/b946c3ce-2e52-4378-b9f6-afbd4bfaf00a',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'68ad37'},body:JSON.stringify({sessionId:'68ad37',location:'wallet-modal.tsx:pre-submit',message:'Enviando form a Cecabank',data:{formAction:data.formAction,fieldNames:Object.keys(data.formFields),fieldCount:Object.keys(data.formFields).length,MerchantID:data.formFields.MerchantID,AcquirerBIN:data.formFields.AcquirerBIN,TerminalID:data.formFields.TerminalID,Num_operacion:data.formFields.Num_operacion,Importe:data.formFields.Importe,TipoMoneda:data.formFields.TipoMoneda,Exponente:data.formFields.Exponente,Cifrado:data.formFields.Cifrado,Idioma:data.formFields.Idioma,firmaLength:data.formFields.Firma?.length,hasUrlOk:!!data.formFields.URL_OK,hasUrlNok:!!data.formFields.URL_NOK,URL_OK:data.formFields.URL_OK,URL_NOK:data.formFields.URL_NOK},timestamp:Date.now(),hypothesisId:'H-1,H-2,H-4'})}).catch(()=>{});
-        // #endregion
         document.body.appendChild(form);
-        // #region agent log
-        fetch('http://127.0.0.1:7543/ingest/b946c3ce-2e52-4378-b9f6-afbd4bfaf00a',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'68ad37'},body:JSON.stringify({sessionId:'68ad37',location:'wallet-modal.tsx:form-submit',message:'Llamando form.submit()',data:{formAction:form.action,method:form.method,enctype:form.enctype,inputCount:form.elements.length},timestamp:Date.now(),hypothesisId:'H-3'})}).catch(()=>{});
-        // #endregion
         form.submit();
         return;
       }
