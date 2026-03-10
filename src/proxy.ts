@@ -1,4 +1,9 @@
-import { createClient } from '@supabase/supabase-js';
+/**
+ * Middleware de sesión compatible con Edge runtime.
+ * Solo refresca tokens de Supabase y redirige usuarios no autenticados.
+ * Las comprobaciones de email confirmado y rol admin se hacen en los layouts
+ * correspondientes (panel/layout.tsx, admin/layout.tsx) donde Node.js sí está disponible.
+ */
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
@@ -7,7 +12,6 @@ export async function proxy(request: NextRequest) {
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !anonKey) return response;
 
   const pathname = request.nextUrl.pathname;
@@ -30,40 +34,13 @@ export async function proxy(request: NextRequest) {
       },
     });
 
+    // Refresca el token de sesión (objetivo principal del middleware)
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
     if (isPanelOrAdmin && !user) {
       return NextResponse.redirect(new URL('/login', request.url));
-    }
-
-    if (isPanelOrAdmin && user && serviceKey) {
-      const adminClient = createClient(url, serviceKey);
-      const {
-        data: { user: fullUser },
-      } = await adminClient.auth.admin.getUserById(user.id);
-      const emailConfirmed = fullUser?.email_confirmed_at ?? null;
-
-      if (!emailConfirmed) {
-        await supabase.auth.signOut();
-        const redirectRes = NextResponse.redirect(new URL('/login', request.url));
-        response.cookies.getAll().forEach((c) => {
-          redirectRes.cookies.set(c.name, c.value, { path: c.path ?? '/' });
-        });
-        return redirectRes;
-      }
-
-      if (pathname.startsWith('/admin')) {
-        const { data: prof } = await adminClient
-          .from('profiles')
-          .select('role')
-          .eq('id', user.id)
-          .single();
-        if (prof?.role !== 'admin') {
-          return NextResponse.redirect(new URL('/panel', request.url));
-        }
-      }
     }
   } catch (error) {
     console.error('Middleware auth error:', error);
@@ -74,10 +51,3 @@ export async function proxy(request: NextRequest) {
 
   return response;
 }
-
-export const config = {
-  matcher: [
-    // No ejecutar proxy en API routes ni en estáticos
-    '/((?!_next/static|_next/image|favicon.ico|api/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
-  ],
-};
