@@ -4,7 +4,7 @@ import { createSupabaseServiceClient } from '@/lib/supabase/server';
 import { AdminWalletRechargeButton } from '@/components/ui/admin-wallet-recharge-button';
 import { AdminCreateUserTrigger } from '@/components/ui/admin-create-user-trigger';
 
-const ADMIN_USUARIOS_CACHE_SECONDS = 0;
+const ADMIN_USUARIOS_CACHE_SECONDS = 1;
 
 type AdminUsuariosPageProps = {
   searchParams?: Promise<{ q?: string }> | { q?: string };
