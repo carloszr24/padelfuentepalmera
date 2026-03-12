@@ -5,7 +5,7 @@
  */
 
 import { NextResponse } from 'next/server';
-import { revalidateTag } from 'next/cache';
+import { revalidateTag, revalidatePath } from 'next/cache';
 import { createSupabaseServiceClient } from '@/lib/supabase/server';
 import {
   parseCallbackFormData,
@@ -90,8 +90,9 @@ export async function POST(request: Request) {
         })
         .eq('num_operacion', data.Num_operacion);
 
-      // Invalida la caché del perfil del usuario para que el panel refleje is_member=true de inmediato
-      try { revalidateTag(`auth-profile-${memOp.user_id}`); } catch { /* non-critical */ }
+      // Invalidar caché de perfil para que el panel refleje la membresía de inmediato
+      revalidateTag(`auth-profile-${memOp.user_id}`);
+      revalidatePath('/panel', 'layout');
 
       return new NextResponse(OK_RESPONSE, {
         status: 200,

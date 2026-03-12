@@ -2,21 +2,52 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { usePanelUserOptional } from '@/contexts/panel-user-context';
+import { getBrowserSupabaseClient } from '@/lib/supabase/client';
 
 export default function MembresiaExitoPage() {
   const router = useRouter();
-  const panelUser = usePanelUserOptional();
 
   useEffect(() => {
-    // Refresca el contexto de usuario para que is_member se actualice en el cliente
-    panelUser?.refreshProfile();
-    const t = setTimeout(() => {
-      router.replace('/panel/membresia?success=1');
-    }, 2500);
-    return () => clearTimeout(t);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    let active = true;
+    let attempts = 0;
+    const MAX = 8;
+    const INTERVAL = 1500;
+
+    const poll = async () => {
+      if (!active) return;
+      try {
+        const { data: { user } } = await getBrowserSupabaseClient().auth.getUser();
+        if (user) {
+          const { data: member } = await getBrowserSupabaseClient()
+            .from('members')
+            .select('is_paid, expiry_date')
+            .eq('user_id', user.id)
+            .maybeSingle();
+          const today = new Date().toISOString().slice(0, 10);
+          const isActive = member?.is_paid === true && member?.expiry_date != null && member.expiry_date >= today;
+          if (isActive && active) {
+            router.replace('/panel/membresia?success=1');
+            return;
+          }
+        }
+      } catch {
+        // ignore
+      }
+      attempts++;
+      if (active && attempts < MAX) {
+        setTimeout(poll, INTERVAL);
+      } else if (active) {
+        router.replace('/panel/membresia?success=1');
+      }
+    };
+
+    // Esperar 2s antes de empezar a sondear (dar tiempo al callback de Cecabank)
+    const t = setTimeout(poll, 2000);
+    return () => {
+      active = false;
+      clearTimeout(t);
+    };
+  }, [router]);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-4">

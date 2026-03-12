@@ -18,7 +18,7 @@ async function getCachedReservasData(desde: string, hasta: string) {
       let bookingsQuery = supabase
         .from('bookings')
         .select(
-          'id, booking_date, start_time, end_time, status, deposit_paid, payment_method, remaining_paid_at, profiles!bookings_user_id_fkey(full_name), courts(name)'
+          'id, booking_date, start_time, end_time, status, deposit_paid, remaining_paid_at, profiles!bookings_user_id_fkey(full_name), courts(name)'
         )
         .order('booking_date', { ascending: false })
         .order('start_time', { ascending: false });
