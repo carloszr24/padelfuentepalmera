@@ -29,7 +29,7 @@ async function getProfileAndEmailConfirmed(userId: string): Promise<{
     service.auth.admin.getUserById(userId),
     service
       .from('profiles')
-      .select('full_name, wallet_balance, role, has_debt, debt_amount, is_member')
+      .select('full_name, wallet_balance, role, has_debt, debt_amount')
       .eq('id', userId)
       .single(),
     service

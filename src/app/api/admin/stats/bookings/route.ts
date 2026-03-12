@@ -85,10 +85,18 @@ export async function GET(request: Request) {
   });
 
   if (error) {
-    console.error('get_booking_stats RPC error:', error);
+    console.error('[admin/stats/bookings] get_booking_stats RPC error:', error.message, error.code);
     return NextResponse.json(
-      { message: 'Error al obtener estadísticas' },
-      { status: 500 }
+      {
+        by_hour: [],
+        by_dow: [],
+        by_court: [],
+        by_date: [],
+        by_status: [],
+        noshows: 0,
+        total_for_noshow_rate: 0,
+      },
+      { status: 200 }
     );
   }
 
