@@ -67,12 +67,18 @@ export function WalletModal({ open, onClose, trigger }: WalletModalProps) {
         body: JSON.stringify(payload),
       });
       const data = await res.json().catch(() => ({}));
+      // #region agent log
+      fetch('http://127.0.0.1:7543/ingest/b946c3ce-2e52-4378-b9f6-afbd4bfaf00a',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'68ad37'},body:JSON.stringify({sessionId:'68ad37',location:'wallet-modal.tsx:create-payment-response',message:'API response',data:{status:res.status,ok:res.ok,error:data?.error,hasFormAction:!!data?.formAction,hasFormFields:!!data?.formFields,formFieldKeys:data?.formFields?Object.keys(data.formFields):null},timestamp:Date.now(),hypothesisId:'B-C'})}).catch(()=>{});
+      // #endregion
       if (!res.ok) {
         setError(data.error || `Error ${res.status}`);
         setLoading(false);
         return;
       }
       if (data.formAction && data.formFields && typeof data.formFields === 'object') {
+        // #region agent log
+        fetch('http://127.0.0.1:7543/ingest/b946c3ce-2e52-4378-b9f6-afbd4bfaf00a',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'68ad37'},body:JSON.stringify({sessionId:'68ad37',location:'wallet-modal.tsx:form-submit',message:'Submitting form to Cecabank',data:{formAction:data.formAction,fields:{...data.formFields,Firma:data.formFields?.Firma?data.formFields.Firma.slice(0,6)+'…':'MISSING'}},timestamp:Date.now(),hypothesisId:'E'})}).catch(()=>{});
+        // #endregion
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = data.formAction;
