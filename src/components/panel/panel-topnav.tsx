@@ -11,6 +11,7 @@ const NAV_LINKS = [
   { href: '/panel', label: 'Inicio' },
   { href: '/panel/reservas', label: 'Reservas' },
   { href: '/panel/monedero', label: 'Monedero' },
+  { href: '/panel/membresia', label: 'Membresía' },
   { href: '/panel/perfil', label: 'Perfil' },
 ] as const;
 

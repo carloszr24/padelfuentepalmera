@@ -59,6 +59,43 @@ export async function POST(request: Request) {
 
     const supabase = createSupabaseServiceClient();
 
+    // 1. ¿Es un pago de membresía?
+    const { data: memOp } = await supabase
+      .from('membership_payments_pending')
+      .select('user_id')
+      .eq('num_operacion', data.Num_operacion)
+      .maybeSingle();
+
+    if (memOp?.user_id) {
+      const { error: memberError } = await supabase.rpc('activate_membership', {
+        p_user_id: memOp.user_id,
+      });
+
+      if (memberError) {
+        console.error('[Ceca callback] Error activando membresía:', memberError);
+        return new NextResponse(NOK_RESPONSE, {
+          status: 200,
+          headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+        });
+      }
+
+      await supabase
+        .from('membership_payments_pending')
+        .update({
+          status: 'completed',
+          referencia: data.Referencia || null,
+          num_aut: data.Num_aut || null,
+          processed_at: new Date().toISOString(),
+        })
+        .eq('num_operacion', data.Num_operacion);
+
+      return new NextResponse(OK_RESPONSE, {
+        status: 200,
+        headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+      });
+    }
+
+    // 2. Pago de recarga de monedero (flujo original)
     const { data: opPendiente } = await supabase
       .from('wallet_operations_pending')
       .select('user_id, amount_euros')

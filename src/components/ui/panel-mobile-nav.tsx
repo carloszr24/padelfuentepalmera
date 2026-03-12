@@ -2,12 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { IconHome, IconCalendar, IconWallet, IconUser } from '@/components/ui/panel-nav-icons';
+import { IconHome, IconCalendar, IconWallet, IconBadge, IconUser } from '@/components/ui/panel-nav-icons';
 
 const NAV_ITEMS = [
   { href: '/panel', label: 'Inicio', Icon: IconHome },
   { href: '/panel/reservas', label: 'Reservas', Icon: IconCalendar },
   { href: '/panel/monedero', label: 'Monedero', Icon: IconWallet },
+  { href: '/panel/membresia', label: 'Socio', Icon: IconBadge },
   { href: '/panel/perfil', label: 'Perfil', Icon: IconUser },
 ] as const;
 

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { createServerSupabaseClient, createSupabaseServiceClient } from '@/lib/supabase/server';
 import { getOpeningForDate } from '@/lib/club-schedule';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { isValidUUID } from '@/lib/utils';
@@ -63,6 +63,27 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { message: 'Tienes una deuda pendiente. Recarga tu monedero para poder reservar.' },
       { status: 400 }
+    );
+  }
+
+  // Solo socios activos pueden reservar
+  const serviceSupabase = createSupabaseServiceClient();
+  const { data: membership } = await serviceSupabase
+    .from('members')
+    .select('expiry_date, is_paid')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  const today = new Date().toISOString().slice(0, 10);
+  const isActiveMember =
+    membership?.is_paid === true &&
+    membership?.expiry_date != null &&
+    membership.expiry_date >= today;
+
+  if (!isActiveMember) {
+    return NextResponse.json(
+      { code: 'NOT_MEMBER', message: 'Solo los socios pueden reservar pistas. Hazte socio para poder reservar.' },
+      { status: 403 }
     );
   }
 

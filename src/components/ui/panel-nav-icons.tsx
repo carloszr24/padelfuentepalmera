@@ -1,5 +1,13 @@
 /** Iconos SVG para la barra de navegación del panel (mobile-first). */
 
+export function IconBadge({ className }: { className?: string }) {
+  return (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M12 2l2.4 6.4L21 9.2l-5 4.8 1.4 6.8L12 17.6 6.6 20.8 8 14 3 9.2l6.6-.8z" />
+    </svg>
+  );
+}
+
 export function IconHome({ className }: { className?: string }) {
   return (
     <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>

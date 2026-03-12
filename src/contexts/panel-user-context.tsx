@@ -15,6 +15,8 @@ export type PanelProfile = {
   role: string | null;
   has_debt?: boolean | null;
   debt_amount?: number | null;
+  is_member?: boolean | null;
+  member_expiry_date?: string | null;
 } | null;
 
 export type PanelUserSerialized = {
@@ -59,6 +61,8 @@ type PanelUserContextValue = {
   isAdmin: boolean;
   hasDebt: boolean;
   debtAmount: number;
+  isMember: boolean;
+  memberExpiry: string | null;
   refreshProfile: () => Promise<void>;
   setProfile: (profile: PanelProfile) => void;
 };
@@ -125,6 +129,12 @@ export function PanelUserProvider({
       (initialUser?.user_metadata?.full_name as string | undefined) ??
       initialUser?.email?.split('@')[0] ??
       'Jugador';
+    const memberExpiry = profile?.member_expiry_date ?? null;
+    const today = new Date().toISOString().slice(0, 10);
+    const isMember =
+      profile?.is_member === true &&
+      memberExpiry != null &&
+      memberExpiry >= today;
     return {
       user: initialUser,
       profile,
@@ -133,6 +143,8 @@ export function PanelUserProvider({
       isAdmin: profile?.role === 'admin',
       hasDebt: profile?.has_debt === true,
       debtAmount: Number(profile?.debt_amount ?? 0),
+      isMember,
+      memberExpiry,
       refreshProfile,
       setProfile,
     };

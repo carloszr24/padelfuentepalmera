@@ -3,6 +3,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { AlertTriangle } from 'lucide-react';
+import { SocioUpsell } from '@/components/ui/socio-upsell';
+import { usePanelUserOptional } from '@/contexts/panel-user-context';
 
 // Horario club: última reserva 21:00 (sesión hasta 22:30, cierre)
 const SLOT_STARTS = ['10:00', '11:30', '16:30', '18:00', '19:30', '21:00'];
@@ -47,6 +49,8 @@ function buildDateStrip(count: number): { date: string; label: string; dayShort:
 }
 
 export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerClassName, onSuccess }: BookingModalProps) {
+  const panelUser = usePanelUserOptional();
+  const isMember = panelUser?.isMember ?? true; // si no hay contexto (admin) permitir
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<'choose' | 'slots' | 'confirm'>('choose');
   const [courtId, setCourtId] = useState('');
@@ -203,7 +207,13 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
             </div>
 
             <div className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-8">
-              {step === 'choose' && (
+              {!isMember && (
+                <SocioUpsell
+                  onCtaClick={() => { setOpen(false); window.location.href = '/panel/membresia'; }}
+                  ctaLabel="Hazte socio para reservar"
+                />
+              )}
+              {isMember && step === 'choose' && (
                 <div className="space-y-8">
                   {courts.length === 0 ? (
                     <p className="rounded-xl border border-amber-200 bg-amber-50 px-6 py-4 text-base font-semibold text-amber-800">
@@ -273,7 +283,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
                 </div>
               )}
 
-              {step === 'slots' && (
+              {isMember && step === 'slots' && (
                 <div className="space-y-6">
                   <p className="text-base font-medium text-stone-700">
                     <span className="font-bold text-stone-900">{courtName}</span>
@@ -328,7 +338,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
                 </div>
               )}
 
-              {step === 'confirm' && (
+              {isMember && step === 'confirm' && (
                 <form onSubmit={handleConfirm} className="space-y-6">
                   <div className="rounded-xl border border-stone-200 bg-stone-50 p-6">
                     <p className="text-sm font-bold uppercase tracking-wider text-stone-500">Resumen</p>
