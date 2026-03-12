@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { isValidUUID } from '@/lib/utils';
@@ -53,5 +54,6 @@ export async function POST(request: Request) {
     );
   }
 
+  revalidatePath('/admin/reservas');
   return NextResponse.json({ ok: true });
 }

@@ -3,7 +3,7 @@ import { createSupabaseServiceClient } from '@/lib/supabase/server';
 import { AdminPageHeader } from '@/components/ui/admin-page-header';
 import { AdminSociosContent } from '@/components/admin/AdminSociosContent';
 
-const ADMIN_SOCIOS_CACHE_SECONDS = 45;
+const ADMIN_SOCIOS_CACHE_SECONDS = 0;
 
 export type MemberWithProfile = {
   id: string;

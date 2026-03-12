@@ -5,7 +5,7 @@ import { AdminPageHeader } from '@/components/ui/admin-page-header';
 import { AdminCreateBookingTrigger } from '@/components/ui/admin-create-booking-trigger';
 import { AdminReservasContent, type BookingRow } from '@/components/admin/AdminReservasContent';
 
-const ADMIN_RESERVAS_CACHE_SECONDS = 30;
+const ADMIN_RESERVAS_CACHE_SECONDS = 0;
 
 type PageProps = {
   searchParams: Promise<{ desde?: string; hasta?: string }> | { desde?: string; hasta?: string };

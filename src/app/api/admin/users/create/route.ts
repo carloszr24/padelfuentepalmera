@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { createSupabaseServiceClient } from '@/lib/supabase/server';
 
@@ -86,6 +87,8 @@ export async function POST(request: Request) {
   if (updateError) {
     console.error('Profile update after create:', updateError);
   }
+
+  revalidatePath('/admin/usuarios');
 
   return NextResponse.json({
     id: newUser.user.id,
