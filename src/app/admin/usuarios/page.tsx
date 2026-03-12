@@ -1,46 +1,39 @@
 import Link from 'next/link';
-import { unstable_cache } from 'next/cache';
 import { createSupabaseServiceClient } from '@/lib/supabase/server';
 import { AdminWalletRechargeButton } from '@/components/ui/admin-wallet-recharge-button';
 import { AdminCreateUserTrigger } from '@/components/ui/admin-create-user-trigger';
 
-const ADMIN_USUARIOS_CACHE_SECONDS = 1;
+export const dynamic = 'force-dynamic';
 
 type AdminUsuariosPageProps = {
   searchParams?: Promise<{ q?: string }> | { q?: string };
 };
 
-async function getCachedUsuariosData(q: string) {
-  return unstable_cache(
-    async () => {
-      const supabase = createSupabaseServiceClient();
-      let query = supabase
-        .from('profiles')
-        .select('id, full_name, email, phone, wallet_balance, has_debt, debt_amount')
-        .order('full_name', { ascending: true })
-        .limit(5000);
-      if (q.length >= 1) {
-        const term = q.replace(/%/g, '\\%').replace(/_/g, '\\_');
-        const pattern = `%${term}%`;
-        query = query.or(`full_name.ilike."${pattern}",email.ilike."${pattern}",phone.ilike."${pattern}"`);
-      }
-      const today = new Date().toISOString().slice(0, 10);
-      const [profilesRes, membersRes] = await Promise.all([
-        query,
-        supabase.from('members').select('user_id').gte('expiry_date', today),
-      ]);
-      if (profilesRes.error) {
-        console.error('[admin/usuarios] profiles error:', profilesRes.error.message, profilesRes.error.code);
-        throw new Error(profilesRes.error.message);
-      }
-      return {
-        profiles: profilesRes.data ?? [],
-        activeMemberIdsList: (membersRes.data ?? []).map((m: { user_id: string }) => m.user_id),
-      };
-    },
-    ['admin-usuarios', q],
-    { revalidate: ADMIN_USUARIOS_CACHE_SECONDS }
-  )();
+async function getUsuariosData(q: string) {
+  const supabase = createSupabaseServiceClient();
+  let query = supabase
+    .from('profiles')
+    .select('id, full_name, email, phone, wallet_balance, has_debt, debt_amount')
+    .order('full_name', { ascending: true })
+    .limit(5000);
+  if (q.length >= 1) {
+    const term = q.replace(/%/g, '\\%').replace(/_/g, '\\_');
+    const pattern = `%${term}%`;
+    query = query.or(`full_name.ilike."${pattern}",email.ilike."${pattern}",phone.ilike."${pattern}"`);
+  }
+  const today = new Date().toISOString().slice(0, 10);
+  const [profilesRes, membersRes] = await Promise.all([
+    query,
+    supabase.from('members').select('user_id').gte('expiry_date', today),
+  ]);
+  if (profilesRes.error) {
+    console.error('[admin/usuarios] profiles error:', profilesRes.error.message, profilesRes.error.code);
+    throw new Error(profilesRes.error.message);
+  }
+  return {
+    profiles: profilesRes.data ?? [],
+    activeMemberIdsList: (membersRes.data ?? []).map((m: { user_id: string }) => m.user_id),
+  };
 }
 
 export default async function AdminUsuariosPage({
@@ -54,7 +47,7 @@ export default async function AdminUsuariosPage({
   const raw = (resolved?.q ?? '').trim();
   const q = raw.slice(0, 100).replace(/[^\w\s@.\-áéíóúñüÁÉÍÓÚÑÜ]/g, '');
 
-  const { profiles, activeMemberIdsList } = await getCachedUsuariosData(q);
+  const { profiles, activeMemberIdsList } = await getUsuariosData(q);
   const activeMemberIds = new Set(activeMemberIdsList);
 
   const total = profiles?.length ?? 0;

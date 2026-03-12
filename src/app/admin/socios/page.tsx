@@ -1,9 +1,8 @@
-import { unstable_cache } from 'next/cache';
 import { createSupabaseServiceClient } from '@/lib/supabase/server';
 import { AdminPageHeader } from '@/components/ui/admin-page-header';
 import { AdminSociosContent } from '@/components/admin/AdminSociosContent';
 
-const ADMIN_SOCIOS_CACHE_SECONDS = 1;
+export const dynamic = 'force-dynamic';
 
 export type MemberWithProfile = {
   id: string;
@@ -18,32 +17,41 @@ type PageProps = {
   searchParams: Promise<{ search?: string }> | { search?: string };
 };
 
-async function getCachedSociosData(search: string) {
-  return unstable_cache(
-    async () => {
-      const service = createSupabaseServiceClient();
-      let query = service
-        .from('members')
-        .select('id, user_id, start_date, expiry_date, is_paid, profiles!members_user_id_fkey(full_name, email, phone)')
-        .order('expiry_date', { ascending: false });
-      if (search.length >= 1) {
-        const { data: ids } = await service
-          .from('profiles')
-          .select('id')
-          .or(`full_name.ilike.%${search}%,email.ilike.%${search}%,phone.ilike.%${search}%`);
-        const userIds = (ids ?? []).map((r: { id: string }) => r.id);
-        if (userIds.length > 0) {
-          query = query.in('user_id', userIds);
-        } else {
-          query = query.eq('user_id', '00000000-0000-0000-0000-000000000000');
-        }
-      }
-      const { data: members } = await query;
-      return members ?? [];
-    },
-    ['admin-socios', search],
-    { revalidate: ADMIN_SOCIOS_CACHE_SECONDS }
-  )();
+async function getSociosData(search: string) {
+  const service = createSupabaseServiceClient();
+  let query = service
+    .from('members')
+    .select('id, user_id, start_date, expiry_date, is_paid, profiles!members_user_id_fkey(full_name, email, phone)')
+    .order('expiry_date', { ascending: false });
+  if (search.length >= 1) {
+    const { data: ids } = await service
+      .from('profiles')
+      .select('id')
+      .or(`full_name.ilike.%${search}%,email.ilike.%${search}%,phone.ilike.%${search}%`);
+    const userIds = (ids ?? []).map((r: { id: string }) => r.id);
+    if (userIds.length > 0) {
+      query = query.in('user_id', userIds);
+    } else {
+      query = query.eq('user_id', '00000000-0000-0000-0000-000000000000');
+    }
+  }
+  const { data: members } = await query;
+  const list = members ?? [];
+  // #region agent log
+  fetch('http://127.0.0.1:7543/ingest/b946c3ce-2e52-4378-b9f6-afbd4bfaf00a', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '68ad37' },
+    body: JSON.stringify({
+      sessionId: '68ad37',
+      location: 'admin/socios/page.tsx:getSociosData',
+      message: 'getSociosData ran',
+      data: { memberCount: list.length, search },
+      timestamp: Date.now(),
+      hypothesisId: 'A',
+    }),
+  }).catch(() => {});
+  // #endregion
+  return list;
 }
 
 export default async function AdminSociosPage({ searchParams }: PageProps) {
@@ -52,7 +60,7 @@ export default async function AdminSociosPage({ searchParams }: PageProps) {
     : (searchParams as { search?: string });
   const search = (resolved?.search ?? '').trim().slice(0, 100);
 
-  const members = await getCachedSociosData(search);
+  const members = await getSociosData(search);
   const raw = members as Array<{
     id: string;
     user_id: string;
@@ -73,7 +81,11 @@ export default async function AdminSociosPage({ searchParams }: PageProps) {
         title="Socios"
         subtitle="Gestiona las membresías de los socios del club."
       />
-      <AdminSociosContent initialMembers={list} initialSearch={search || undefined} />
+      <AdminSociosContent
+        key={`socios-${list.length}-${list[0]?.id ?? ''}`}
+        initialMembers={list}
+        initialSearch={search || undefined}
+      />
     </div>
   );
 }

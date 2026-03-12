@@ -24,19 +24,20 @@ export function AuthRegisterForm() {
 
   const PHONE_MAX_LENGTH = 9;
   const phoneDigitsOnly = phone.replace(/\D/g, '');
-  const phoneValid = phone.length === 0 || (phoneDigitsOnly.length <= PHONE_MAX_LENGTH && phoneDigitsOnly.length === phone.length);
+  const phoneValid = phoneDigitsOnly.length === PHONE_MAX_LENGTH && phoneDigitsOnly.length === phone.length;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setAlreadyHasAccount(false);
 
-    if (phone.trim()) {
-      const digits = phone.replace(/\D/g, '');
-      if (digits.length > PHONE_MAX_LENGTH || digits.length !== phone.replace(/\s/g, '').length) {
-        setError('El teléfono debe tener 9 dígitos.');
-        return;
-      }
+    if (!phone.trim()) {
+      setError('El teléfono es obligatorio.');
+      return;
+    }
+    if (!phoneValid) {
+      setError('El teléfono debe tener 9 dígitos.');
+      return;
     }
 
     if (password !== confirmPassword) {
@@ -236,6 +237,7 @@ export function AuthRegisterForm() {
           autoComplete="tel"
           maxLength={9}
           pattern="[0-9]{0,9}"
+          required
           value={phone}
           onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 9))}
           className="w-full rounded-xl border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"

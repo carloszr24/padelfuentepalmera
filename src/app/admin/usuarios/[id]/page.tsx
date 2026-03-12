@@ -59,15 +59,28 @@ export default async function AdminUsuarioPage({ params }: PageProps) {
   return (
     <div className="space-y-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <AdminPageHeader
-          breadcrumbs={[
-            { label: 'Inicio', href: '/admin' },
-            { label: 'Usuarios', href: '/admin/usuarios' },
-            { label: profile.full_name || profile.email || 'Perfil' },
-          ]}
-          title={profile.full_name || profile.email || 'Sin nombre'}
-          subtitle={profile.email ?? undefined}
-        />
+        <div className="space-y-2">
+          <AdminPageHeader
+            breadcrumbs={[
+              { label: 'Inicio', href: '/admin' },
+              { label: 'Usuarios', href: '/admin/usuarios' },
+              { label: profile.full_name || profile.email || 'Perfil' },
+            ]}
+            title={profile.full_name || profile.email || 'Sin nombre'}
+            subtitle={profile.email ?? undefined}
+          />
+          <div className="rounded-[10px] bg-[#f7f7f5] px-4 py-3 text-sm text-stone-700">
+            <p className="font-semibold text-stone-800">Contacto</p>
+            <p className="mt-1">
+              <span className="text-xs uppercase tracking-wide text-stone-500">Email:</span>{' '}
+              <span className="font-medium">{profile.email || '—'}</span>
+            </p>
+            <p className="mt-1">
+              <span className="text-xs uppercase tracking-wide text-stone-500">Teléfono:</span>{' '}
+              <span className="font-medium">{profile.phone || '—'}</span>
+            </p>
+          </div>
+        </div>
         <AdminWalletRechargeButton
           userId={profile.id}
           userName={profile.full_name || profile.email || ''}

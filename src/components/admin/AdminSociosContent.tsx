@@ -25,10 +25,21 @@ export function AdminSociosContent({ initialMembers, initialSearch }: AdminSocio
   const [editMember, setEditMember] = useState<MemberWithProfile | null>(null);
   const [deleteMember, setDeleteMember] = useState<MemberWithProfile | null>(null);
 
-  const refresh = useCallback(() => {
-    const params = new URLSearchParams();
-    if (search) params.set('search', search);
-    router.push(`/admin/socios${params.toString() ? `?${params.toString()}` : ''}`);
+  const refresh = useCallback(async () => {
+    const searchParam = search ? `?search=${encodeURIComponent(search)}` : '';
+    const res = await fetch(`/api/admin/members${searchParam}`, { cache: 'no-store' });
+    if (res.ok) {
+      const data = await res.json();
+      const raw = Array.isArray(data) ? data : [];
+      const list: MemberWithProfile[] = raw.map((m: { profiles?: unknown; [k: string]: unknown }) => ({
+        ...m,
+        profiles: Array.isArray(m.profiles) ? (m.profiles[0] ?? null) : m.profiles ?? null,
+      }));
+      setMembers(list);
+    } else if (process.env.NODE_ENV === 'development') {
+      console.error('[AdminSocios] refresh failed', res.status, await res.text());
+    }
+    router.refresh();
   }, [router, search]);
 
   useEffect(() => {
