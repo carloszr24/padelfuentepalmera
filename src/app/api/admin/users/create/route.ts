@@ -55,6 +55,10 @@ export async function POST(request: Request) {
     },
   });
 
+  // #region agent log
+  console.log('[DBG-68ad37] createUser result:', JSON.stringify({ userId: newUser?.user?.id, createError }));
+  // #endregion
+
   if (createError) {
     const msg = createError.message?.toLowerCase() ?? '';
     if (msg.includes('already') || msg.includes('ya existe')) {
@@ -74,6 +78,10 @@ export async function POST(request: Request) {
       phone,
     })
     .eq('id', newUser.user.id);
+
+  // #region agent log
+  console.log('[DBG-68ad37] profile update:', JSON.stringify({ updateError }));
+  // #endregion
 
   if (updateError) {
     console.error('Profile update after create:', updateError);

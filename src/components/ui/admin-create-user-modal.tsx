@@ -45,6 +45,9 @@ export function AdminCreateUserModal({ open, onClose }: Props) {
         }),
       });
       const data = await res.json().catch(() => ({}));
+      // #region agent log
+      try{navigator.sendBeacon('http://127.0.0.1:7543/ingest/b946c3ce-2e52-4378-b9f6-afbd4bfaf00a',new Blob([JSON.stringify({sessionId:'68ad37',location:'admin-create-user-modal:submit',message:'create user response',data:{status:res.status,ok:res.ok,body:data},timestamp:Date.now()})],{type:'application/json'}));}catch(_){}
+      // #endregion
       if (!res.ok) {
         setError(data?.message ?? 'No se pudo crear el usuario.');
         return;
