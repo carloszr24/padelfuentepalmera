@@ -59,18 +59,29 @@ export async function POST(request: Request) {
     }
 
     const supabase = createSupabaseServiceClient();
+    // #region agent log
+    console.log('[DBG-68ad37] callback invoked numOp=', data.Num_operacion, 'sigValid=true');
+    // #endregion
 
     // 1. ¿Es un pago de membresía?
-    const { data: memOp } = await supabase
+    const { data: memOp, error: memOpError } = await supabase
       .from('membership_payments_pending')
       .select('user_id')
       .eq('num_operacion', data.Num_operacion)
       .maybeSingle();
 
+    // #region agent log
+    console.log('[DBG-68ad37] memOp lookup:', JSON.stringify({ memOp, memOpError }));
+    // #endregion
+
     if (memOp?.user_id) {
       const { error: memberError } = await supabase.rpc('activate_membership', {
         p_user_id: memOp.user_id,
       });
+
+      // #region agent log
+      console.log('[DBG-68ad37] activate_membership result:', JSON.stringify({ memberError }));
+      // #endregion
 
       if (memberError) {
         console.error('[Ceca callback] Error activando membresía:', memberError);
@@ -92,6 +103,10 @@ export async function POST(request: Request) {
 
       revalidatePath('/panel', 'layout');
 
+      // #region agent log
+      console.log('[DBG-68ad37] membership OK → returning OKY');
+      // #endregion
+
       return new NextResponse(OK_RESPONSE, {
         status: 200,
         headers: { 'Content-Type': 'text/plain; charset=utf-8' },
@@ -99,15 +114,22 @@ export async function POST(request: Request) {
     }
 
     // 2. Pago de recarga de monedero (flujo original)
-    const { data: opPendiente } = await supabase
+    const { data: opPendiente, error: opError } = await supabase
       .from('wallet_operations_pending')
       .select('user_id, amount_euros')
       .eq('num_operacion', data.Num_operacion)
-      .single();
+      .maybeSingle();
+
+    // #region agent log
+    console.log('[DBG-68ad37] walletOp lookup:', JSON.stringify({ found: !!opPendiente, opError }));
+    // #endregion
 
     // La operación DEBE existir en nuestra BD — no aceptamos datos del banco como fuente de verdad
     if (!opPendiente?.user_id || opPendiente?.amount_euros == null) {
       console.error('[Ceca callback] Operación no encontrada en BD:', data.Num_operacion);
+      // #region agent log
+      console.log('[DBG-68ad37] NOK: op not found in either table');
+      // #endregion
       return new NextResponse(NOK_RESPONSE, {
         status: 200,
         headers: { 'Content-Type': 'text/plain; charset=utf-8' },
@@ -132,6 +154,10 @@ export async function POST(request: Request) {
       p_stripe_session_id: `ceca_${data.Num_operacion}`,
     });
 
+    // #region agent log
+    console.log('[DBG-68ad37] wallet_recharge result:', JSON.stringify({ error }));
+    // #endregion
+
     if (error) {
       console.error('[Ceca callback] Error acreditando saldo:', error);
       return new NextResponse(NOK_RESPONSE, {
@@ -150,12 +176,19 @@ export async function POST(request: Request) {
       })
       .eq('num_operacion', data.Num_operacion);
 
+    // #region agent log
+    console.log('[DBG-68ad37] wallet OK → returning OKY');
+    // #endregion
+
     return new NextResponse(OK_RESPONSE, {
       status: 200,
       headers: { 'Content-Type': 'text/plain; charset=utf-8' },
     });
   } catch (err) {
     console.error('[Ceca callback]', err);
+    // #region agent log
+    console.log('[DBG-68ad37] EXCEPTION in callback:', String(err));
+    // #endregion
     return new NextResponse(NOK_RESPONSE, {
       status: 200,
       headers: { 'Content-Type': 'text/plain; charset=utf-8' },
