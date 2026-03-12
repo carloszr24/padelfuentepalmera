@@ -13,6 +13,7 @@ export type BookingRow = {
   end_time: string;
   status: string;
   deposit_paid: boolean;
+  payment_method?: string | null;
   remaining_paid_at?: string | null;
   profiles: { full_name: string | null } | { full_name: string | null }[] | null;
   courts: { name: string } | { name: string }[] | null;
@@ -292,6 +293,10 @@ export function AdminReservasContent({ bookings, desde, hasta }: AdminReservasCo
                               {b.deposit_paid ? (
                                 <span className="text-[11px] font-medium leading-none text-emerald-600">
                                   Depósito pagado
+                                </span>
+                              ) : b.payment_method === 'pay_at_club' ? (
+                                <span className="text-[11px] font-medium leading-none text-blue-600">
+                                  Pago en club
                                 </span>
                               ) : (
                                 <span className="text-[11px] leading-none text-stone-500">

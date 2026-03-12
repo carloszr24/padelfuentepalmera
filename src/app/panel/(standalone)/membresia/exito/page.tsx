@@ -2,16 +2,21 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { usePanelUserOptional } from '@/contexts/panel-user-context';
 
 export default function MembresiaExitoPage() {
   const router = useRouter();
+  const panelUser = usePanelUserOptional();
 
   useEffect(() => {
+    // Refresca el contexto de usuario para que is_member se actualice en el cliente
+    panelUser?.refreshProfile();
     const t = setTimeout(() => {
       router.replace('/panel/membresia?success=1');
     }, 2500);
     return () => clearTimeout(t);
-  }, [router]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-4">
