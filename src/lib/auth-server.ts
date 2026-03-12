@@ -62,7 +62,7 @@ function getCachedProfileAndEmail(userId: string) {
   return unstable_cache(
     async () => getProfileAndEmailConfirmed(userId),
     ['auth-profile', userId],
-    { revalidate: PROFILE_CACHE_SECONDS, tags: [`auth-profile-${userId}`] }
+    { revalidate: PROFILE_CACHE_SECONDS }
   )();
 }
 
