@@ -67,18 +67,12 @@ export function WalletModal({ open, onClose, trigger }: WalletModalProps) {
         body: JSON.stringify(payload),
       });
       const data = await res.json().catch(() => ({}));
-      // #region agent log
-      try{navigator.sendBeacon('http://127.0.0.1:7543/ingest/b946c3ce-2e52-4378-b9f6-afbd4bfaf00a',new Blob([JSON.stringify({sessionId:'68ad37',location:'wallet-modal:create-payment-response',message:'API response',data:{status:res.status,ok:res.ok,error:data?.error,hasFormAction:!!data?.formAction,hasFormFields:!!data?.formFields},timestamp:Date.now(),hypothesisId:'B-C'})],{type:'application/json'}));}catch(_){}
-      // #endregion
       if (!res.ok) {
         setError(data.error || `Error ${res.status}`);
         setLoading(false);
         return;
       }
       if (data.formAction && data.formFields && typeof data.formFields === 'object') {
-        // #region agent log
-        try{navigator.sendBeacon('http://127.0.0.1:7543/ingest/b946c3ce-2e52-4378-b9f6-afbd4bfaf00a',new Blob([JSON.stringify({sessionId:'68ad37',location:'wallet-modal:form-submit',message:'Submitting to Cecabank',data:{formAction:data.formAction,Importe:data.formFields?.Importe,hasF:!!data.formFields?.Firma,keys:Object.keys(data.formFields||{})},timestamp:Date.now(),hypothesisId:'E'})],{type:'application/json'}));}catch(_){}
-        // #endregion
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = data.formAction;

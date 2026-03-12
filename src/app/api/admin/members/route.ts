@@ -182,9 +182,20 @@ export async function DELETE(request: Request) {
   }
 
   const service = createSupabaseServiceClient();
+  // Get user_id before deleting so we can clear is_member on profiles
+  const { data: memberRow } = await service.from('members').select('user_id').eq('id', id).maybeSingle();
+  // #region agent log
+  console.log('[DBG-68ad37] DELETE member id=', id, 'user_id=', memberRow?.user_id);
+  // #endregion
   const { error } = await service.from('members').delete().eq('id', id);
+  // #region agent log
+  console.log('[DBG-68ad37] DELETE result:', JSON.stringify({ error }));
+  // #endregion
   if (error) {
     return NextResponse.json({ message: error.message }, { status: 400 });
+  }
+  if (memberRow?.user_id) {
+    await service.from('profiles').update({ is_member: false }).eq('id', memberRow.user_id);
   }
   return NextResponse.json({ ok: true });
 }
