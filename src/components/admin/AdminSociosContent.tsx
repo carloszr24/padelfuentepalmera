@@ -476,9 +476,6 @@ function AdminSociosDeleteModal({
     try {
       setLoading(true);
       const res = await fetch(`/api/admin/members?id=${encodeURIComponent(member.id)}`, { method: 'DELETE' });
-      // #region agent log
-      try{const rb=await res.clone().json().catch(()=>({}));navigator.sendBeacon('http://127.0.0.1:7543/ingest/b946c3ce-2e52-4378-b9f6-afbd4bfaf00a',new Blob([JSON.stringify({sessionId:'68ad37',location:'AdminSociosContent:handleDelete',message:'DELETE response',data:{status:res.status,ok:res.ok,body:rb},timestamp:Date.now(),hypothesisId:'A-B'})],{type:'application/json'}));}catch(_){}
-      // #endregion
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         alert(data?.message ?? 'Error al eliminar');
