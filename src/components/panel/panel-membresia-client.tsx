@@ -102,14 +102,6 @@ export function PanelMembresiaClient({ isActiveMember, expiryDate, startDate }: 
             </div>
           </div>
 
-          {/* Renovar anticipadamente */}
-          <div className={cardClass}>
-            <p className="text-sm font-bold text-[var(--panel-text)]">¿Quieres renovar antes de tiempo?</p>
-            <p className="mt-1 text-sm text-[var(--panel-text-secondary)]">
-              Puedes renovar ahora. La nueva membresía empezará desde hoy y durará un año.
-            </p>
-            <SocioUpsell showPayButton ctaLabel="Renovar membresía" />
-          </div>
         </div>
       ) : (
         <div className="space-y-4">
