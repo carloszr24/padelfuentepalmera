@@ -83,9 +83,6 @@ export function SocioUpsell({ showPayButton = false, ctaLabel, onCtaClick }: Soc
           {[
             'Reserva de pistas con sistema online',
             'Descuentos exclusivos para socios',
-            'Acceso prioritario a torneos y eventos',
-            'Tarifas especiales en actividades del club',
-            'Comunidad de jugadores y socios',
           ].map((benefit) => (
             <li key={benefit} className="flex items-start gap-3 text-sm text-stone-700">
               <span className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-[#1d4ed8]/10">
