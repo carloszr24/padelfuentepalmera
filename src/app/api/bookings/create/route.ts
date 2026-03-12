@@ -30,12 +30,14 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json().catch(() => ({}));
-  const { courtId, bookingDate, startTime, endTime } = body as {
+  const { courtId, bookingDate, startTime, endTime, paymentMethod } = body as {
     courtId?: string;
     bookingDate?: string;
     startTime?: string;
     endTime?: string;
+    paymentMethod?: 'wallet' | 'pay_at_club';
   };
+  const isPayAtClub = paymentMethod === 'pay_at_club';
 
   if (!courtId || !bookingDate || !startTime || !endTime) {
     return NextResponse.json(
@@ -50,7 +52,7 @@ export async function POST(request: Request) {
     );
   }
 
-  // Bloquear reserva si tiene deuda o saldo negativo (no confiar solo en la UI)
+  // Bloquear reserva si tiene deuda o (para pago con monedero) saldo insuficiente
   const { data: profile } = await supabase
     .from('profiles')
     .select('has_debt, wallet_balance')
@@ -59,9 +61,15 @@ export async function POST(request: Request) {
 
   const hasDebt = (profile as { has_debt?: boolean } | null)?.has_debt === true;
   const balance = Number((profile as { wallet_balance?: number } | null)?.wallet_balance ?? 0);
-  if (hasDebt || balance < 0) {
+  if (hasDebt) {
     return NextResponse.json(
       { message: 'Tienes una deuda pendiente. Recarga tu monedero para poder reservar.' },
+      { status: 400 }
+    );
+  }
+  if (!isPayAtClub && balance < 0) {
+    return NextResponse.json(
+      { message: 'Saldo insuficiente. Recarga tu monedero para poder reservar.' },
       { status: 400 }
     );
   }
@@ -130,7 +138,8 @@ export async function POST(request: Request) {
     );
   }
 
-  const { error } = await supabase.rpc('booking_pay_deposit', {
+  const rpcName = isPayAtClub ? 'booking_reserve_free' : 'booking_pay_deposit';
+  const { error } = await supabase.rpc(rpcName, {
     p_user_id: user.id,
     p_court_id: courtId,
     p_booking_date: bookingDate,

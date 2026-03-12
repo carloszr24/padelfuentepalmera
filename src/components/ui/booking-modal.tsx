@@ -60,6 +60,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
   const [clubClosed, setClubClosed] = useState(false);
   const [clubClosedLabel, setClubClosedLabel] = useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState<'wallet' | 'pay_at_club'>('wallet');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -95,6 +96,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
       setClubClosed(false);
       setClubClosedLabel(null);
       setSelectedSlot('');
+      setPaymentMethod('wallet');
       setError(null);
     }
   }, [open]);
@@ -140,6 +142,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
           bookingDate: date,
           startTime: selectedSlot + ':00',
           endTime,
+          paymentMethod,
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -192,7 +195,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
                 Reserva tu <span style={{ color: ACCENT }}>pista</span>
               </h2>
               <p className="mt-2 text-base font-medium text-stone-600">
-                Elige tu horario, confirma con depósito de 4,50€ y prepárate para jugar al máximo nivel.
+                Elige tu horario y método de pago. ¡Nos vemos en la pista!
               </p>
               <button
                 type="button"
@@ -340,6 +343,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
 
               {isMember && step === 'confirm' && (
                 <form onSubmit={handleConfirm} className="space-y-6">
+                  {/* Resumen */}
                   <div className="rounded-xl border border-stone-200 bg-stone-50 p-6">
                     <p className="text-sm font-bold uppercase tracking-wider text-stone-500">Resumen</p>
                     <p className="mt-2 text-lg font-bold text-stone-900">{courtName}</p>
@@ -353,23 +357,59 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
                       {' · '}
                       {selectedSlot} – {slotEnd(selectedSlot).slice(0, 5)}
                     </p>
-                    <p className="mt-3 text-base font-medium text-stone-600">
-                      Depósito: <span className="font-bold text-stone-900">4,50 €</span>
-                    </p>
-                  </div>
-                  {error && <p className="text-base font-medium text-red-600">{error}</p>}
-                  <div
-                    className="mb-4 flex gap-3 rounded-r-lg border-l-[3px] py-3 pl-4 pr-4 text-sm text-stone-700"
-                    style={{ backgroundColor: '#fefce8', borderLeftColor: '#f59e0b' }}
-                  >
-                    <AlertTriangle className="h-5 w-5 shrink-0 text-amber-500" aria-hidden style={{ color: '#f59e0b' }} />
-                    <div>
-                      <p className="font-semibold text-stone-800">Política de cancelación</p>
-                      <p className="mt-1 leading-snug">
-                        Si cancelas con menos de 24 horas de antelación, perderás el depósito de la señal (4,50 €) y deberás abonar el importe restante (13,50 €) antes de poder realizar nuevas reservas.
+                    {paymentMethod === 'wallet' ? (
+                      <p className="mt-3 text-base font-medium text-stone-600">
+                        Señal ahora: <span className="font-bold text-stone-900">4,50 €</span>
+                        <span className="ml-2 text-sm text-stone-500">(resto 13,50 € en el club)</span>
                       </p>
+                    ) : (
+                      <p className="mt-3 text-base font-medium text-stone-600">
+                        Total en el club: <span className="font-bold text-stone-900">18 €</span>
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Selector de método de pago */}
+                  <div>
+                    <p className="mb-2 text-sm font-bold uppercase tracking-wider text-stone-500">Método de pago</p>
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod('wallet')}
+                        className={`flex flex-col items-start rounded-xl border p-4 text-left transition ${paymentMethod === 'wallet' ? 'border-[#1d4ed8] bg-[#1d4ed8]/5' : 'border-stone-300 bg-white hover:bg-stone-50'}`}
+                      >
+                        <span className={`text-sm font-bold ${paymentMethod === 'wallet' ? 'text-[#1d4ed8]' : 'text-stone-800'}`}>Señal online</span>
+                        <span className="mt-1 text-xs font-medium text-stone-500">4,50 € del monedero ahora</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod('pay_at_club')}
+                        className={`flex flex-col items-start rounded-xl border p-4 text-left transition ${paymentMethod === 'pay_at_club' ? 'border-[#1d4ed8] bg-[#1d4ed8]/5' : 'border-stone-300 bg-white hover:bg-stone-50'}`}
+                      >
+                        <span className={`text-sm font-bold ${paymentMethod === 'pay_at_club' ? 'text-[#1d4ed8]' : 'text-stone-800'}`}>Pagar en el club</span>
+                        <span className="mt-1 text-xs font-medium text-stone-500">18 € al llegar</span>
+                      </button>
                     </div>
                   </div>
+
+                  {/* Aviso cancelación solo para pago con señal */}
+                  {paymentMethod === 'wallet' && (
+                    <div
+                      className="flex gap-3 rounded-r-lg border-l-[3px] py-3 pl-4 pr-4 text-sm text-stone-700"
+                      style={{ backgroundColor: '#fefce8', borderLeftColor: '#f59e0b' }}
+                    >
+                      <AlertTriangle className="h-5 w-5 shrink-0 text-amber-500" aria-hidden style={{ color: '#f59e0b' }} />
+                      <div>
+                        <p className="font-semibold text-stone-800">Política de cancelación</p>
+                        <p className="mt-1 leading-snug">
+                          Si cancelas con menos de 24 horas de antelación, perderás el depósito de la señal (4,50 €) y deberás abonar el importe restante (13,50 €) antes de poder realizar nuevas reservas.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {error && <p className="text-base font-medium text-red-600">{error}</p>}
+
                   <div className="flex min-h-[44px] flex-col gap-2 sm:flex-row sm:gap-3">
                     <button
                       type="button"
