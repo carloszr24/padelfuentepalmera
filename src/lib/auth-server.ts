@@ -8,6 +8,8 @@ type Profile = {
   role: string | null;
   has_debt?: boolean | null;
   debt_amount?: number | null;
+  is_member?: boolean | null;
+  member_expiry_date?: string | null;
 } | null;
 
 const PROFILE_CACHE_SECONDS = 60;
@@ -23,17 +25,35 @@ async function getProfileAndEmailConfirmed(userId: string): Promise<{
 }> {
   if (PERF_LOG) console.time('[panel] getProfileAndEmailConfirmed (parallel)');
   const service = createSupabaseServiceClient();
-  const [userRes, profileRes] = await Promise.all([
+  const [userRes, profileRes, memberRes] = await Promise.all([
     service.auth.admin.getUserById(userId),
     service
       .from('profiles')
-      .select('full_name, wallet_balance, role, has_debt, debt_amount')
+      .select('full_name, wallet_balance, role, has_debt, debt_amount, is_member')
       .eq('id', userId)
       .single(),
+    service
+      .from('members')
+      .select('expiry_date, is_paid')
+      .eq('user_id', userId)
+      .maybeSingle(),
   ]);
   if (PERF_LOG) console.timeEnd('[panel] getProfileAndEmailConfirmed (parallel)');
   const emailConfirmed = userRes.data?.user?.email_confirmed_at ?? null;
-  const profile = (profileRes.data ?? null) as Profile;
+  const raw = profileRes.data;
+  const member = memberRes.data;
+  const today = new Date().toISOString().slice(0, 10);
+  const isMember =
+    member?.is_paid === true &&
+    member?.expiry_date != null &&
+    member.expiry_date >= today;
+  const profile: Profile = raw
+    ? {
+        ...raw,
+        is_member: isMember,
+        member_expiry_date: member?.expiry_date ?? null,
+      }
+    : null;
   return { emailConfirmed, profile };
 }
 

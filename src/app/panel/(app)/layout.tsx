@@ -33,6 +33,8 @@ export default async function PanelAppLayout({
         role: profile.role,
         has_debt: profile.has_debt,
         debt_amount: profile.debt_amount,
+        is_member: profile.is_member,
+        member_expiry_date: profile.member_expiry_date,
       }
     : null;
 
