@@ -4,8 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
-const DEPOSIT_EUR = 4.5;
-const REST_EUR = 13.5;
 
 type Props = {
   bookingId: string;
@@ -15,7 +13,9 @@ type Props = {
   bookingDate?: string;
   /** Hora de inicio (HH:MM o HH:MM:SS) */
   startTime?: string;
-  /** Saldo del monedero del usuario (para cancelación tardía: debe poder pagar 13,50€) */
+  /** Importe real de la señal pagada (por defecto 4,50 €) */
+  depositAmount?: number;
+  /** Saldo del monedero del usuario (para cancelación tardía) */
   walletBalance?: number;
   className?: string;
   /** Llamado tras cancelar con éxito (para refrescar lista sin recargar) */
@@ -34,6 +34,7 @@ export function CancelBookingButton({
   status,
   bookingDate,
   startTime,
+  depositAmount = 4.5,
   walletBalance = 0,
   className = '',
   onCancelSuccess,
@@ -48,7 +49,7 @@ export function CancelBookingButton({
       : isAtLeast24hAway(bookingDate, startTime);
   const canCancel = status === 'confirmed';
   const isLateCancellation = canCancel && !atLeast24h && depositPaid;
-  const hasEnoughForPenalty = walletBalance >= REST_EUR;
+  const hasEnoughForPenalty = walletBalance > 0;
 
   const handleCancel = async () => {
     if (!confirm) {
@@ -94,11 +95,11 @@ export function CancelBookingButton({
         <div className="flex flex-col gap-3">
           {atLeast24h ? (
             <p className="text-xs font-medium text-stone-600">
-              Se te devolverán <span className="whitespace-nowrap">{DEPOSIT_EUR.toFixed(2).replace('.', ',')} €</span> a tu monedero. ¿Confirmar cancelación?
+              Se te devolverán <span className="whitespace-nowrap">{depositAmount.toFixed(2).replace('.', ',')} €</span> a tu monedero. ¿Confirmar cancelación?
             </p>
           ) : isLateCancellation ? (
             <p className="text-xs font-medium text-stone-600">
-              Cancelación tardía: no se devuelve la señal (<span className="whitespace-nowrap">{DEPOSIT_EUR.toFixed(2).replace('.', ',')} €</span>) y se cobrará el resto (<span className="whitespace-nowrap">{REST_EUR.toFixed(2).replace('.', ',')} €</span>) de tu monedero.
+              Cancelación tardía: no se devuelve la señal (<span className="whitespace-nowrap">{depositAmount.toFixed(2).replace('.', ',')} €</span>) y deberás abonar el resto de la pista en el club.
               {!hasEnoughForPenalty && (
                 <span className="mt-1 block font-semibold text-amber-700">
                   No tienes saldo suficiente: quedará como deuda y deberás recargar antes de poder reservar de nuevo.

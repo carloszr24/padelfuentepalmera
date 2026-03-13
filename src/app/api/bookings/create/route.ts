@@ -50,15 +50,15 @@ export async function POST(request: Request) {
     );
   }
 
-  // Bloquear reserva si tiene deuda o saldo insuficiente (señal 4,50 €)
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('has_debt, wallet_balance')
-    .eq('id', user.id)
-    .single();
+  // Comprobar deuda y membresía en paralelo
+  const serviceSupabase = createSupabaseServiceClient();
+  const [profileRes, membershipRes] = await Promise.all([
+    supabase.from('profiles').select('has_debt, wallet_balance').eq('id', user.id).single(),
+    serviceSupabase.from('members').select('expiry_date, is_paid').eq('user_id', user.id).maybeSingle(),
+  ]);
 
-  const hasDebt = (profile as { has_debt?: boolean } | null)?.has_debt === true;
-  const balance = Number((profile as { wallet_balance?: number } | null)?.wallet_balance ?? 0);
+  const hasDebt = (profileRes.data as { has_debt?: boolean } | null)?.has_debt === true;
+  const balance = Number((profileRes.data as { wallet_balance?: number } | null)?.wallet_balance ?? 0);
   if (hasDebt || balance < 0) {
     return NextResponse.json(
       { message: 'Tienes una deuda pendiente o saldo insuficiente. Recarga tu monedero para poder reservar.' },
@@ -66,26 +66,20 @@ export async function POST(request: Request) {
     );
   }
 
-  // Solo socios activos pueden reservar
-  const serviceSupabase = createSupabaseServiceClient();
-  const { data: membership } = await serviceSupabase
-    .from('members')
-    .select('expiry_date, is_paid')
-    .eq('user_id', user.id)
-    .maybeSingle();
-
   const today = new Date().toISOString().slice(0, 10);
+  const membership = membershipRes.data;
   const isActiveMember =
     membership?.is_paid === true &&
     membership?.expiry_date != null &&
     membership.expiry_date >= today;
-
   if (!isActiveMember) {
     return NextResponse.json(
-      { code: 'NOT_MEMBER', message: 'Solo los socios pueden reservar pistas. Hazte socio para poder reservar.' },
+      { message: 'Solo los socios pueden reservar pistas. Hazte socio para poder reservar.' },
       { status: 403 }
     );
   }
+
+  const deposit = 4.5;
 
   const startNorm = String(startTime).slice(0, 5);
   const endNorm = String(endTime).slice(0, 5);
@@ -130,13 +124,30 @@ export async function POST(request: Request) {
     );
   }
 
-  const { error } = await supabase.rpc('booking_pay_deposit', {
+  let rpcResult = await supabase.rpc('booking_pay_deposit', {
     p_user_id: user.id,
     p_court_id: courtId,
     p_booking_date: bookingDate,
     p_start_time: startTime,
     p_end_time: endTime,
+    p_deposit: deposit,
   });
+
+  // Si la función aún no tiene el parámetro p_deposit (migración pendiente), reintentar sin él
+  if (
+    rpcResult.error &&
+    (rpcResult.error.message ?? '').toLowerCase().includes('could not find the function')
+  ) {
+    rpcResult = await supabase.rpc('booking_pay_deposit', {
+      p_user_id: user.id,
+      p_court_id: courtId,
+      p_booking_date: bookingDate,
+      p_start_time: startTime,
+      p_end_time: endTime,
+    });
+  }
+
+  const { error } = rpcResult;
 
   if (error) {
     const msg = (error.message ?? '').toLowerCase();

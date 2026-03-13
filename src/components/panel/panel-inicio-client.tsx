@@ -18,6 +18,7 @@ type BookingRow = {
   end_time: string;
   status: string;
   deposit_paid: boolean;
+  deposit_amount?: number | null;
   courts: { name: string } | { name: string }[] | null;
 };
 
@@ -103,7 +104,7 @@ export function PanelInicioClient() {
       supabase.from('courts').select('id, name').eq('is_active', true).order('name'),
       supabase
         .from('bookings')
-        .select('id, booking_date, start_time, end_time, status, deposit_paid, courts(name)')
+        .select('id, booking_date, start_time, end_time, status, deposit_paid, deposit_amount, courts(name)')
         .eq('user_id', user.id)
         .order('booking_date', { ascending: false })
         .order('start_time', { ascending: false })
@@ -148,7 +149,7 @@ export function PanelInicioClient() {
     refreshProfile();
     getBrowserSupabaseClient()
       .from('bookings')
-      .select('id, booking_date, start_time, end_time, status, deposit_paid, courts(name)')
+      .select('id, booking_date, start_time, end_time, status, deposit_paid, deposit_amount, courts(name)')
       .eq('user_id', user.id)
       .order('booking_date', { ascending: false })
       .order('start_time', { ascending: false })
@@ -342,6 +343,7 @@ export function PanelInicioClient() {
                           <CancelBookingButton
                             bookingId={b.id}
                             depositPaid={b.deposit_paid}
+                            depositAmount={b.deposit_amount ?? 4.5}
                             status={b.status}
                             bookingDate={b.booking_date}
                             startTime={b.start_time}
@@ -418,6 +420,7 @@ export function PanelInicioClient() {
               <CancelBookingButton
                 bookingId={nextBooking.id}
                 depositPaid={nextBooking.deposit_paid}
+                depositAmount={nextBooking.deposit_amount ?? 4.5}
                 status={nextBooking.status}
                 bookingDate={nextBooking.booking_date}
                 startTime={nextBooking.start_time}

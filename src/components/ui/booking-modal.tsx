@@ -3,8 +3,8 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { AlertTriangle } from 'lucide-react';
-import { SocioUpsell } from '@/components/ui/socio-upsell';
 import { usePanelUserOptional } from '@/contexts/panel-user-context';
+import { SocioUpsell } from '@/components/ui/socio-upsell';
 
 // Horario club: última reserva 21:00 (sesión hasta 22:30, cierre)
 const SLOT_STARTS = ['10:00', '11:30', '16:30', '18:00', '19:30', '21:00'];
@@ -192,7 +192,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
                 Reserva tu <span style={{ color: ACCENT }}>pista</span>
               </h2>
               <p className="mt-2 text-base font-medium text-stone-600">
-                Elige tu horario, confirma con depósito de 4,50 € y prepárate para jugar al máximo nivel.
+                Elige tu horario, paga la señal y prepárate para jugar al máximo nivel.
               </p>
               <button
                 type="button"
@@ -207,13 +207,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
             </div>
 
             <div className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-8">
-              {!isMember && (
-                <SocioUpsell
-                  onCtaClick={() => { setOpen(false); window.location.href = '/panel/membresia'; }}
-                  ctaLabel="Hazte socio para reservar"
-                />
-              )}
-              {isMember && step === 'choose' && (
+              {step === 'choose' && (
                 <div className="space-y-8">
                   {courts.length === 0 ? (
                     <p className="rounded-xl border border-amber-200 bg-amber-50 px-6 py-4 text-base font-semibold text-amber-800">
@@ -283,7 +277,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
                 </div>
               )}
 
-              {isMember && step === 'slots' && (
+              {step === 'slots' && (
                 <div className="space-y-6">
                   <p className="text-base font-medium text-stone-700">
                     <span className="font-bold text-stone-900">{courtName}</span>
@@ -338,7 +332,28 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
                 </div>
               )}
 
-              {isMember && step === 'confirm' && (
+              {step === 'confirm' && !isMember && (
+                <div className="space-y-6">
+                  <p className="rounded-xl border border-[#1d4ed8]/30 bg-[#1d4ed8]/5 px-4 py-3 text-base font-semibold text-stone-800">
+                    Solo los socios pueden reservar. Hazte socio para reservar pistas.
+                  </p>
+                  <SocioUpsell
+                    ctaLabel="Hazte socio"
+                    onCtaClick={() => { setOpen(false); window.location.href = '/panel/membresia'; }}
+                  />
+                  <div className="flex min-h-[44px] flex-col gap-2 sm:flex-row sm:gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setStep('slots')}
+                      className="min-h-[44px] w-full rounded-xl border border-stone-300 px-5 py-2.5 text-base font-bold text-stone-700 hover:bg-stone-100 sm:w-auto"
+                    >
+                      Atrás
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {step === 'confirm' && isMember && (
                 <form onSubmit={handleConfirm} className="space-y-6">
                   <div className="rounded-xl border border-stone-200 bg-stone-50 p-6">
                     <p className="text-sm font-bold uppercase tracking-wider text-stone-500">Resumen</p>
@@ -354,8 +369,9 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
                       {selectedSlot} – {slotEnd(selectedSlot).slice(0, 5)}
                     </p>
                     <p className="mt-3 text-base font-medium text-stone-600">
-                      Depósito: <span className="font-bold text-stone-900">4,50 €</span>
-                      <span className="ml-2 text-sm text-stone-500">(resto 13,50 € en el club)</span>
+                      Señal:{' '}
+                      <span className="font-bold text-stone-900">4,50 €</span>
+                      <span className="ml-2 text-sm text-stone-500">(resto se abona en el club)</span>
                     </p>
                   </div>
                   <div
@@ -366,7 +382,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
                     <div>
                       <p className="font-semibold text-stone-800">Política de cancelación</p>
                       <p className="mt-1 leading-snug">
-                        Si cancelas con menos de 24 horas de antelación, perderás el depósito de la señal (4,50 €) y deberás abonar el importe restante (13,50 €) antes de poder realizar nuevas reservas.
+                        Si cancelas con menos de 24 horas de antelación, perderás la señal (4,50 €) y deberás abonar el resto de la pista en el club antes de poder realizar nuevas reservas.
                       </p>
                     </div>
                   </div>

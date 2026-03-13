@@ -7,7 +7,7 @@ import { AdminReservasContent, type BookingRow } from '@/components/admin/AdminR
 export const dynamic = 'force-dynamic';
 
 type PageProps = {
-  searchParams: Promise<{ desde?: string; hasta?: string }> | { desde?: string; hasta?: string };
+  searchParams: Promise<{ desde?: string; hasta?: string }>;
 };
 
 async function getReservasData(desde: string, hasta: string) {
@@ -34,10 +34,7 @@ async function getReservasData(desde: string, hasta: string) {
 }
 
 export default async function AdminReservasPage({ searchParams }: PageProps) {
-  const params =
-    typeof (searchParams as Promise<unknown>).then === 'function'
-      ? await (searchParams as Promise<{ desde?: string; hasta?: string }>)
-      : (searchParams as { desde?: string; hasta?: string });
+  const params = await searchParams;
 
   const desde = params?.desde?.trim().slice(0, 10) ?? '';
   const hasta = params?.hasta?.trim().slice(0, 10) ?? '';

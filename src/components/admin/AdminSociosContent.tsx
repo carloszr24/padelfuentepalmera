@@ -30,8 +30,15 @@ export function AdminSociosContent({ initialMembers, initialSearch }: AdminSocio
     const res = await fetch(`/api/admin/members${searchParam}`, { cache: 'no-store' });
     if (res.ok) {
       const data = await res.json();
-      const raw = Array.isArray(data) ? data : [];
-      const list: MemberWithProfile[] = raw.map((m: { profiles?: unknown; [k: string]: unknown }) => ({
+      const raw: Array<{
+        id: string;
+        user_id: string;
+        start_date: string;
+        expiry_date: string;
+        is_paid: boolean;
+        profiles: { full_name: string | null; email: string | null; phone: string | null }[] | { full_name: string | null; email: string | null; phone: string | null } | null;
+      }> = Array.isArray(data) ? data : [];
+      const list: MemberWithProfile[] = raw.map((m) => ({
         ...m,
         profiles: Array.isArray(m.profiles) ? (m.profiles[0] ?? null) : m.profiles ?? null,
       }));

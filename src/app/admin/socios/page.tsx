@@ -14,7 +14,7 @@ export type MemberWithProfile = {
 };
 
 type PageProps = {
-  searchParams: Promise<{ search?: string }> | { search?: string };
+  searchParams: Promise<{ search?: string }>;
 };
 
 async function getSociosData(search: string) {
@@ -55,9 +55,7 @@ async function getSociosData(search: string) {
 }
 
 export default async function AdminSociosPage({ searchParams }: PageProps) {
-  const resolved = typeof (searchParams as Promise<unknown>).then === 'function'
-    ? await (searchParams as Promise<{ search?: string }>)
-    : (searchParams as { search?: string });
+  const resolved = await searchParams;
   const search = (resolved?.search ?? '').trim().slice(0, 100);
 
   const members = await getSociosData(search);

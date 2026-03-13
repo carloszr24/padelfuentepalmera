@@ -6,7 +6,7 @@ import { AdminCreateUserTrigger } from '@/components/ui/admin-create-user-trigge
 export const dynamic = 'force-dynamic';
 
 type AdminUsuariosPageProps = {
-  searchParams?: Promise<{ q?: string }> | { q?: string };
+  searchParams?: Promise<{ q?: string }>;
 };
 
 async function getUsuariosData(q: string) {
@@ -39,12 +39,8 @@ async function getUsuariosData(q: string) {
 export default async function AdminUsuariosPage({
   searchParams,
 }: AdminUsuariosPageProps) {
-  const resolved = await (
-    typeof (searchParams as Promise<unknown>)?.then === 'function'
-      ? (searchParams as Promise<{ q?: string }>)
-      : Promise.resolve(searchParams ?? {})
-  );
-  const raw = (resolved?.q ?? '').trim();
+  const resolved = await (searchParams ?? Promise.resolve({}));
+  const raw = ((resolved as { q?: string })?.q ?? '').trim();
   const q = raw.slice(0, 100).replace(/[^\w\s@.\-áéíóúñüÁÉÍÓÚÑÜ]/g, '');
 
   const { profiles, activeMemberIdsList } = await getUsuariosData(q);

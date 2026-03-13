@@ -12,7 +12,7 @@ export default async function PanelReservasPage() {
     service.from('courts').select('id, name').eq('is_active', true).order('name'),
     service
       .from('bookings')
-      .select('id, booking_date, start_time, end_time, status, deposit_paid, courts(name)')
+      .select('id, booking_date, start_time, end_time, status, deposit_paid, deposit_amount, courts(name)')
       .eq('user_id', user.id)
       .order('booking_date', { ascending: false })
       .order('start_time', { ascending: false }),
@@ -26,6 +26,7 @@ export default async function PanelReservasPage() {
     end_time: string;
     status: string;
     deposit_paid: boolean;
+    deposit_amount?: number | null;
     courts: { name: string } | { name: string }[] | null;
   }[];
 
