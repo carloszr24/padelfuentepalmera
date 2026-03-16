@@ -3,6 +3,8 @@ import { createSupabaseServiceClient } from '@/lib/supabase/server';
 import { AdminPageHeader } from '@/components/ui/admin-page-header';
 import { AdminCreateBookingTrigger } from '@/components/ui/admin-create-booking-trigger';
 import { AdminReservasContent, type BookingRow } from '@/components/admin/AdminReservasContent';
+import { AdminCourtBlocksSection } from '@/components/admin/AdminCourtBlocksSection';
+import { RecurringBlocksSection } from '@/components/admin/RecurringBlocksSection';
 
 export const dynamic = 'force-dynamic';
 
@@ -102,6 +104,18 @@ export default async function AdminReservasPage({ searchParams }: PageProps) {
         </form>
 
         <AdminReservasContent bookings={bookingsList} desde={desde ?? null} hasta={hasta ?? null} />
+      </div>
+
+      <div className="space-y-6">
+        <div className="rounded-[10px] bg-[#f7f7f5] p-5">
+          <h2 className="admin-stat-label mb-2">Gestión de bloqueos de pistas</h2>
+          <p className="mb-4 text-[13px] text-[#6b6b6b]">
+            Usa estos bloqueos para que ciertas franjas no aparezcan como disponibles en el panel de reservas de los usuarios.
+          </p>
+          <AdminCourtBlocksSection showBackToPistasLink={false} />
+        </div>
+
+        <RecurringBlocksSection />
       </div>
     </div>
   );
