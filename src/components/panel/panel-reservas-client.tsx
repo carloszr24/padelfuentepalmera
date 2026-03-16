@@ -44,10 +44,32 @@ type TabKey = 'proximas' | 'pasadas' | 'canceladas';
 function filterByTab(bookings: BookingRow[], tab: TabKey): BookingRow[] {
   const t = today();
   if (tab === 'proximas') {
-    return bookings.filter((b) => b.booking_date >= t && b.status !== 'cancelled').sort((a, b) => a.booking_date.localeCompare(b.booking_date) || a.start_time.localeCompare(b.start_time));
+    return bookings
+      .filter(
+        (b) =>
+          b.booking_date >= t &&
+          b.status !== 'cancelled' &&
+          b.status !== 'blocked'
+      )
+      .sort(
+        (a, b) =>
+          a.booking_date.localeCompare(b.booking_date) ||
+          a.start_time.localeCompare(b.start_time)
+      );
   }
   if (tab === 'pasadas') {
-    return bookings.filter((b) => b.booking_date < t && b.status !== 'cancelled').sort((a, b) => b.booking_date.localeCompare(a.booking_date) || b.start_time.localeCompare(a.start_time));
+    return bookings
+      .filter(
+        (b) =>
+          b.booking_date < t &&
+          b.status !== 'cancelled' &&
+          b.status !== 'blocked'
+      )
+      .sort(
+        (a, b) =>
+          b.booking_date.localeCompare(a.booking_date) ||
+          b.start_time.localeCompare(a.start_time)
+      );
   }
   return bookings.filter((b) => b.status === 'cancelled').sort((a, b) => b.booking_date.localeCompare(a.booking_date));
 }

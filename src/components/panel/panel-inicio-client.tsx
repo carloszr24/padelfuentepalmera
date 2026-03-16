@@ -87,7 +87,18 @@ export function PanelInicioClient() {
 
   const isBlocked = hasDebt || balance < 0;
   const displayDebtAmount = hasDebt ? debtAmount : balance < 0 ? Math.abs(balance) : 0;
-  const upcoming = (bookings ?? []).filter((b) => b.booking_date >= today() && b.status !== 'cancelled').sort((a, b) => a.booking_date.localeCompare(b.booking_date) || a.start_time.localeCompare(b.start_time));
+  const upcoming = (bookings ?? [])
+    .filter(
+      (b) =>
+        b.booking_date >= today() &&
+        b.status !== 'cancelled' &&
+        b.status !== 'blocked'
+    )
+    .sort(
+      (a, b) =>
+        a.booking_date.localeCompare(b.booking_date) ||
+        a.start_time.localeCompare(b.start_time)
+    );
   const nextBooking = upcoming[0] ?? null;
   const proximasCount = upcoming.length;
 

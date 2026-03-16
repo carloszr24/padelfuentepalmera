@@ -49,7 +49,7 @@ BEGIN
        SELECT EXTRACT(HOUR FROM b.start_time)::int AS hour, COUNT(*)::bigint AS total
        FROM bookings b
        WHERE b.included_in_stats = true
-         AND b.status IN ('confirmed', 'completed')
+         AND b.status IN ('confirmed', 'completed', 'blocked')
          AND (p_start IS NULL OR b.created_at >= p_start)
          AND (p_end IS NULL OR b.created_at <= p_end)
        GROUP BY EXTRACT(HOUR FROM b.start_time)
@@ -64,7 +64,7 @@ BEGIN
        SELECT EXTRACT(DOW FROM b.booking_date)::int AS day_of_week, COUNT(*)::bigint AS total
        FROM bookings b
        WHERE b.included_in_stats = true
-         AND b.status IN ('confirmed', 'completed')
+         AND b.status IN ('confirmed', 'completed', 'blocked')
          AND (p_start IS NULL OR b.created_at >= p_start)
          AND (p_end IS NULL OR b.created_at <= p_end)
        GROUP BY EXTRACT(DOW FROM b.booking_date)
@@ -80,7 +80,7 @@ BEGIN
        FROM bookings b
        JOIN courts c ON c.id = b.court_id
        WHERE b.included_in_stats = true
-         AND b.status IN ('confirmed', 'completed')
+         AND b.status IN ('confirmed', 'completed', 'blocked')
          AND (p_start IS NULL OR b.created_at >= p_start)
          AND (p_end IS NULL OR b.created_at <= p_end)
        GROUP BY c.name
@@ -95,7 +95,7 @@ BEGIN
        SELECT b.booking_date::text AS booking_date, COUNT(*)::bigint AS total
        FROM bookings b
        WHERE b.included_in_stats = true
-         AND b.status IN ('confirmed', 'completed')
+         AND b.status IN ('confirmed', 'completed', 'blocked')
          AND (p_start IS NULL OR b.created_at >= p_start)
          AND (p_end IS NULL OR b.created_at <= p_end)
        GROUP BY b.booking_date
@@ -120,7 +120,7 @@ BEGIN
   -- (f) Tasa no-show
   SELECT
     COUNT(*) FILTER (WHERE b.status = 'no_show'),
-    COUNT(*) FILTER (WHERE b.status IN ('confirmed', 'completed', 'no_show', 'cancelled'))
+    COUNT(*) FILTER (WHERE b.status IN ('confirmed', 'completed', 'no_show', 'cancelled', 'blocked'))
   INTO v_noshows, v_total_noshow_denom
   FROM bookings b
   WHERE b.included_in_stats = true

@@ -27,19 +27,97 @@ async function getReservasData(desde: string, hasta: string) {
     { data: bookings },
     { data: courts },
     { data: profiles },
+    { data: recurringBlocks },
   ] = await Promise.all([
     bookingsQuery,
     supabase.from('courts').select('id, name').eq('is_active', true).order('name'),
     supabase.from('profiles').select('id, full_name, email').order('full_name'),
+    supabase.from('recurring_blocks').select('court_id, day_of_week, start_time'),
   ]);
-  return { bookings: bookings ?? [], courts: courts ?? [], profiles: profiles ?? [] };
+
+  const bookingsList: BookingRow[] = (bookings ?? []) as BookingRow[];
+
+  // Generar reservas técnicas virtuales a partir de bloqueos recurrentes en el rango [desde, hasta]
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' });
+  const rangeStart = desde || today;
+  const rangeEnd = hasta || today;
+
+  const startDate = new Date(rangeStart + 'T12:00:00');
+  const endDate = new Date(rangeEnd + 'T12:00:00');
+
+  const courtNameById = new Map<string, string>();
+  (courts ?? []).forEach((c) => {
+    if (c.id) courtNameById.set(String(c.id), c.name ?? 'Pista');
+  });
+
+  const virtualBlocks: BookingRow[] = [];
+  const rb = recurringBlocks ?? [];
+
+  if (rb.length > 0 && !Number.isNaN(startDate.getTime()) && !Number.isNaN(endDate.getTime()) && startDate <= endDate) {
+    for (
+      let d = new Date(startDate.getTime());
+      d <= endDate;
+      d.setDate(d.getDate() + 1)
+    ) {
+      const bookingDate = d.toISOString().slice(0, 10);
+      const dayOfWeek = ((d.getDay() + 6) % 7) + 1; // ISO: lunes=1
+
+      for (const block of rb as Array<{ court_id: string; day_of_week: number; start_time: string }>) {
+        if (block.day_of_week !== dayOfWeek) continue;
+        const startStr =
+          typeof block.start_time === 'string'
+            ? block.start_time.slice(0, 5)
+            : String(block.start_time).slice(0, 5);
+
+        const [h, m] = startStr.split(':').map((x) => parseInt(x, 10));
+        const startMinutes = h * 60 + m;
+        const endMinutes = startMinutes + 90;
+        const endH = Math.floor(endMinutes / 60);
+        const endM = endMinutes % 60;
+        const endStr = `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}:00`;
+
+        const courtIdStr = String(block.court_id);
+        const courtName = courtNameById.get(courtIdStr) ?? 'Pista';
+
+        const id = `rb-${courtIdStr}-${bookingDate}-${startStr}`;
+
+        virtualBlocks.push({
+          id,
+          booking_date: bookingDate,
+          start_time: `${startStr}:00`,
+          end_time: endStr,
+          status: 'blocked',
+          deposit_paid: true,
+          payment_method: 'pay_at_club',
+          remaining_paid_at: null,
+          profiles: null,
+          courts: { name: courtName },
+        });
+      }
+    }
+  }
+
+  const allBookings = bookingsList.concat(virtualBlocks);
+
+  return { bookings: allBookings, courts: courts ?? [], profiles: profiles ?? [] };
 }
 
 export default async function AdminReservasPage({ searchParams }: PageProps) {
   const params = await searchParams;
 
-  const desde = params?.desde?.trim().slice(0, 10) ?? '';
-  const hasta = params?.hasta?.trim().slice(0, 10) ?? '';
+  let desde = params?.desde?.trim().slice(0, 10) ?? '';
+  let hasta = params?.hasta?.trim().slice(0, 10) ?? '';
+
+  // Por defecto, mostrar próximas 4 semanas
+  if (!desde && !hasta) {
+    const now = new Date();
+    const todayMadrid = now.toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' });
+    const end = new Date(now);
+    end.setDate(end.getDate() + 27); // hoy + 27 días ≈ 4 semanas
+    const endMadrid = end.toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' });
+    desde = todayMadrid;
+    hasta = endMadrid;
+  }
 
   const { bookings, courts, profiles } = await getReservasData(desde, hasta);
 

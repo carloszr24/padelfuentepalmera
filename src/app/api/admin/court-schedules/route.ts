@@ -50,9 +50,11 @@ export async function POST(request: Request) {
   const startNormalized = startTime.length === 5 ? `${startTime}:00` : startTime;
   const endNormalized = endTime.length === 5 ? `${endTime}:00` : endTime;
 
+  const blockedDateNorm = blockedDate.trim().slice(0, 10);
+
   const { error } = await supabase.from('court_schedules').insert({
     court_id: courtId,
-    blocked_date: blockedDate.trim().slice(0, 10),
+    blocked_date: blockedDateNorm,
     start_time: startNormalized,
     end_time: endNormalized,
     reason: reason?.trim() || null,
@@ -64,6 +66,20 @@ export async function POST(request: Request) {
       { status: 400 }
     );
   }
+
+  // Crear también una \"reserva técnica\" para que el bloqueo se vea en los listados de reservas
+  // Se usa el propio admin como user_id/created_by y status = 'blocked'
+  await supabase.from('bookings').insert({
+    user_id: user.id,
+    court_id: courtId,
+    booking_date: blockedDateNorm,
+    start_time: startNormalized,
+    end_time: endNormalized,
+    status: 'blocked',
+    deposit_paid: true,
+    payment_method: 'pay_at_club',
+    created_by: user.id,
+  });
 
   return NextResponse.json({ ok: true });
 }
@@ -99,6 +115,20 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ message: 'id no válido' }, { status: 400 });
   }
 
+  // Leer primero el bloque para poder borrar la reserva técnica asociada
+  const { data: block, error: fetchError } = await supabase
+    .from('court_schedules')
+    .select('court_id, blocked_date, start_time, end_time')
+    .eq('id', id)
+    .single();
+
+  if (fetchError) {
+    return NextResponse.json(
+      { message: fetchError.message ?? 'Error al cargar el bloque' },
+      { status: 400 }
+    );
+  }
+
   const { error } = await supabase.from('court_schedules').delete().eq('id', id);
 
   if (error) {
@@ -106,6 +136,28 @@ export async function DELETE(request: Request) {
       { message: error.message ?? 'Error al eliminar el bloque' },
       { status: 400 }
     );
+  }
+
+  if (block) {
+    const startNormalized =
+      typeof block.start_time === 'string' && block.start_time.length === 5
+        ? `${block.start_time}:00`
+        : String(block.start_time);
+    const endNormalized =
+      typeof block.end_time === 'string' && block.end_time.length === 5
+        ? `${block.end_time}:00`
+        : String(block.end_time);
+
+    await supabase
+      .from('bookings')
+      .delete()
+      .match({
+        court_id: block.court_id,
+        booking_date: block.blocked_date,
+        start_time: startNormalized,
+        end_time: endNormalized,
+        status: 'blocked',
+      });
   }
 
   return NextResponse.json({ ok: true });

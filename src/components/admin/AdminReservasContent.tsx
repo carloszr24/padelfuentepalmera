@@ -60,10 +60,16 @@ function getProfileName(b: BookingRow): string {
 }
 
 function partitionBookings(bookings: BookingRow[], todayMadrid: string) {
-  const canceladas = bookings.filter((b) => b.status === 'cancelled' || b.status === 'no_show');
-  const rest = bookings.filter((b) => b.status !== 'cancelled' && b.status !== 'no_show');
+  const canceladas = bookings.filter(
+    (b) => b.status === 'cancelled' || b.status === 'no_show'
+  );
+  const rest = bookings.filter(
+    (b) => b.status !== 'cancelled' && b.status !== 'no_show'
+  );
   const hoy = rest.filter((b) => b.booking_date === todayMadrid);
-  const proximas = rest.filter((b) => b.booking_date > todayMadrid && b.status === 'confirmed');
+  const proximas = rest.filter(
+    (b) => b.booking_date > todayMadrid && (b.status === 'confirmed' || b.status === 'blocked')
+  );
   const pasadas = rest.filter(
     (b) => b.booking_date < todayMadrid || b.status === 'completed'
   );
@@ -102,7 +108,15 @@ function downloadCsv(bookings: BookingRow[], tab: TabKey) {
     formatTimeRange(b.start_time, b.end_time),
     getCourtName(b),
     getProfileName(b),
-    b.status === 'confirmed' ? 'Confirmada' : b.status === 'completed' ? 'Completada' : b.status === 'no_show' ? 'No-show' : 'Cancelada',
+    b.status === 'confirmed'
+      ? 'Confirmada'
+      : b.status === 'completed'
+        ? 'Completada'
+        : b.status === 'no_show'
+          ? 'No-show'
+          : b.status === 'blocked'
+            ? 'Bloqueo'
+            : 'Cancelada',
   ]);
   const escape = (v: string) => (v.includes(';') || v.includes('"') ? `"${v.replace(/"/g, '""')}"` : v);
   const csv = [headers.map(escape).join(';'), ...rows.map((r) => r.map(escape).join(';'))].join('\n');
@@ -279,7 +293,9 @@ export function AdminReservasContent({ bookings, desde, hasta }: AdminReservasCo
                                       ? 'bg-sky-100 text-sky-700'
                                       : b.status === 'no_show'
                                         ? 'bg-amber-100 text-amber-700'
-                                        : 'bg-red-100 text-red-700'
+                                        : b.status === 'blocked'
+                                          ? 'bg-stone-200 text-stone-800'
+                                          : 'bg-red-100 text-red-700'
                                 }`}
                               >
                                 {b.status === 'confirmed'
@@ -288,9 +304,15 @@ export function AdminReservasContent({ bookings, desde, hasta }: AdminReservasCo
                                     ? 'Completada'
                                     : b.status === 'no_show'
                                       ? 'No-show'
-                                      : 'Cancelada'}
+                                      : b.status === 'blocked'
+                                        ? 'Bloqueo'
+                                        : 'Cancelada'}
                               </span>
-                              {b.payment_method === 'pay_at_club' ? (
+                              {b.status === 'blocked' ? (
+                                <span className="text-[11px] leading-none text-stone-500">
+                                  Bloqueo de pista (reserva pagada)
+                                </span>
+                              ) : b.payment_method === 'pay_at_club' ? (
                                 <span className="text-[11px] font-medium leading-none text-blue-600">
                                   Pago en el club
                                 </span>
