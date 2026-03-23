@@ -76,9 +76,10 @@ export async function POST(request: Request) {
     const diffMs = bookingStartMadrid ? bookingStartMadrid.getTime() - now.getTime() : 0;
     const antelacion = diffMs >= 24 * 60 * 60 * 1000 ? 'Más de 24h' : 'Menos de 24h';
 
-    const courtName = Array.isArray(bookingData?.courts)
-      ? bookingData?.courts?.[0]?.name
-      : bookingData?.courts?.name;
+    const courtsRaw = bookingData?.courts as { name?: string } | { name?: string }[] | null;
+    const courtName = Array.isArray(courtsRaw)
+      ? courtsRaw?.[0]?.name
+      : (courtsRaw as { name?: string } | null)?.name;
 
     await sendClubNotification({
       subject: `❌ Cancelación — ${courtName ?? 'Pista'} ${dateFormatted} ${String(bookingData?.start_time ?? '').slice(0, 5)}`,
