@@ -11,7 +11,7 @@ export async function sendClubNotification({
 }) {
   await sgMail.send({
     to: 'fuentepalmerapadel@gmail.com',
-    from: 'fuentepalmerapadel@gmail.com',
+    from: 'info@padelfuentepalmera.com',
     subject,
     html,
   });
