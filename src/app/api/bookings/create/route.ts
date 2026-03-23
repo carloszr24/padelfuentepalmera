@@ -30,11 +30,12 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json().catch(() => ({}));
-  const { courtId, bookingDate, startTime, endTime } = body as {
+  const { courtId, bookingDate, startTime, endTime, metodo_pago } = body as {
     courtId?: string;
     bookingDate?: string;
     startTime?: string;
     endTime?: string;
+    metodo_pago?: 'bono' | 'monedero';
   };
 
   if (!courtId || !bookingDate || !startTime || !endTime) {
@@ -79,6 +80,7 @@ export async function POST(request: Request) {
     );
   }
 
+  const metodoPago: 'bono' | 'monedero' = metodo_pago === 'bono' ? 'bono' : 'monedero';
   const deposit = 4.5;
 
   const startNorm = String(startTime).slice(0, 5);
@@ -122,6 +124,46 @@ export async function POST(request: Request) {
       { message: 'La franja horaria no está dentro del horario de apertura.' },
       { status: 400 }
     );
+  }
+
+  if (metodoPago === 'bono') {
+    // Consumir bono de forma atómica (la función SQL hace FOR UPDATE internamente)
+    const bonoResult = await serviceSupabase.rpc('usar_bono', { p_user_id: user.id });
+    if (bonoResult.error) {
+      return NextResponse.json(
+        { message: bonoResult.error.message ?? 'Error al usar el bono.' },
+        { status: 400 }
+      );
+    }
+    if (bonoResult.data !== true) {
+      return NextResponse.json(
+        { message: 'Bono no disponible, elige otro método de pago' },
+        { status: 409 }
+      );
+    }
+
+    const insertResult = await serviceSupabase
+      .from('bookings')
+      .insert({
+        user_id: user.id,
+        court_id: courtId,
+        booking_date: bookingDate,
+        start_time: startTime,
+        end_time: endTime,
+        status: 'confirmed',
+        deposit_paid: true,
+        pagado_con_bono: true,
+        created_by: user.id,
+      })
+      .select('id')
+      .single();
+
+    if (insertResult.error) {
+      const msg = insertResult.error.message ?? 'Error al crear la reserva con bono.';
+      return NextResponse.json({ message: msg }, { status: 400 });
+    }
+
+    return NextResponse.json({ ok: true, metodo_pago: 'bono' });
   }
 
   let rpcResult = await supabase.rpc('booking_pay_deposit', {

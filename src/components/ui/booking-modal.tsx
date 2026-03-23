@@ -51,6 +51,7 @@ function buildDateStrip(count: number): { date: string; label: string; dayShort:
 export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerClassName, onSuccess }: BookingModalProps) {
   const panelUser = usePanelUserOptional();
   const isMember = panelUser?.isMember ?? true; // si no hay contexto (admin) permitir
+  const walletBalance = panelUser?.balance ?? 0;
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<'choose' | 'slots' | 'confirm'>('choose');
   const [courtId, setCourtId] = useState('');
@@ -62,6 +63,10 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
   const [selectedSlot, setSelectedSlot] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [bonoLoading, setBonoLoading] = useState(false);
+  const [hasBono, setHasBono] = useState(false);
+  const [bonoRestantes, setBonoRestantes] = useState(0);
+  const [metodoPago, setMetodoPago] = useState<'bono' | 'monedero'>('monedero');
   const router = useRouter();
 
   const dateStrip = useMemo(() => buildDateStrip(14), []);
@@ -96,8 +101,39 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
       setClubClosedLabel(null);
       setSelectedSlot('');
       setError(null);
+      setHasBono(false);
+      setBonoRestantes(0);
+      setMetodoPago('monedero');
     }
   }, [open]);
+
+  useEffect(() => {
+    if (!open || step !== 'confirm' || !isMember) return;
+    let cancelled = false;
+    setBonoLoading(true);
+    fetch('/api/panel/bono/availability', { cache: 'no-store' })
+      .then((r) => r.json())
+      .then((data) => {
+        if (cancelled) return;
+        const available = data?.hasBono === true;
+        const restantes = Number(data?.restantes ?? 0);
+        setHasBono(available);
+        setBonoRestantes(restantes);
+        setMetodoPago(available ? 'bono' : 'monedero');
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setHasBono(false);
+        setBonoRestantes(0);
+        setMetodoPago('monedero');
+      })
+      .finally(() => {
+        if (!cancelled) setBonoLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [open, step, isMember]);
 
   useEffect(() => {
     if (!courtId || !date || step !== 'choose') return;
@@ -140,6 +176,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
           bookingDate: date,
           startTime: selectedSlot + ':00',
           endTime,
+          metodo_pago: metodoPago,
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -374,6 +411,45 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
                       <span className="ml-2 text-sm text-stone-500">(resto se abona en el club)</span>
                     </p>
                   </div>
+                  {bonoLoading ? (
+                    <p className="text-sm text-stone-500">Comprobando bono disponible…</p>
+                  ) : hasBono ? (
+                    <div className="rounded-xl border border-emerald-900/20 bg-emerald-900/5 p-4">
+                      <p className="mb-3 text-sm font-semibold text-emerald-950">Método de pago</p>
+                      <div className="space-y-2">
+                        <label className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition ${metodoPago === 'bono' ? 'border-emerald-900 bg-emerald-900/10' : 'border-stone-300 bg-white'}`}>
+                          <input
+                            type="radio"
+                            name="metodo_pago"
+                            value="bono"
+                            checked={metodoPago === 'bono'}
+                            onChange={() => setMetodoPago('bono')}
+                            className="mt-1 h-4 w-4 accent-emerald-900"
+                          />
+                          <span className="text-sm text-stone-800">
+                            <span className="font-semibold text-emerald-900">
+                              Usar bono de socio (te quedan {bonoRestantes} partidos)
+                            </span>
+                          </span>
+                        </label>
+                        <label className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition ${metodoPago === 'monedero' ? 'border-emerald-900 bg-emerald-900/10' : 'border-stone-300 bg-white'}`}>
+                          <input
+                            type="radio"
+                            name="metodo_pago"
+                            value="monedero"
+                            checked={metodoPago === 'monedero'}
+                            onChange={() => setMetodoPago('monedero')}
+                            className="mt-1 h-4 w-4 accent-emerald-900"
+                          />
+                          <span className="text-sm text-stone-800">
+                            <span className="font-semibold text-emerald-900">
+                              Pagar con monedero (saldo: {walletBalance.toFixed(2).replace('.', ',')} €)
+                            </span>
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+                  ) : null}
                   <div
                     className="mb-4 flex gap-3 rounded-r-lg border-l-[3px] py-3 pl-4 pr-4 text-sm text-stone-700"
                     style={{ backgroundColor: '#fefce8', borderLeftColor: '#f59e0b' }}
