@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { sendClubNotification } from '@/lib/sendgrid';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { isValidUUID } from '@/lib/utils';
 
@@ -54,6 +55,44 @@ export async function POST(request: Request) {
       { message },
       { status: error.message?.includes('permission') ? 403 : 400 }
     );
+  }
+
+  try {
+    const { data: bookingData } = await supabase
+      .from('bookings')
+      .select('booking_date, start_time, end_time, courts(name)')
+      .eq('id', bookingId)
+      .single();
+
+    const dateFormatted = bookingData?.booking_date
+      ? new Date(`${bookingData.booking_date}T00:00:00`).toLocaleDateString('es-ES')
+      : '';
+
+    const bookingStartMadrid = bookingData?.booking_date && bookingData?.start_time
+      ? new Date(`${bookingData.booking_date}T${String(bookingData.start_time).slice(0, 5)}:00`)
+      : null;
+
+    const now = new Date();
+    const diffMs = bookingStartMadrid ? bookingStartMadrid.getTime() - now.getTime() : 0;
+    const antelacion = diffMs >= 24 * 60 * 60 * 1000 ? 'Más de 24h' : 'Menos de 24h';
+
+    const courtName = Array.isArray(bookingData?.courts)
+      ? bookingData?.courts?.[0]?.name
+      : bookingData?.courts?.name;
+
+    await sendClubNotification({
+      subject: `❌ Cancelación — ${courtName ?? 'Pista'} ${dateFormatted} ${String(bookingData?.start_time ?? '').slice(0, 5)}`,
+      html: `
+      <h2>Reserva cancelada</h2>
+      <p><strong>Socio:</strong> ${user.email ?? 'Sin email'}</p>
+      <p><strong>Pista:</strong> ${courtName ?? 'Pista'}</p>
+      <p><strong>Fecha:</strong> ${dateFormatted}</p>
+      <p><strong>Hora:</strong> ${String(bookingData?.start_time ?? '').slice(0, 5)} - ${String(bookingData?.end_time ?? '').slice(0, 5)}</p>
+      <p><strong>Antelación:</strong> ${antelacion}</p>
+    `,
+    });
+  } catch (emailError) {
+    console.error('SendGrid cancel notification error:', emailError);
   }
 
   return NextResponse.json({ ok: true });

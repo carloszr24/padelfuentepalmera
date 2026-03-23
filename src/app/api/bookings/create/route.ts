@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient, createSupabaseServiceClient } from '@/lib/supabase/server';
+import { sendClubNotification } from '@/lib/sendgrid';
 import { getOpeningForDate } from '@/lib/club-schedule';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { isValidUUID } from '@/lib/utils';
@@ -163,6 +164,30 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: msg }, { status: 400 });
     }
 
+    try {
+      const { data: courtData } = await serviceSupabase
+        .from('courts')
+        .select('name')
+        .eq('id', courtId)
+        .single();
+
+      const dateFormatted = new Date(`${bookingDate}T00:00:00`).toLocaleDateString('es-ES');
+
+      await sendClubNotification({
+        subject: `🎾 Nueva reserva — ${courtData?.name ?? 'Pista'} ${dateFormatted} ${String(startTime).slice(0, 5)}`,
+        html: `
+      <h2>Nueva reserva</h2>
+      <p><strong>Socio:</strong> ${user.email ?? 'Sin email'}</p>
+      <p><strong>Pista:</strong> ${courtData?.name ?? 'Pista'}</p>
+      <p><strong>Fecha:</strong> ${dateFormatted}</p>
+      <p><strong>Hora:</strong> ${String(startTime).slice(0, 5)} - ${String(endTime).slice(0, 5)}</p>
+      <p><strong>Pago:</strong> Bono de socio</p>
+    `,
+      });
+    } catch (emailError) {
+      console.error('SendGrid booking notification error (bono):', emailError);
+    }
+
     return NextResponse.json({ ok: true, metodo_pago: 'bono' });
   }
 
@@ -207,6 +232,30 @@ export async function POST(request: Request) {
       { message: error.message ?? 'Error al crear la reserva' },
       { status: 400 }
     );
+  }
+
+  try {
+    const { data: courtData } = await serviceSupabase
+      .from('courts')
+      .select('name')
+      .eq('id', courtId)
+      .single();
+
+    const dateFormatted = new Date(`${bookingDate}T00:00:00`).toLocaleDateString('es-ES');
+
+    await sendClubNotification({
+      subject: `🎾 Nueva reserva — ${courtData?.name ?? 'Pista'} ${dateFormatted} ${String(startTime).slice(0, 5)}`,
+      html: `
+      <h2>Nueva reserva</h2>
+      <p><strong>Socio:</strong> ${user.email ?? 'Sin email'}</p>
+      <p><strong>Pista:</strong> ${courtData?.name ?? 'Pista'}</p>
+      <p><strong>Fecha:</strong> ${dateFormatted}</p>
+      <p><strong>Hora:</strong> ${String(startTime).slice(0, 5)} - ${String(endTime).slice(0, 5)}</p>
+      <p><strong>Pago:</strong> Monedero</p>
+    `,
+    });
+  } catch (emailError) {
+    console.error('SendGrid booking notification error (monedero):', emailError);
   }
 
   return NextResponse.json({ ok: true });
