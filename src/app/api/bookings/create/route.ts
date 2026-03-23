@@ -55,10 +55,15 @@ export async function POST(request: Request) {
   // Comprobar deuda y membresía en paralelo
   const serviceSupabase = createSupabaseServiceClient();
   const [profileRes, membershipRes] = await Promise.all([
-    supabase.from('profiles').select('has_debt, wallet_balance').eq('id', user.id).single(),
+    supabase.from('profiles').select('has_debt, wallet_balance, full_name').eq('id', user.id).single(),
     serviceSupabase.from('members').select('expiry_date, is_paid').eq('user_id', user.id).maybeSingle(),
   ]);
 
+  const profile = (profileRes.data as {
+    has_debt?: boolean;
+    wallet_balance?: number;
+    full_name?: string | null;
+  } | null);
   const hasDebt = (profileRes.data as { has_debt?: boolean } | null)?.has_debt === true;
   const balance = Number((profileRes.data as { wallet_balance?: number } | null)?.wallet_balance ?? 0);
   if (hasDebt || balance < 0) {
@@ -177,7 +182,7 @@ export async function POST(request: Request) {
         subject: `🎾 Nueva reserva — ${courtData?.name ?? 'Pista'} ${dateFormatted} ${String(startTime).slice(0, 5)}`,
         html: `
       <h2>Nueva reserva</h2>
-      <p><strong>Socio:</strong> ${user.email ?? 'Sin email'}</p>
+      <p><strong>Socio:</strong> ${profile?.full_name ?? user.email ?? 'Sin nombre'}</p>
       <p><strong>Pista:</strong> ${courtData?.name ?? 'Pista'}</p>
       <p><strong>Fecha:</strong> ${dateFormatted}</p>
       <p><strong>Hora:</strong> ${String(startTime).slice(0, 5)} - ${String(endTime).slice(0, 5)}</p>
@@ -247,7 +252,7 @@ export async function POST(request: Request) {
       subject: `🎾 Nueva reserva — ${courtData?.name ?? 'Pista'} ${dateFormatted} ${String(startTime).slice(0, 5)}`,
       html: `
       <h2>Nueva reserva</h2>
-      <p><strong>Socio:</strong> ${user.email ?? 'Sin email'}</p>
+      <p><strong>Socio:</strong> ${profile?.full_name ?? user.email ?? 'Sin nombre'}</p>
       <p><strong>Pista:</strong> ${courtData?.name ?? 'Pista'}</p>
       <p><strong>Fecha:</strong> ${dateFormatted}</p>
       <p><strong>Hora:</strong> ${String(startTime).slice(0, 5)} - ${String(endTime).slice(0, 5)}</p>
