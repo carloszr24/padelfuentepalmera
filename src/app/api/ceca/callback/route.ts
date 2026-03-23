@@ -90,6 +90,14 @@ export async function POST(request: Request) {
         })
         .eq('num_operacion', data.Num_operacion);
 
+      // Asignar bono de 3 partidos si no tenía uno
+      await supabase
+        .from('bonos_socio')
+        .upsert(
+          { user_id: memOp.user_id, partidos_totales: 3, partidos_usados: 0 },
+          { onConflict: 'user_id', ignoreDuplicates: true }
+        );
+
       revalidatePath('/panel', 'layout');
 
       return new NextResponse(OK_RESPONSE, {

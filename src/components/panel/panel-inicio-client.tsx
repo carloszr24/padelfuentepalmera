@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { BookingModal } from '@/components/ui/booking-modal';
 import { CancelBookingButton } from '@/components/ui/cancel-booking-button';
 import { PanelPageSkeleton } from '@/components/ui/panel-page-skeleton';
+import { BonoBadge } from '@/components/panel/BonoBadge';
 import { usePanelUser } from '@/contexts/panel-user-context';
 import { getBrowserSupabaseClient } from '@/lib/supabase/client';
 
@@ -215,6 +216,8 @@ export function PanelInicioClient() {
           </Link>
         </div>
       )}
+
+      <BonoBadge />
 
       {/* Grid 3: Saldo, Próxima reserva, Este mes (desktop) */}
       <div className="hidden gap-5 md:grid md:grid-cols-3">

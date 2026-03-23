@@ -113,6 +113,15 @@ export async function POST(request: Request) {
   if (error) {
     return NextResponse.json({ message: error.message }, { status: 400 });
   }
+
+  // Asignar bono de 3 partidos si no tenía uno
+  await service
+    .from('bonos_socio')
+    .upsert(
+      { user_id: userId, partidos_totales: 3, partidos_usados: 0 },
+      { onConflict: 'user_id', ignoreDuplicates: true }
+    );
+
   revalidatePath('/admin/socios');
   return NextResponse.json(data);
 }
