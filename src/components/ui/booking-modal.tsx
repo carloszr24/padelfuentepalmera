@@ -391,80 +391,82 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
               )}
 
               {step === 'confirm' && isMember && (
-                <form onSubmit={handleConfirm} className="space-y-6">
-                  <div className="rounded-xl border border-stone-200 bg-stone-50 p-6">
-                    <p className="text-sm font-bold uppercase tracking-wider text-stone-500">Resumen</p>
-                    <p className="mt-2 text-lg font-bold text-stone-900">{courtName}</p>
-                    <p className="mt-1 text-base font-medium text-stone-700">
-                      {date &&
-                        new Date(date + 'T12:00').toLocaleDateString('es-ES', {
-                          weekday: 'long',
-                          day: 'numeric',
-                          month: 'long',
-                        })}
-                      {' · '}
-                      {selectedSlot} – {slotEnd(selectedSlot).slice(0, 5)}
-                    </p>
-                    <p className="mt-3 text-base font-medium text-stone-600">
-                      Señal:{' '}
-                      <span className="font-bold text-stone-900">4,50 €</span>
-                      <span className="ml-2 text-sm text-stone-500">(resto se abona en el club)</span>
-                    </p>
-                  </div>
-                  {bonoLoading ? (
-                    <p className="text-sm text-stone-500">Comprobando bono disponible…</p>
-                  ) : hasBono ? (
-                    <div className="rounded-xl border border-emerald-900/20 bg-emerald-900/5 p-4">
-                      <p className="mb-3 text-sm font-semibold text-emerald-950">Método de pago</p>
-                      <div className="space-y-2">
-                        <label className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition ${metodoPago === 'bono' ? 'border-emerald-900 bg-emerald-900/10' : 'border-stone-300 bg-white'}`}>
-                          <input
-                            type="radio"
-                            name="metodo_pago"
-                            value="bono"
-                            checked={metodoPago === 'bono'}
-                            onChange={() => setMetodoPago('bono')}
-                            className="mt-1 h-4 w-4 accent-emerald-900"
-                          />
-                          <span className="text-sm text-stone-800">
-                            <span className="font-semibold text-emerald-900">
-                              Usar bono de socio (te quedan {bonoRestantes} partidos)
-                            </span>
-                          </span>
-                        </label>
-                        <label className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition ${metodoPago === 'monedero' ? 'border-emerald-900 bg-emerald-900/10' : 'border-stone-300 bg-white'}`}>
-                          <input
-                            type="radio"
-                            name="metodo_pago"
-                            value="monedero"
-                            checked={metodoPago === 'monedero'}
-                            onChange={() => setMetodoPago('monedero')}
-                            className="mt-1 h-4 w-4 accent-emerald-900"
-                          />
-                          <span className="text-sm text-stone-800">
-                            <span className="font-semibold text-emerald-900">
-                              Pagar con monedero (saldo: {walletBalance.toFixed(2).replace('.', ',')} €)
-                            </span>
-                          </span>
-                        </label>
-                      </div>
-                    </div>
-                  ) : null}
-                  <div
-                    className="mb-4 flex gap-3 rounded-r-lg border-l-[3px] py-3 pl-4 pr-4 text-sm text-stone-700"
-                    style={{ backgroundColor: '#fefce8', borderLeftColor: '#f59e0b' }}
-                  >
-                    <AlertTriangle className="h-5 w-5 shrink-0 text-amber-500" aria-hidden style={{ color: '#f59e0b' }} />
-                    <div>
-                      <p className="font-semibold text-stone-800">Política de cancelación</p>
-                      <p className="mt-1 leading-snug">
-                        Si cancelas con menos de 24 horas de antelación, perderás la señal (4,50 €) y deberás abonar el resto de la pista en el club antes de poder realizar nuevas reservas.
+                <form onSubmit={handleConfirm} className="flex flex-col h-full">
+                  <div className="flex-1 overflow-y-auto space-y-6 pb-4">
+                    <div className="rounded-xl border border-stone-200 bg-stone-50 p-6">
+                      <p className="text-sm font-bold uppercase tracking-wider text-stone-500">Resumen</p>
+                      <p className="mt-2 text-lg font-bold text-stone-900">{courtName}</p>
+                      <p className="mt-1 text-base font-medium text-stone-700">
+                        {date &&
+                          new Date(date + 'T12:00').toLocaleDateString('es-ES', {
+                            weekday: 'long',
+                            day: 'numeric',
+                            month: 'long',
+                          })}
+                        {' · '}
+                        {selectedSlot} – {slotEnd(selectedSlot).slice(0, 5)}
+                      </p>
+                      <p className="mt-3 text-base font-medium text-stone-600">
+                        Señal:{' '}
+                        <span className="font-bold text-stone-900">4,50 €</span>
+                        <span className="ml-2 text-sm text-stone-500">(resto se abona en el club)</span>
                       </p>
                     </div>
+                    {bonoLoading ? (
+                      <p className="text-sm text-stone-500">Comprobando bono disponible…</p>
+                    ) : hasBono ? (
+                      <div className="rounded-xl border border-emerald-900/20 bg-emerald-900/5 p-4">
+                        <p className="mb-3 text-sm font-semibold text-emerald-950">Método de pago</p>
+                        <div className="space-y-2">
+                          <label className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition ${metodoPago === 'bono' ? 'border-emerald-900 bg-emerald-900/10' : 'border-stone-300 bg-white'}`}>
+                            <input
+                              type="radio"
+                              name="metodo_pago"
+                              value="bono"
+                              checked={metodoPago === 'bono'}
+                              onChange={() => setMetodoPago('bono')}
+                              className="mt-1 h-4 w-4 accent-emerald-900"
+                            />
+                            <span className="text-sm text-stone-800">
+                              <span className="font-semibold text-emerald-900">
+                                Usar bono de socio (te quedan {bonoRestantes} partidos)
+                              </span>
+                            </span>
+                          </label>
+                          <label className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition ${metodoPago === 'monedero' ? 'border-emerald-900 bg-emerald-900/10' : 'border-stone-300 bg-white'}`}>
+                            <input
+                              type="radio"
+                              name="metodo_pago"
+                              value="monedero"
+                              checked={metodoPago === 'monedero'}
+                              onChange={() => setMetodoPago('monedero')}
+                              className="mt-1 h-4 w-4 accent-emerald-900"
+                            />
+                            <span className="text-sm text-stone-800">
+                              <span className="font-semibold text-emerald-900">
+                                Pagar con monedero (saldo: {walletBalance.toFixed(2).replace('.', ',')} €)
+                              </span>
+                            </span>
+                          </label>
+                        </div>
+                      </div>
+                    ) : null}
+                    <div
+                      className="mb-4 flex gap-3 rounded-r-lg border-l-[3px] py-3 pl-4 pr-4 text-sm text-stone-700"
+                      style={{ backgroundColor: '#fefce8', borderLeftColor: '#f59e0b' }}
+                    >
+                      <AlertTriangle className="h-5 w-5 shrink-0 text-amber-500" aria-hidden style={{ color: '#f59e0b' }} />
+                      <div>
+                        <p className="font-semibold text-stone-800">Política de cancelación</p>
+                        <p className="mt-1 leading-snug">
+                          Si cancelas con menos de 24 horas de antelación, perderás la señal (4,50 €) y deberás abonar el resto de la pista en el club antes de poder realizar nuevas reservas.
+                        </p>
+                      </div>
+                    </div>
+                    {error && <p className="text-base font-medium text-red-600">{error}</p>}
                   </div>
-                  {error && <p className="text-base font-medium text-red-600">{error}</p>}
 
-                  <div className="flex min-h-[44px] flex-col gap-2 sm:flex-row sm:gap-3">
+                  <div className="flex min-h-[44px] flex-col gap-2 sm:flex-row sm:gap-3 pt-4 border-t border-stone-200 bg-white">
                     <button
                       type="button"
                       onClick={() => setStep('slots')}
