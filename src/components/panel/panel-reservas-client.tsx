@@ -18,6 +18,7 @@ type BookingRow = {
   status: string;
   deposit_paid: boolean;
   deposit_amount?: number | null;
+  pagado_con_bono?: boolean;
   courts: { name: string } | { name: string }[] | null;
 };
 
@@ -121,7 +122,7 @@ export function PanelReservasClient({ initialCourts = [], initialBookings }: Pan
       fetch('/api/panel/courts').then((r) => r.json()),
       getBrowserSupabaseClient()
         .from('bookings')
-        .select('id, booking_date, start_time, end_time, status, deposit_paid, deposit_amount, courts(name)')
+        .select('id, booking_date, start_time, end_time, status, deposit_paid, deposit_amount, pagado_con_bono, courts(name)')
         .eq('user_id', user.id)
         .order('booking_date', { ascending: false })
         .order('start_time', { ascending: false }),
@@ -140,7 +141,7 @@ export function PanelReservasClient({ initialCourts = [], initialBookings }: Pan
     refreshProfile();
     getBrowserSupabaseClient()
       .from('bookings')
-      .select('id, booking_date, start_time, end_time, status, deposit_paid, deposit_amount, courts(name)')
+      .select('id, booking_date, start_time, end_time, status, deposit_paid, deposit_amount, pagado_con_bono, courts(name)')
       .eq('user_id', user.id)
       .order('booking_date', { ascending: false })
       .order('start_time', { ascending: false })
@@ -241,15 +242,22 @@ export function PanelReservasClient({ initialCourts = [], initialBookings }: Pan
                         <span className="font-medium text-[var(--panel-text)]" style={{ fontFamily: 'var(--font-space-grotesk)', fontSize: '14px' }}>
                           {b.start_time.slice(0, 5)} — {b.end_time.slice(0, 5)}
                         </span>
-                        {b.status === 'cancelled' ? (
-                          <span className="inline-flex rounded-full px-3 py-1 text-xs font-semibold" style={{ background: 'var(--panel-red-bg)', color: 'var(--panel-red)' }}>Cancelada</span>
-                        ) : b.status === 'completed' ? (
-                          <span className="text-xs font-semibold text-[var(--panel-text-secondary)]">Completada</span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold" style={{ background: 'var(--panel-green-bg)', color: 'var(--panel-green)' }}>
-                            <span className="h-1.5 w-1.5 rounded-full bg-current" /> Confirmada
-                          </span>
-                        )}
+                        <div className="flex items-center gap-2">
+                          {b.status === 'cancelled' ? (
+                            <span className="inline-flex rounded-full px-3 py-1 text-xs font-semibold" style={{ background: 'var(--panel-red-bg)', color: 'var(--panel-red)' }}>Cancelada</span>
+                          ) : b.status === 'completed' ? (
+                            <span className="text-xs font-semibold text-[var(--panel-text-secondary)]">Completada</span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold" style={{ background: 'var(--panel-green-bg)', color: 'var(--panel-green)' }}>
+                              <span className="h-1.5 w-1.5 rounded-full bg-current" /> Confirmada
+                            </span>
+                          )}
+                          {b.pagado_con_bono ? (
+                            <span className="inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold" style={{ background: 'var(--panel-green-bg)', color: 'var(--panel-green)' }}>
+                              🎾 Bono
+                            </span>
+                          ) : null}
+                        </div>
                         {b.booking_date >= today() && b.status !== 'cancelled' && (
                           <CancelBookingButton
                             bookingId={b.id}
@@ -291,11 +299,16 @@ export function PanelReservasClient({ initialCourts = [], initialBookings }: Pan
                           </div>
                         </div>
                         <div className="flex flex-col items-end gap-2">
-                          {b.status === 'cancelled' ? (
-                            <span className="rounded-md px-2 py-1 text-[10px] font-bold" style={{ background: 'var(--panel-red-bg)', color: 'var(--panel-red)' }}>Cancelada</span>
-                          ) : (
-                            <span className="rounded-md px-2 py-1 text-[10px] font-bold" style={{ background: 'var(--panel-green-bg)', color: 'var(--panel-green)' }}>Confirmada</span>
-                          )}
+                          <div className="flex flex-wrap justify-end gap-1.5">
+                            {b.status === 'cancelled' ? (
+                              <span className="rounded-md px-2 py-1 text-[10px] font-bold" style={{ background: 'var(--panel-red-bg)', color: 'var(--panel-red)' }}>Cancelada</span>
+                            ) : (
+                              <span className="rounded-md px-2 py-1 text-[10px] font-bold" style={{ background: 'var(--panel-green-bg)', color: 'var(--panel-green)' }}>Confirmada</span>
+                            )}
+                            {b.pagado_con_bono ? (
+                              <span className="rounded-md px-2 py-1 text-[10px] font-semibold" style={{ background: 'var(--panel-green-bg)', color: 'var(--panel-green)' }}>🎾 Bono</span>
+                            ) : null}
+                          </div>
                           {b.booking_date >= today() && b.status !== 'cancelled' && (
                             <CancelBookingButton
                               bookingId={b.id}

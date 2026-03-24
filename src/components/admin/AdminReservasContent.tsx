@@ -13,6 +13,7 @@ export type BookingRow = {
   end_time: string;
   status: string;
   deposit_paid: boolean;
+  pagado_con_bono: boolean;
   payment_method?: string | null;
   remaining_paid_at?: string | null;
   profiles: { full_name: string | null } | { full_name: string | null }[] | null;
@@ -311,6 +312,10 @@ export function AdminReservasContent({ bookings, desde, hasta }: AdminReservasCo
                               {b.status === 'blocked' ? (
                                 <span className="text-[11px] leading-none text-stone-500">
                                   Bloqueo de pista (reserva pagada)
+                                </span>
+                              ) : b.pagado_con_bono ? (
+                                <span className="inline-flex w-fit rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+                                  🎾 Bono
                                 </span>
                               ) : b.payment_method === 'pay_at_club' ? (
                                 <span className="text-[11px] font-medium leading-none text-blue-600">

@@ -17,7 +17,7 @@ async function getReservasData(desde: string, hasta: string) {
   let bookingsQuery = supabase
     .from('bookings')
     .select(
-      'id, booking_date, start_time, end_time, status, deposit_paid, payment_method, remaining_paid_at, profiles!bookings_user_id_fkey(full_name), courts(name)'
+      'id, booking_date, start_time, end_time, status, deposit_paid, payment_method, remaining_paid_at, pagado_con_bono, profiles!bookings_user_id_fkey(full_name), courts(name)'
     )
     .order('booking_date', { ascending: false })
     .order('start_time', { ascending: false });
@@ -88,6 +88,7 @@ async function getReservasData(desde: string, hasta: string) {
           end_time: endStr,
           status: 'blocked',
           deposit_paid: true,
+          pagado_con_bono: false,
           payment_method: 'pay_at_club',
           remaining_paid_at: null,
           profiles: null,
