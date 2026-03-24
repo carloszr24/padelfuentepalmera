@@ -214,7 +214,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
           onClick={(e) => e.target === e.currentTarget && setOpen(false)}
         >
           <div
-            className="flex w-full max-w-[calc(100vw-32px)] flex-col rounded-3xl border border-stone-200 bg-white shadow-2xl md:max-h-[80vh] md:max-w-[640px] md:overflow-hidden md:rounded-2xl md:shadow-[0_8px_30px_rgba(0,0,0,0.12)]"
+            className="flex w-full max-w-[calc(100vw-32px)] max-h-[calc(100dvh-32px)] overflow-hidden flex-col rounded-3xl border border-stone-200 bg-white shadow-2xl md:max-h-[80vh] md:max-w-[640px] md:rounded-2xl md:shadow-[0_8px_30px_rgba(0,0,0,0.12)]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
