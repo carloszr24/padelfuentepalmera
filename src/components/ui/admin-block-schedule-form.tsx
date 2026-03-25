@@ -5,8 +5,9 @@ import { useRouter } from 'next/navigation';
 
 // Horario club: mañana 10-11:30, 11:30-13:00; tarde 16:30-18, 18-19:30, 19:30-21, 21-22:30
 const SLOT_OPTIONS: { start: string; end: string; label: string }[] = [
-  { start: '10:00', end: '11:30', label: '10:00 - 11:30' },
-  { start: '11:30', end: '13:00', label: '11:30 - 13:00' },
+  { start: '09:30', end: '11:00', label: '09:30 - 11:00' },
+  { start: '11:00', end: '12:30', label: '11:00 - 12:30' },
+  { start: '12:30', end: '14:00', label: '12:30 - 14:00' },
   { start: '16:30', end: '18:00', label: '16:30 - 18:00' },
   { start: '18:00', end: '19:30', label: '18:00 - 19:30' },
   { start: '19:30', end: '21:00', label: '19:30 - 21:00' },

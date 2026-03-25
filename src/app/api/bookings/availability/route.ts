@@ -9,7 +9,7 @@ import { getOpeningForDate } from '@/lib/club-schedule';
 // 4. court_schedules + bookings: reservas y bloqueos puntuales → lo que queda es lo disponible.
 
 // Horarios fijos por día: solo estos slots existen. day_of_week 1 = Lunes, 7 = Domingo.
-const SLOTS_WEEKDAY = ['16:30', '18:00', '19:30', '21:00'] as const; // Lunes–Viernes (solo tardes). Última 21:00, cierre 22:30
+const SLOTS_WEEKDAY = ['09:30', '11:00', '12:30', '16:30', '18:00', '19:30', '21:00'] as const; // Lunes–Viernes (mañana + tardes). Última 21:00, cierre 22:30
 const SLOTS_WEEKEND = ['09:30', '11:00', '12:30', '14:00', '16:30', '18:00', '19:30', '21:00'] as const; // Sábado–Domingo. Última 21:00
 
 function getSlotStartsForDay(dayOfWeek: number): readonly string[] {

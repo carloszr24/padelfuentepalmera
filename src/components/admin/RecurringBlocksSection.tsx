@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 
 const DAY_NAMES = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-const SLOT_OPTIONS = ['09:30', '11:00', '12:30', '14:00', '16:30', '18:00', '19:30', '21:00'];
+const SLOT_OPTIONS = ['09:30', '11:00', '12:30', '16:30', '18:00', '19:30', '21:00'];
 
 type Block = {
   id: string;

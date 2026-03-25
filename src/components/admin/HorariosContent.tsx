@@ -28,7 +28,7 @@ type WeeklyRow = {
 const DEFAULT_WEEKLY: WeeklyRow[] = [1, 2, 3, 4, 5, 6, 7].map((d) => ({
   day_of_week: d,
   is_open: true,
-  morning_open: d <= 5 ? '10:00' : '10:00',
+  morning_open: d <= 5 ? '09:30' : '10:00',
   morning_close: d <= 5 ? '14:00' : '14:00',
   afternoon_open: d <= 5 ? '16:30' : '16:30',
   afternoon_close: d <= 5 ? '22:00' : '21:00',
