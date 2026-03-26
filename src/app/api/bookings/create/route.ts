@@ -79,15 +79,9 @@ export async function POST(request: Request) {
     membership?.is_paid === true &&
     membership?.expiry_date != null &&
     membership.expiry_date >= today;
-  if (!isActiveMember) {
-    return NextResponse.json(
-      { message: 'Solo los socios pueden reservar pistas. Hazte socio para poder reservar.' },
-      { status: 403 }
-    );
-  }
 
   const metodoPago: 'bono' | 'monedero' = metodo_pago === 'bono' ? 'bono' : 'monedero';
-  const deposit = 4.5;
+  const deposit = isActiveMember ? 4.5 : 5.0;
 
   const startNorm = String(startTime).slice(0, 5);
   const endNorm = String(endTime).slice(0, 5);
@@ -133,6 +127,13 @@ export async function POST(request: Request) {
   }
 
   if (metodoPago === 'bono') {
+    if (!isActiveMember) {
+      return NextResponse.json(
+        { message: 'El bono de socio solo está disponible para socios activos.' },
+        { status: 403 }
+      );
+    }
+
     // Consumir bono de forma atómica (la función SQL hace FOR UPDATE internamente)
     const bonoResult = await serviceSupabase.rpc('usar_bono', { p_user_id: user.id });
     if (bonoResult.error) {
@@ -256,7 +257,7 @@ export async function POST(request: Request) {
       <p><strong>Pista:</strong> ${courtData?.name ?? 'Pista'}</p>
       <p><strong>Fecha:</strong> ${dateFormatted}</p>
       <p><strong>Hora:</strong> ${String(startTime).slice(0, 5)} - ${String(endTime).slice(0, 5)}</p>
-      <p><strong>Pago:</strong> Monedero</p>
+      <p><strong>Pago:</strong> ${isActiveMember ? 'Monedero' : 'Monedero (no socio)'}</p>
     `,
     });
   } catch (emailError) {

@@ -176,7 +176,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
           bookingDate: date,
           startTime: selectedSlot + ':00',
           endTime,
-          metodo_pago: metodoPago,
+          metodo_pago: isMember ? metodoPago : 'monedero',
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -370,14 +370,46 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
               )}
 
               {step === 'confirm' && !isMember && (
-                <div className="space-y-6">
+                <form onSubmit={handleConfirm} className="space-y-6">
+                  <div className="rounded-xl border border-stone-200 bg-stone-50 p-6">
+                    <p className="text-sm font-bold uppercase tracking-wider text-stone-500">Resumen</p>
+                    <p className="mt-2 text-lg font-bold text-stone-900">{courtName}</p>
+                    <p className="mt-1 text-base font-medium text-stone-700">
+                      {date &&
+                        new Date(date + 'T12:00').toLocaleDateString('es-ES', {
+                          weekday: 'long',
+                          day: 'numeric',
+                          month: 'long',
+                        })}
+                      {' · '}
+                      {selectedSlot} – {slotEnd(selectedSlot).slice(0, 5)}
+                    </p>
+                    <p className="mt-3 text-base font-medium text-stone-600">
+                      Señal:{' '}
+                      <span className="font-bold text-stone-900">5,00 €</span>
+                      <span className="ml-2 text-sm text-stone-500">(resto se abona en el club)</span>
+                    </p>
+                  </div>
                   <p className="rounded-xl border border-[#1d4ed8]/30 bg-[#1d4ed8]/5 px-4 py-3 text-base font-semibold text-stone-800">
-                    Solo los socios pueden reservar. Hazte socio para reservar pistas.
+                    Hazte socio y ahorra 0,50 € en esta reserva.
                   </p>
                   <SocioUpsell
                     ctaLabel="Hazte socio"
                     onCtaClick={() => { setOpen(false); window.location.href = '/panel/membresia'; }}
                   />
+                  <div
+                    className="mb-4 flex gap-3 rounded-r-lg border-l-[3px] py-3 pl-4 pr-4 text-sm text-stone-700"
+                    style={{ backgroundColor: '#fefce8', borderLeftColor: '#f59e0b' }}
+                  >
+                    <AlertTriangle className="h-5 w-5 shrink-0 text-amber-500" aria-hidden style={{ color: '#f59e0b' }} />
+                    <div>
+                      <p className="font-semibold text-stone-800">Política de cancelación</p>
+                      <p className="mt-1 leading-snug">
+                        Si cancelas con menos de 24 horas de antelación, perderás la señal (5,00 €) y deberás abonar el resto de la pista en el club antes de poder realizar nuevas reservas.
+                      </p>
+                    </div>
+                  </div>
+                  {error && <p className="text-base font-medium text-red-600">{error}</p>}
                   <div className="flex min-h-[44px] flex-col gap-2 sm:flex-row sm:gap-3">
                     <button
                       type="button"
@@ -386,8 +418,15 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
                     >
                       Atrás
                     </button>
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="min-h-[44px] w-full rounded-xl bg-[#1d4ed8] px-6 py-3 text-base font-bold text-white shadow-lg shadow-[#1d4ed8]/30 hover:bg-[#2563eb] disabled:opacity-60 sm:ml-auto sm:w-auto"
+                    >
+                      {loading ? 'Creando...' : 'Confirmar reserva'}
+                    </button>
                   </div>
-                </div>
+                </form>
               )}
 
               {step === 'confirm' && isMember && (
