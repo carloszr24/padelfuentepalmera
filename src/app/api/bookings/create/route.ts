@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createServerSupabaseClient, createSupabaseServiceClient } from '@/lib/supabase/server';
 import { sendClubNotification } from '@/lib/sendgrid';
 import { getOpeningForDate } from '@/lib/club-schedule';
+import { isSameDayMadridTooSoon, minutesFromClock } from '@/lib/booking-lead-time';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { isValidUUID } from '@/lib/utils';
 
@@ -93,9 +94,20 @@ export async function POST(request: Request) {
     minute: '2-digit',
     hour12: false,
   });
-  if (bookingDate < todayMadrid || (bookingDate === todayMadrid && startNorm <= timeMadrid)) {
+  if (bookingDate < todayMadrid) {
     return NextResponse.json(
-      { message: 'No se puede reservar una hora que ya ha pasado' },
+      { message: 'No se puede reservar en una fecha pasada' },
+      { status: 400 }
+    );
+  }
+  if (bookingDate === todayMadrid && isSameDayMadridTooSoon(bookingDate, todayMadrid, startNorm, timeMadrid)) {
+    const slotAlreadyStarted = minutesFromClock(startNorm) < minutesFromClock(timeMadrid);
+    return NextResponse.json(
+      {
+        message: slotAlreadyStarted
+          ? 'No se puede reservar una hora que ya ha pasado'
+          : 'Debes reservar con al menos 25 minutos de antelación respecto al inicio de la franja.',
+      },
       { status: 400 }
     );
   }

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
-import { createSupabaseServiceClient } from '@/lib/supabase/server';
+import { createServerSupabaseClient, createSupabaseServiceClient } from '@/lib/supabase/server';
 import { getOpeningForDate } from '@/lib/club-schedule';
+import { isSameDayMadridTooSoon } from '@/lib/booking-lead-time';
 
 // Orden de filtrado (imposible reservar fuera de horario):
 // 1. club_schedule (getOpeningForDate): si is_open=false → ningún slot; si true → solo slots entre open_time y close_time (sesión termina antes de cierre).
@@ -54,6 +55,20 @@ export async function GET(request: Request) {
       { message: 'Faltan courtId o date (yyyy-mm-dd)' },
       { status: 400 }
     );
+  }
+
+  const sessionSupabase = await createServerSupabaseClient();
+  const {
+    data: { user: sessionUser },
+  } = await sessionSupabase.auth.getUser();
+  let isAdmin = false;
+  if (sessionUser) {
+    const { data: profile } = await sessionSupabase
+      .from('profiles')
+      .select('role')
+      .eq('id', sessionUser.id)
+      .maybeSingle();
+    isAdmin = profile?.role === 'admin';
   }
 
   const supabase = createSupabaseServiceClient();
@@ -138,7 +153,13 @@ export async function GET(request: Request) {
   });
 
   const available = slotStarts.filter((slotStart) => {
-    if (date === todayMadrid && slotStart <= timeMadrid) return false;
+    if (date === todayMadrid) {
+      if (isAdmin) {
+        if (slotStart <= timeMadrid) return false;
+      } else if (isSameDayMadridTooSoon(date, todayMadrid, slotStart, timeMadrid)) {
+        return false;
+      }
+    }
     const end = slotEnd(slotStart);
     const overlaps = occupied.some((o) =>
       timesOverlap(slotStart, end, o.start, o.end)
