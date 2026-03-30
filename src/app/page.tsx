@@ -27,8 +27,8 @@ const NOVEDADES_SLIDER = [
   {
     title: 'Clases para todos los niveles',
     category: 'Escuela',
-    image: 'https://images.unsplash.com/photo-1646649851780-d9701b7c3c04?w=600&q=80',
-    instagramUrl: 'https://www.instagram.com/fuentepalmerapadel/',
+    image: '/carrusel-clases.jpg',
+    instagramUrl: 'https://www.instagram.com/p/DWe81SzDBzZ/',
   },
   {
     title: 'Nuestro club',
