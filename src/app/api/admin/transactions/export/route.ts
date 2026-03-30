@@ -18,6 +18,7 @@ function getTransactionLabel(type: string): string {
     admin_recharge: 'Recarga admin',
     booking_deposit: 'Depósito reserva',
     refund: 'Reembolso',
+    membership_fee: 'Cuota de socio',
   };
   return map[type] ?? type;
 }
@@ -56,13 +57,15 @@ export async function GET(request: Request) {
     const name = Array.isArray(p) ? (p[0] as { full_name?: string | null } | undefined)?.full_name : (p as { full_name?: string | null } | null)?.full_name;
     const email = Array.isArray(p) ? (p[0] as { email?: string | null } | undefined)?.email : (p as { email?: string | null } | null)?.email;
     const date = new Date(tx.created_at as string).toLocaleString('es-ES');
+    const amount = Number(tx.amount);
+    const normalizedAmount = tx.type === 'membership_fee' ? Math.abs(amount) : amount;
     return [
       date,
       name ?? '',
       email ?? '',
       getTransactionLabel(tx.type as string),
       (tx.description as string | null) ?? '',
-      Number(tx.amount).toFixed(2),
+      normalizedAmount.toFixed(2),
     ].map(escapeCsv).join(';');
   });
   const csv = '\uFEFF' + [headers.join(';'), ...rows].join('\n');

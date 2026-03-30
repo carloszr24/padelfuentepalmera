@@ -84,8 +84,7 @@ export async function GET(request: Request) {
     const { data: dayRows, error: dayError } = await supabase
       .from('transactions')
       .select('id, type, amount, created_at, user_id, profiles!transactions_user_id_fkey(full_name)')
-      .in('type', ['recharge', 'admin_recharge'])
-      .gt('amount', 0)
+      .in('type', ['recharge', 'admin_recharge', 'membership_fee'])
       .gte('created_at', dateStart)
       .lte('created_at', dateEnd)
       .order('created_at', { ascending: true });
@@ -106,17 +105,23 @@ export async function GET(request: Request) {
     };
     const list: Row[] = (dayRows ?? []) as unknown as Row[];
     let totalIncome = 0;
-    let totalFees = 0;
     const transactions = list.map((tx) => {
       const amount = Number(tx.amount);
-      totalIncome += amount;
+      // `membership_fee` se guarda como negativo en DB, pero para el club es un ingreso.
+      const normalizedAmount = tx.type === 'membership_fee' ? Math.abs(amount) : amount;
+      totalIncome += normalizedAmount;
       const profile = tx.profiles;
       const full_name = Array.isArray(profile) ? profile[0]?.full_name ?? null : (profile?.full_name ?? null);
       return {
         created_at: tx.created_at,
         full_name: full_name ?? null,
-        type: tx.type === 'recharge' ? 'Tarjeta' : 'Admin',
-        amount: Math.round(amount * 100) / 100,
+        type:
+          tx.type === 'recharge'
+            ? 'Tarjeta'
+            : tx.type === 'membership_fee'
+              ? 'Cuota socio'
+              : 'Admin',
+        amount: Math.round(normalizedAmount * 100) / 100,
         fee: 0,
       };
     });
@@ -139,8 +144,7 @@ export async function GET(request: Request) {
   let query = supabase
     .from('transactions')
     .select('id, type, amount, created_at')
-    .in('type', ['recharge', 'admin_recharge'])
-    .gt('amount', 0);
+    .in('type', ['recharge', 'admin_recharge', 'membership_fee']);
 
   if (since) {
     query = query.gte('created_at', since.toISOString());
@@ -168,6 +172,7 @@ export async function GET(request: Request) {
 
   for (const tx of txList) {
     const amount = Number(tx.amount);
+    const normalizedAmount = tx.type === 'membership_fee' ? Math.abs(amount) : amount;
     const date = new Date(tx.created_at);
     const monthKey = date.toISOString().slice(0, 7);
     const dayKey = date.toISOString().slice(0, 10);
@@ -182,13 +187,17 @@ export async function GET(request: Request) {
     }
 
     if (tx.type === 'recharge') {
-      monthMap[monthKey].cardIncome += amount;
+      monthMap[monthKey].cardIncome += normalizedAmount;
       monthMap[monthKey].txCount += 1;
-      dayMap[dayKey].income += amount;
+      dayMap[dayKey].income += normalizedAmount;
     } else if (tx.type === 'admin_recharge') {
-      monthMap[monthKey].adminIncome += amount;
+      monthMap[monthKey].adminIncome += normalizedAmount;
       monthMap[monthKey].txCount += 1;
-      dayMap[dayKey].income += amount;
+      dayMap[dayKey].income += normalizedAmount;
+    } else if (tx.type === 'membership_fee') {
+      monthMap[monthKey].adminIncome += normalizedAmount;
+      monthMap[monthKey].txCount += 1;
+      dayMap[dayKey].income += normalizedAmount;
     }
   }
 

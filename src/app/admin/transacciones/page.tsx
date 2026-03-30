@@ -52,14 +52,17 @@ export default async function AdminTransaccionesPage() {
                   const name = typeof profile === 'object' && profile !== null && 'full_name' in profile
                     ? (profile as { full_name: string | null }).full_name
                     : null;
+                  // Para la cuota de socio, en DB se guarda como negativa, pero en finanzas se quiere ver como ingreso (+).
+                  const normalizedAmount =
+                    tx.type === 'membership_fee' ? Math.abs(Number(tx.amount)) : Number(tx.amount);
                   return (
                     <tr key={tx.id} className="border-b border-[#e8e8e4] transition hover:bg-black/[0.02]">
                       <td className="font-semibold text-[#1a1a1a]">{name ?? 'Usuario'}</td>
                       <td className="font-medium text-[#1a1a1a]">{tx.description || getTransactionLabel(tx.type)}</td>
                       <td className="whitespace-nowrap text-xs text-[#6b6b6b]">{formatDateTime(tx.created_at)}</td>
                       <td className="text-right tabular-nums">
-                        <span className={`whitespace-nowrap ${tx.amount >= 0 ? 'admin-amount-positive' : 'font-semibold text-[#dc2626]'}`} style={tx.amount >= 0 ? { fontFamily: 'var(--font-space-grotesk)' } : undefined}>
-                          {tx.amount >= 0 ? '+' : ''}{Number(tx.amount).toFixed(2)} €
+                        <span className={`whitespace-nowrap ${normalizedAmount >= 0 ? 'admin-amount-positive' : 'font-semibold text-[#dc2626]'}`} style={normalizedAmount >= 0 ? { fontFamily: 'var(--font-space-grotesk)' } : undefined}>
+                          {normalizedAmount >= 0 ? '+' : ''}{normalizedAmount.toFixed(2)} €
                         </span>
                       </td>
                     </tr>
@@ -85,9 +88,7 @@ function formatDateTime(dateStr: string) {
   });
 }
 
-function getTransactionLabel(
-  type: 'recharge' | 'booking_deposit' | 'admin_recharge' | 'refund'
-): string {
+function getTransactionLabel(type: string): string {
   switch (type) {
     case 'recharge':
       return 'Recarga monedero';
@@ -97,6 +98,8 @@ function getTransactionLabel(
       return 'Depósito reserva';
     case 'refund':
       return 'Reembolso depósito';
+    case 'membership_fee':
+      return 'Cuota de socio';
     default:
       return 'Transacción';
   }
