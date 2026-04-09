@@ -17,7 +17,7 @@ async function getReservasData(desde: string, hasta: string) {
   let bookingsQuery = supabase
     .from('bookings')
     .select(
-      'id, booking_date, start_time, end_time, status, deposit_paid, payment_method, remaining_paid_at, pagado_con_bono, profiles!bookings_user_id_fkey(full_name), courts(name)'
+      'id, user_id, booking_date, start_time, end_time, status, deposit_paid, payment_method, remaining_paid_at, pagado_con_bono, profiles!bookings_user_id_fkey(full_name), courts(name)'
     )
     .order('booking_date', { ascending: false })
     .order('start_time', { ascending: false });
@@ -28,14 +28,25 @@ async function getReservasData(desde: string, hasta: string) {
     { data: courts },
     { data: profiles },
     { data: recurringBlocks },
+    { data: members },
   ] = await Promise.all([
     bookingsQuery,
     supabase.from('courts').select('id, name').eq('is_active', true).order('name'),
     supabase.from('profiles').select('id, full_name, email').order('full_name'),
     supabase.from('recurring_blocks').select('court_id, day_of_week, start_time'),
+    supabase.from('members').select('user_id, expiry_date').gte('expiry_date', new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' })),
   ]);
 
-  const bookingsList: BookingRow[] = (bookings ?? []) as BookingRow[];
+  const activeMemberIds = new Set<string>(
+    (members ?? [])
+      .map((m) => m.user_id)
+      .filter((id): id is string => typeof id === 'string' && id.length > 0)
+  );
+
+  const bookingsList: BookingRow[] = ((bookings ?? []) as BookingRow[]).map((b) => ({
+    ...b,
+    is_member: !!(b.user_id && activeMemberIds.has(b.user_id)),
+  }));
 
   // Generar reservas técnicas virtuales a partir de bloqueos recurrentes en el rango [desde, hasta]
   const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' });
@@ -83,6 +94,7 @@ async function getReservasData(desde: string, hasta: string) {
 
         virtualBlocks.push({
           id,
+          user_id: null,
           booking_date: bookingDate,
           start_time: `${startStr}:00`,
           end_time: endStr,
@@ -91,6 +103,7 @@ async function getReservasData(desde: string, hasta: string) {
           pagado_con_bono: false,
           payment_method: 'pay_at_club',
           remaining_paid_at: null,
+          is_member: false,
           profiles: null,
           courts: { name: courtName },
         });

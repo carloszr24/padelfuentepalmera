@@ -8,6 +8,7 @@ import { AdminNoshowButton } from '@/components/ui/admin-noshow-button';
 
 export type BookingRow = {
   id: string;
+  user_id?: string | null;
   booking_date: string;
   start_time: string;
   end_time: string;
@@ -16,6 +17,7 @@ export type BookingRow = {
   pagado_con_bono: boolean;
   payment_method?: string | null;
   remaining_paid_at?: string | null;
+  is_member?: boolean;
   profiles: { full_name: string | null } | { full_name: string | null }[] | null;
   courts: { name: string } | { name: string }[] | null;
 };
@@ -279,7 +281,14 @@ export function AdminReservasContent({ bookings, desde, hasta }: AdminReservasCo
                             {getCourtName(b)}
                           </td>
                           <td className="px-4 py-3 align-middle font-medium text-stone-800">
-                            {getProfileName(b)}
+                            <div className="flex flex-col items-start gap-1">
+                              <span>{getProfileName(b)}</span>
+                              {b.is_member && (
+                                <span className="inline-flex w-fit rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+                                  Socio
+                                </span>
+                              )}
+                            </div>
                           </td>
                           <td className="px-4 py-3 align-middle font-medium text-stone-800">
                             {formatTimeRange(b.start_time, b.end_time)}
