@@ -266,7 +266,7 @@ export function AdminReservasContent({ bookings, desde, hasta }: AdminReservasCo
                       <th className="px-4 py-3 align-middle">Usuario</th>
                       <th className="px-4 py-3 align-middle">Hora</th>
                       <th className="px-4 py-3 align-middle">Estado</th>
-                      <th className="px-4 py-3 align-middle">Resto pagado</th>
+                      <th className="px-4 py-3 align-middle">Señal / resto</th>
                       <th className="px-4 py-3 align-middle">Acciones</th>
                     </tr>
                   </thead>
@@ -344,26 +344,26 @@ export function AdminReservasContent({ bookings, desde, hasta }: AdminReservasCo
                             </div>
                           </td>
                           <td className="px-4 py-3 align-middle">
-                            {b.status === 'confirmed' && (
-                              <AdminMarkRemainingPaidButton
-                                bookingId={b.id}
-                                alreadyPaid={!!b.remaining_paid_at}
-                              />
-                            )}
-                          </td>
-                          <td className="px-4 py-3 align-middle">
-                            {(b.status === 'confirmed' || b.status === 'blocked') && (
-                              <div className="flex flex-col gap-2 items-start">
+                            <div className="flex flex-col gap-2 items-start">
+                              {(b.status === 'confirmed' || b.status === 'blocked') && (
                                 <AdminMarkDepositPaidButton
                                   bookingId={b.id}
                                   alreadyPaid={!!b.deposit_paid}
                                 />
-                                {b.status === 'confirmed' && (
-                                  <>
-                                    <AdminCancelBookingButton bookingId={b.id} />
-                                    {showNoshow && <AdminNoshowButton bookingId={b.id} />}
-                                  </>
-                                )}
+                              )}
+                              {b.status === 'confirmed' && (
+                                <AdminMarkRemainingPaidButton
+                                  bookingId={b.id}
+                                  alreadyPaid={!!b.remaining_paid_at}
+                                />
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 align-middle">
+                            {b.status === 'confirmed' && (
+                              <div className="flex flex-col gap-2 items-start">
+                                <AdminCancelBookingButton bookingId={b.id} />
+                                {showNoshow && <AdminNoshowButton bookingId={b.id} />}
                               </div>
                             )}
                           </td>
