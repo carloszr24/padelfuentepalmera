@@ -59,6 +59,7 @@ function getCourtName(b: BookingRow): string {
 }
 
 function getProfileName(b: BookingRow): string {
+  if (b.status === 'blocked') return 'Bloqueo de pista';
   const p = b.profiles;
   return Array.isArray(p) ? p[0]?.full_name ?? 'Usuario' : (p as { full_name?: string } | null)?.full_name ?? 'Usuario';
 }
@@ -284,7 +285,7 @@ export function AdminReservasContent({ bookings, desde, hasta }: AdminReservasCo
                           <td className="px-4 py-3 align-middle font-medium text-stone-800">
                             <div className="flex flex-col items-start gap-1">
                               <span>{getProfileName(b)}</span>
-                              {b.is_member && (
+                              {b.is_member && b.status !== 'blocked' && (
                                 <span className="inline-flex w-fit rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
                                   Socio
                                 </span>

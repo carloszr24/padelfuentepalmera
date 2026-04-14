@@ -56,7 +56,7 @@ export async function POST(request: Request) {
   // Comprobar deuda y membresía en paralelo
   const serviceSupabase = createSupabaseServiceClient();
   const [profileRes, membershipRes] = await Promise.all([
-    supabase.from('profiles').select('has_debt, wallet_balance, full_name').eq('id', user.id).single(),
+    supabase.from('profiles').select('has_debt, wallet_balance, full_name, role').eq('id', user.id).single(),
     serviceSupabase.from('members').select('expiry_date, is_paid').eq('user_id', user.id).maybeSingle(),
   ]);
 
@@ -64,10 +64,12 @@ export async function POST(request: Request) {
     has_debt?: boolean;
     wallet_balance?: number;
     full_name?: string | null;
+    role?: string | null;
   } | null);
+  const isAdmin = profile?.role === 'admin';
   const hasDebt = (profileRes.data as { has_debt?: boolean } | null)?.has_debt === true;
   const balance = Number((profileRes.data as { wallet_balance?: number } | null)?.wallet_balance ?? 0);
-  if (hasDebt || balance < 0) {
+  if (!isAdmin && (hasDebt || balance < 0)) {
     return NextResponse.json(
       { message: 'Tienes una deuda pendiente o saldo insuficiente. Recarga tu monedero para poder reservar.' },
       { status: 400 }
@@ -136,6 +138,50 @@ export async function POST(request: Request) {
       { message: 'La franja horaria no está dentro del horario de apertura.' },
       { status: 400 }
     );
+  }
+
+  if (isAdmin) {
+    const startNormalized = String(startTime).length === 5 ? `${startTime}:00` : String(startTime);
+    const endNormalized = String(endTime).length === 5 ? `${endTime}:00` : String(endTime);
+    const adminCreate = await supabase.rpc('admin_create_booking', {
+      p_user_id: user.id,
+      p_court_id: courtId,
+      p_booking_date: bookingDate,
+      p_start_time: startNormalized,
+      p_end_time: endNormalized,
+    });
+
+    if (adminCreate.error) {
+      return NextResponse.json(
+        { message: adminCreate.error.message ?? 'Error al crear la reserva' },
+        { status: 400 }
+      );
+    }
+
+    try {
+      const { data: courtData } = await serviceSupabase
+        .from('courts')
+        .select('name')
+        .eq('id', courtId)
+        .single();
+
+      const dateFormatted = new Date(`${bookingDate}T00:00:00`).toLocaleDateString('es-ES');
+      await sendClubNotification({
+        subject: `🎾 Nueva reserva — ${courtData?.name ?? 'Pista'} ${dateFormatted} ${String(startTime).slice(0, 5)}`,
+        html: `
+      <h2>Nueva reserva</h2>
+      <p><strong>Socio:</strong> ${profile?.full_name ?? user.email ?? 'Sin nombre'}</p>
+      <p><strong>Pista:</strong> ${courtData?.name ?? 'Pista'}</p>
+      <p><strong>Fecha:</strong> ${dateFormatted}</p>
+      <p><strong>Hora:</strong> ${String(startTime).slice(0, 5)} - ${String(endTime).slice(0, 5)}</p>
+      <p><strong>Pago:</strong> Pendiente en club (admin)</p>
+    `,
+      });
+    } catch (emailError) {
+      console.error('SendGrid booking notification error (admin):', emailError);
+    }
+
+    return NextResponse.json({ ok: true, metodo_pago: 'admin' });
   }
 
   if (metodoPago === 'bono') {
