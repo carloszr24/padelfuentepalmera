@@ -76,7 +76,7 @@ export async function POST(request: Request) {
     start_time: startNormalized,
     end_time: endNormalized,
     status: 'blocked',
-    deposit_paid: true,
+    deposit_paid: false,
     payment_method: 'pay_at_club',
     created_by: user.id,
   });

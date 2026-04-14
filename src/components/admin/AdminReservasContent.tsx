@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { AdminMarkRemainingPaidButton } from '@/components/ui/admin-mark-remaining-paid-button';
+import { AdminMarkDepositPaidButton } from '@/components/ui/admin-mark-deposit-paid-button';
 import { AdminCancelBookingButton } from '@/components/ui/admin-cancel-booking-button';
 import { AdminNoshowButton } from '@/components/ui/admin-noshow-button';
 
@@ -320,7 +321,7 @@ export function AdminReservasContent({ bookings, desde, hasta }: AdminReservasCo
                               </span>
                               {b.status === 'blocked' ? (
                                 <span className="text-[11px] leading-none text-stone-500">
-                                  Bloqueo de pista (reserva pagada)
+                                  {b.deposit_paid ? 'Bloqueo de pista (depósito pagado)' : 'Bloqueo de pista (depósito pendiente)'}
                                 </span>
                               ) : b.pagado_con_bono ? (
                                 <span className="inline-flex w-fit rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
@@ -335,8 +336,8 @@ export function AdminReservasContent({ bookings, desde, hasta }: AdminReservasCo
                                   Depósito pagado
                                 </span>
                               ) : (
-                                <span className="text-[11px] leading-none text-stone-500">
-                                  Sin depósito (admin)
+                                <span className="text-[11px] font-medium leading-none text-amber-700">
+                                  Depósito pendiente
                                 </span>
                               )}
                             </div>
@@ -350,10 +351,18 @@ export function AdminReservasContent({ bookings, desde, hasta }: AdminReservasCo
                             )}
                           </td>
                           <td className="px-4 py-3 align-middle">
-                            {b.status === 'confirmed' && (
+                            {(b.status === 'confirmed' || b.status === 'blocked') && (
                               <div className="flex flex-col gap-2 items-start">
-                                <AdminCancelBookingButton bookingId={b.id} />
-                                {showNoshow && <AdminNoshowButton bookingId={b.id} />}
+                                <AdminMarkDepositPaidButton
+                                  bookingId={b.id}
+                                  alreadyPaid={!!b.deposit_paid}
+                                />
+                                {b.status === 'confirmed' && (
+                                  <>
+                                    <AdminCancelBookingButton bookingId={b.id} />
+                                    {showNoshow && <AdminNoshowButton bookingId={b.id} />}
+                                  </>
+                                )}
                               </div>
                             )}
                           </td>

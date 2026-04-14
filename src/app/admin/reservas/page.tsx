@@ -99,7 +99,7 @@ async function getReservasData(desde: string, hasta: string) {
           start_time: `${startStr}:00`,
           end_time: endStr,
           status: 'blocked',
-          deposit_paid: true,
+          deposit_paid: false,
           pagado_con_bono: false,
           payment_method: 'pay_at_club',
           remaining_paid_at: null,

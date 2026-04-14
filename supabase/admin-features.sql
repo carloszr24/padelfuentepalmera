@@ -81,7 +81,7 @@ BEGIN
   END IF;
 
   INSERT INTO public.bookings (user_id, court_id, booking_date, start_time, end_time, status, deposit_paid, created_by)
-  VALUES (p_user_id, p_court_id, p_booking_date, p_start_time, p_end_time, 'confirmed', true, auth.uid())
+  VALUES (p_user_id, p_court_id, p_booking_date, p_start_time, p_end_time, 'confirmed', false, auth.uid())
   RETURNING id INTO v_booking_id;
 
   RETURN v_booking_id;
