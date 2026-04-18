@@ -154,54 +154,6 @@ export async function POST(request: Request) {
       { status: 400 }
     );
   }
-
-  if (isAdmin) {
-    const startNormalized = String(startTime).length === 5 ? `${startTime}:00` : String(startTime);
-    const endNormalized = String(endTime).length === 5 ? `${endTime}:00` : String(endTime);
-    // #region agent log
-    dbgLog('A', 'create/route.ts:admin-branch', 'taking_admin_path_no_wallet_deduction', { userId: user.id, role: profile?.role, fullNameNorm });
-    // #endregion
-    const adminCreate = await supabase.rpc('admin_create_booking', {
-      p_user_id: user.id,
-      p_court_id: courtId,
-      p_booking_date: bookingDate,
-      p_start_time: startNormalized,
-      p_end_time: endNormalized,
-    });
-
-    if (adminCreate.error) {
-      return NextResponse.json(
-        { message: adminCreate.error.message ?? 'Error al crear la reserva' },
-        { status: 400 }
-      );
-    }
-
-    try {
-      const { data: courtData } = await serviceSupabase
-        .from('courts')
-        .select('name')
-        .eq('id', courtId)
-        .single();
-
-      const dateFormatted = new Date(`${bookingDate}T00:00:00`).toLocaleDateString('es-ES');
-      await sendClubNotification({
-        subject: `🎾 Nueva reserva — ${courtData?.name ?? 'Pista'} ${dateFormatted} ${String(startTime).slice(0, 5)}`,
-        html: `
-      <h2>Nueva reserva</h2>
-      <p><strong>Socio:</strong> ${profile?.full_name ?? user.email ?? 'Sin nombre'}</p>
-      <p><strong>Pista:</strong> ${courtData?.name ?? 'Pista'}</p>
-      <p><strong>Fecha:</strong> ${dateFormatted}</p>
-      <p><strong>Hora:</strong> ${String(startTime).slice(0, 5)} - ${String(endTime).slice(0, 5)}</p>
-      <p><strong>Pago:</strong> Pendiente en club (admin)</p>
-    `,
-      });
-    } catch (emailError) {
-      console.error('SendGrid booking notification error (admin):', emailError);
-    }
-
-    return NextResponse.json({ ok: true, metodo_pago: 'admin', _debug: { path: 'admin', isAdmin, role: profile?.role, fullNameNorm, balance } });
-  }
-
   if (metodoPago === 'bono') {
     if (!isActiveMember) {
       return NextResponse.json(
