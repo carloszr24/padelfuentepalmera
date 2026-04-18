@@ -6,6 +6,14 @@ import { isSameDayMadridTooSoon, minutesFromClock } from '@/lib/booking-lead-tim
 import { checkRateLimit } from '@/lib/rate-limit';
 import { isValidUUID } from '@/lib/utils';
 
+// #region agent log
+function dbgLog(hypothesisId: string, location: string, message: string, data: Record<string, unknown>) {
+  const entry = JSON.stringify({ sessionId: '68ad37', hypothesisId, location, message, data, timestamp: Date.now() });
+  console.error('[DBG-68ad37]', entry);
+  fetch('http://127.0.0.1:7925/ingest/b946c3ce-2e52-4378-b9f6-afbd4bfaf00a', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '68ad37' }, body: entry }).catch(() => {});
+}
+// #endregion
+
 export async function POST(request: Request) {
   const ip =
     request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
@@ -89,6 +97,10 @@ export async function POST(request: Request) {
   const metodoPago: 'bono' | 'monedero' = metodo_pago === 'bono' ? 'bono' : 'monedero';
   const deposit = isActiveMember ? 4.5 : 5.0;
 
+  // #region agent log
+  dbgLog('A-C', 'create/route.ts:after-deposit-calc', 'booking_attempt_state', { userId: user.id, isAdmin, isActiveMember, metodoPago, deposit, balance, hasDebt, bookingDate, courtId });
+  // #endregion
+
   const startNorm = String(startTime).slice(0, 5);
   const endNorm = String(endTime).slice(0, 5);
   const now = new Date();
@@ -146,6 +158,9 @@ export async function POST(request: Request) {
   if (isAdmin) {
     const startNormalized = String(startTime).length === 5 ? `${startTime}:00` : String(startTime);
     const endNormalized = String(endTime).length === 5 ? `${endTime}:00` : String(endTime);
+    // #region agent log
+    dbgLog('A', 'create/route.ts:admin-branch', 'taking_admin_path_no_wallet_deduction', { userId: user.id, role: profile?.role, fullNameNorm });
+    // #endregion
     const adminCreate = await supabase.rpc('admin_create_booking', {
       p_user_id: user.id,
       p_court_id: courtId,
@@ -184,7 +199,7 @@ export async function POST(request: Request) {
       console.error('SendGrid booking notification error (admin):', emailError);
     }
 
-    return NextResponse.json({ ok: true, metodo_pago: 'admin' });
+    return NextResponse.json({ ok: true, metodo_pago: 'admin', _debug: { path: 'admin', isAdmin, role: profile?.role, fullNameNorm, balance } });
   }
 
   if (metodoPago === 'bono') {
@@ -255,7 +270,7 @@ export async function POST(request: Request) {
       console.error('SendGrid booking notification error (bono):', emailError);
     }
 
-    return NextResponse.json({ ok: true, metodo_pago: 'bono' });
+    return NextResponse.json({ ok: true, metodo_pago: 'bono', _debug: { path: 'bono', isActiveMember, balance } });
   }
 
   let rpcResult = await supabase.rpc('booking_pay_deposit', {
@@ -267,11 +282,18 @@ export async function POST(request: Request) {
     p_deposit: deposit,
   });
 
+  // #region agent log
+  dbgLog('B-C-E', 'create/route.ts:after-rpc-6param', 'rpc_6param_result', { error: rpcResult.error?.message ?? null, data: rpcResult.data, deposit });
+  // #endregion
+
   // Si la función aún no tiene el parámetro p_deposit (migración pendiente), reintentar sin él
   if (
     rpcResult.error &&
     (rpcResult.error.message ?? '').toLowerCase().includes('could not find the function')
   ) {
+    // #region agent log
+    dbgLog('B', 'create/route.ts:fallback-branch', 'falling_back_to_5param_rpc', { originalError: rpcResult.error?.message });
+    // #endregion
     rpcResult = await supabase.rpc('booking_pay_deposit', {
       p_user_id: user.id,
       p_court_id: courtId,
@@ -279,11 +301,17 @@ export async function POST(request: Request) {
       p_start_time: startTime,
       p_end_time: endTime,
     });
+    // #region agent log
+    dbgLog('B', 'create/route.ts:after-fallback-5param', 'rpc_5param_result', { error: rpcResult.error?.message ?? null, data: rpcResult.data });
+    // #endregion
   }
 
   const { error } = rpcResult;
 
   if (error) {
+    // #region agent log
+    dbgLog('E', 'create/route.ts:final-error', 'rpc_final_error_returning_400', { error: error.message });
+    // #endregion
     const msg = (error.message ?? '').toLowerCase();
     if (
       msg.includes('insufficient') ||
@@ -325,5 +353,5 @@ export async function POST(request: Request) {
     console.error('SendGrid booking notification error (monedero):', emailError);
   }
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, _debug: { path: 'monedero', deposit, isAdmin, isActiveMember, balance, rpcData: rpcResult.data } });
 }
