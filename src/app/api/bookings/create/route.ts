@@ -6,14 +6,6 @@ import { isSameDayMadridTooSoon, minutesFromClock } from '@/lib/booking-lead-tim
 import { checkRateLimit } from '@/lib/rate-limit';
 import { isValidUUID } from '@/lib/utils';
 
-// #region agent log
-function dbgLog(hypothesisId: string, location: string, message: string, data: Record<string, unknown>) {
-  const entry = JSON.stringify({ sessionId: '68ad37', hypothesisId, location, message, data, timestamp: Date.now() });
-  console.error('[DBG-68ad37]', entry);
-  fetch('http://127.0.0.1:7925/ingest/b946c3ce-2e52-4378-b9f6-afbd4bfaf00a', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '68ad37' }, body: entry }).catch(() => {});
-}
-// #endregion
-
 export async function POST(request: Request) {
   const ip =
     request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
@@ -61,11 +53,12 @@ export async function POST(request: Request) {
     );
   }
 
-  // Comprobar deuda y membresía en paralelo
+  // Todas las consultas independientes en paralelo: perfil, membresía y horario del club
   const serviceSupabase = createSupabaseServiceClient();
-  const [profileRes, membershipRes] = await Promise.all([
+  const [profileRes, membershipRes, opening] = await Promise.all([
     supabase.from('profiles').select('has_debt, wallet_balance, full_name, role').eq('id', user.id).single(),
     serviceSupabase.from('members').select('expiry_date, is_paid').eq('user_id', user.id).maybeSingle(),
+    getOpeningForDate(bookingDate),
   ]);
 
   const profile = (profileRes.data as {
@@ -96,10 +89,6 @@ export async function POST(request: Request) {
 
   const metodoPago: 'bono' | 'monedero' = metodo_pago === 'bono' ? 'bono' : 'monedero';
   const deposit = isActiveMember ? 4.5 : 5.0;
-
-  // #region agent log
-  dbgLog('A-C', 'create/route.ts:after-deposit-calc', 'booking_attempt_state', { userId: user.id, isAdmin, isActiveMember, metodoPago, deposit, balance, hasDebt, bookingDate, courtId });
-  // #endregion
 
   const startNorm = String(startTime).slice(0, 5);
   const endNorm = String(endTime).slice(0, 5);
@@ -138,7 +127,6 @@ export async function POST(request: Request) {
     );
   }
 
-  const opening = await getOpeningForDate(bookingDate);
   if (!opening.isOpen || opening.ranges.length === 0) {
     return NextResponse.json(
       { message: 'Club cerrado ese día.' },
@@ -154,6 +142,7 @@ export async function POST(request: Request) {
       { status: 400 }
     );
   }
+
   if (metodoPago === 'bono') {
     if (!isActiveMember) {
       return NextResponse.json(
@@ -198,16 +187,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: msg }, { status: 400 });
     }
 
-    try {
-      const { data: courtData } = await serviceSupabase
-        .from('courts')
-        .select('name')
-        .eq('id', courtId)
-        .single();
-
+    // Email en background: no bloquea la respuesta al usuario
+    serviceSupabase.from('courts').select('name').eq('id', courtId).single().then(({ data: courtData }) => {
       const dateFormatted = new Date(`${bookingDate}T00:00:00`).toLocaleDateString('es-ES');
-
-      await sendClubNotification({
+      sendClubNotification({
         subject: `🎾 Nueva reserva — ${courtData?.name ?? 'Pista'} ${dateFormatted} ${String(startTime).slice(0, 5)}`,
         html: `
       <h2>Nueva reserva</h2>
@@ -217,12 +200,10 @@ export async function POST(request: Request) {
       <p><strong>Hora:</strong> ${String(startTime).slice(0, 5)} - ${String(endTime).slice(0, 5)}</p>
       <p><strong>Pago:</strong> Bono de socio</p>
     `,
-      });
-    } catch (emailError) {
-      console.error('SendGrid booking notification error (bono):', emailError);
-    }
+      }).catch((e) => console.error('SendGrid booking notification error (bono):', e));
+    }).catch((e) => console.error('SendGrid court fetch error (bono):', e));
 
-    return NextResponse.json({ ok: true, metodo_pago: 'bono', _debug: { path: 'bono', isActiveMember, balance } });
+    return NextResponse.json({ ok: true, metodo_pago: 'bono' });
   }
 
   let rpcResult = await supabase.rpc('booking_pay_deposit', {
@@ -234,18 +215,11 @@ export async function POST(request: Request) {
     p_deposit: deposit,
   });
 
-  // #region agent log
-  dbgLog('B-C-E', 'create/route.ts:after-rpc-6param', 'rpc_6param_result', { error: rpcResult.error?.message ?? null, data: rpcResult.data, deposit });
-  // #endregion
-
   // Si la función aún no tiene el parámetro p_deposit (migración pendiente), reintentar sin él
   if (
     rpcResult.error &&
     (rpcResult.error.message ?? '').toLowerCase().includes('could not find the function')
   ) {
-    // #region agent log
-    dbgLog('B', 'create/route.ts:fallback-branch', 'falling_back_to_5param_rpc', { originalError: rpcResult.error?.message });
-    // #endregion
     rpcResult = await supabase.rpc('booking_pay_deposit', {
       p_user_id: user.id,
       p_court_id: courtId,
@@ -253,17 +227,11 @@ export async function POST(request: Request) {
       p_start_time: startTime,
       p_end_time: endTime,
     });
-    // #region agent log
-    dbgLog('B', 'create/route.ts:after-fallback-5param', 'rpc_5param_result', { error: rpcResult.error?.message ?? null, data: rpcResult.data });
-    // #endregion
   }
 
   const { error } = rpcResult;
 
   if (error) {
-    // #region agent log
-    dbgLog('E', 'create/route.ts:final-error', 'rpc_final_error_returning_400', { error: error.message });
-    // #endregion
     const msg = (error.message ?? '').toLowerCase();
     if (
       msg.includes('insufficient') ||
@@ -281,16 +249,10 @@ export async function POST(request: Request) {
     );
   }
 
-  try {
-    const { data: courtData } = await serviceSupabase
-      .from('courts')
-      .select('name')
-      .eq('id', courtId)
-      .single();
-
+  // Email en background: no bloquea la respuesta al usuario
+  serviceSupabase.from('courts').select('name').eq('id', courtId).single().then(({ data: courtData }) => {
     const dateFormatted = new Date(`${bookingDate}T00:00:00`).toLocaleDateString('es-ES');
-
-    await sendClubNotification({
+    sendClubNotification({
       subject: `🎾 Nueva reserva — ${courtData?.name ?? 'Pista'} ${dateFormatted} ${String(startTime).slice(0, 5)}`,
       html: `
       <h2>Nueva reserva</h2>
@@ -298,12 +260,10 @@ export async function POST(request: Request) {
       <p><strong>Pista:</strong> ${courtData?.name ?? 'Pista'}</p>
       <p><strong>Fecha:</strong> ${dateFormatted}</p>
       <p><strong>Hora:</strong> ${String(startTime).slice(0, 5)} - ${String(endTime).slice(0, 5)}</p>
-      <p><strong>Pago:</strong> ${isActiveMember ? 'Monedero' : 'Monedero (no socio)'}</p>
+      <p><strong>Pago:</strong> ${isActiveMember ? 'Monedero socio' : 'Monedero'}</p>
     `,
-    });
-  } catch (emailError) {
-    console.error('SendGrid booking notification error (monedero):', emailError);
-  }
+    }).catch((e) => console.error('SendGrid booking notification error (monedero):', e));
+  }).catch((e) => console.error('SendGrid court fetch error (monedero):', e));
 
-  return NextResponse.json({ ok: true, _debug: { path: 'monedero', deposit, isAdmin, isActiveMember, balance, rpcData: rpcResult.data } });
+  return NextResponse.json({ ok: true });
 }
