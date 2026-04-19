@@ -10,7 +10,9 @@
     "dev:lan": "next dev --hostname 0.0.0.0",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "smoke": "node --env-file=.env.local scripts/smoke-check.mjs",
+    "smoke:ci": "node scripts/smoke-check.mjs"
   },
   "dependencies": {
     "@sendgrid/mail": "^8.1.6",
