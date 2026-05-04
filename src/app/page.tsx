@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { CLUB_LOGO_PATH } from '@/lib/club-logo';
 import { getCachedAuth } from '@/lib/auth-server';
@@ -52,8 +51,8 @@ export default async function Home() {
     <div className="min-h-screen bg-[#faf8f5] text-stone-900">
       <LandingHeader isLoggedIn={!!user} />
 
-      {/* Hero promocional del torneo: toda la sección es clicable */}
-      <section className="relative min-h-[85dvh] overflow-hidden sm:min-h-[90dvh]">
+      {/* Hero: solo el cartel, sin velo ni textos; clic abre EvenPadel (el header fijo queda encima) */}
+      <section className="relative h-[100dvh] min-h-[100dvh] w-full overflow-hidden bg-black">
         <a
           href={TOURNAMENT_URL}
           target="_blank"
@@ -62,42 +61,10 @@ export default async function Home() {
           className="absolute inset-0 z-10"
         />
         <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          className="absolute inset-0 bg-contain bg-center bg-no-repeat"
           style={{ backgroundImage: 'url(/hero-primer-torneo-ordenador.png)' }}
           aria-hidden
         />
-        <div className="absolute inset-0 bg-stone-900/50" aria-hidden />
-        <div className="pointer-events-none relative z-20 mx-auto flex min-h-[85dvh] max-w-5xl flex-col justify-end px-4 pb-16 pt-28 sm:min-h-[90dvh] sm:justify-center sm:pb-24 sm:pt-32 sm:px-6 md:px-8">
-          <div className="hero-entrance">
-            <p className="text-sm font-bold uppercase tracking-[0.2em] text-white/90 sm:text-base">
-              Fuente Palmera · Córdoba
-            </p>
-            <h1 className="mt-2 text-balance text-4xl font-extrabold leading-tight tracking-tight text-white drop-shadow sm:text-5xl md:text-6xl lg:text-7xl">
-              I Torneo Fuente Palmera.
-              <br />
-              <span className="text-[#93c5fd]">Inscripciones abiertas.</span>
-            </h1>
-            <p className="mt-4 max-w-lg text-lg leading-relaxed text-white/90 sm:text-xl md:text-xl">
-              Pulsa en cualquier parte de esta sección para ir directamente al evento en EvenPadel.
-            </p>
-            <div className="mt-8">
-              <span className="inline-flex justify-center rounded-2xl bg-white px-8 py-4 text-base font-bold text-stone-900 shadow-xl transition md:px-10 md:py-5 md:text-lg">
-                Inscríbete
-              </span>
-            </div>
-            <div className="mt-10 flex flex-wrap gap-6 text-base text-white/80 sm:text-lg md:gap-8">
-              <span className="flex items-center gap-2">
-                <span className="font-semibold text-white">09:30–14:00 y 16:30–22:30</span>
-                Horario
-              </span>
-              <span className="flex items-center gap-2">
-                <span className="font-semibold text-white">4,50 €</span>
-                Depósito
-              </span>
-              <span>Reserva 24/7</span>
-            </div>
-          </div>
-        </div>
       </section>
 
       <main className="mx-auto max-w-5xl px-4 pb-24 pt-14 sm:px-6 md:px-8 sm:pb-32 sm:pt-20">
