@@ -61,7 +61,7 @@ export default async function Home() {
           className="absolute inset-0 z-10"
         />
         <div
-          className="absolute inset-0 bg-contain bg-center bg-no-repeat"
+          className="absolute inset-[3%] bg-contain bg-center bg-no-repeat sm:inset-[4%]"
           style={{ backgroundImage: 'url(/hero-primer-torneo-ordenador.png)' }}
           aria-hidden
         />
