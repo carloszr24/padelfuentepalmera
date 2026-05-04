@@ -38,6 +38,8 @@ const NOVEDADES_SLIDER = [
   },
 ];
 
+const TOURNAMENT_URL = 'https://evenpadel.com/event/476';
+
 export default async function Home() {
   let user: Awaited<ReturnType<typeof getCachedAuth>>['user'] = null;
   try {
@@ -50,40 +52,38 @@ export default async function Home() {
     <div className="min-h-screen bg-[#faf8f5] text-stone-900">
       <LandingHeader isLoggedIn={!!user} />
 
-      {/* Hero: limpio, impacto en móvil */}
+      {/* Hero promocional del torneo: toda la sección es clicable */}
       <section className="relative min-h-[85dvh] overflow-hidden sm:min-h-[90dvh]">
+        <a
+          href={TOURNAMENT_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Abrir inscripción al torneo en EvenPadel"
+          className="absolute inset-0 z-10"
+        />
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url(/hero-pista.png)' }}
+          style={{ backgroundImage: 'url(/hero-primer-torneo-ordenador.png)' }}
           aria-hidden
         />
         <div className="absolute inset-0 bg-stone-900/50" aria-hidden />
-        <div className="relative z-10 mx-auto flex min-h-[85dvh] max-w-5xl flex-col justify-end px-4 pb-16 pt-28 sm:min-h-[90dvh] sm:justify-center sm:pb-24 sm:pt-32 sm:px-6 md:px-8">
+        <div className="pointer-events-none relative z-20 mx-auto flex min-h-[85dvh] max-w-5xl flex-col justify-end px-4 pb-16 pt-28 sm:min-h-[90dvh] sm:justify-center sm:pb-24 sm:pt-32 sm:px-6 md:px-8">
           <div className="hero-entrance">
             <p className="text-sm font-bold uppercase tracking-[0.2em] text-white/90 sm:text-base">
               Fuente Palmera · Córdoba
             </p>
             <h1 className="mt-2 text-balance text-4xl font-extrabold leading-tight tracking-tight text-white drop-shadow sm:text-5xl md:text-6xl lg:text-7xl">
-              Pista cuando quieras.
+              I Torneo Fuente Palmera.
               <br />
-              <span className="text-[#93c5fd]">Reserva en un clic.</span>
+              <span className="text-[#93c5fd]">Inscripciones abiertas.</span>
             </h1>
             <p className="mt-4 max-w-lg text-lg leading-relaxed text-white/90 sm:text-xl md:text-xl">
-              Reserva online, paga el depósito con el monedero y preocúpate solo de jugar.
+              Pulsa en cualquier parte de esta sección para ir directamente al evento en EvenPadel.
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
-              <a
-                href={user ? '/panel/reservas' : '/registro'}
-                className="inline-flex justify-center rounded-2xl bg-white px-8 py-4 text-base font-bold text-stone-900 shadow-xl transition hover:bg-stone-100 active:scale-[0.98] md:px-10 md:py-5 md:text-lg"
-              >
-                {user ? 'Reservar pista' : 'Crear cuenta y reservar'}
-              </a>
-              <a
-                href="#que-te-ofrecemos"
-                className="inline-flex justify-center rounded-2xl border-2 border-white/80 bg-white/10 px-8 py-4 text-base font-semibold text-white backdrop-blur-sm transition hover:bg-white/20 md:px-10 md:py-5 md:text-lg"
-              >
-                Ver cómo funciona
-              </a>
+            <div className="mt-8">
+              <span className="inline-flex justify-center rounded-2xl bg-white px-8 py-4 text-base font-bold text-stone-900 shadow-xl transition md:px-10 md:py-5 md:text-lg">
+                Inscríbete
+              </span>
             </div>
             <div className="mt-10 flex flex-wrap gap-6 text-base text-white/80 sm:text-lg md:gap-8">
               <span className="flex items-center gap-2">
