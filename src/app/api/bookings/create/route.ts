@@ -188,11 +188,17 @@ export async function POST(request: Request) {
     }
 
     // Email en background: no bloquea la respuesta al usuario
-    serviceSupabase.from('courts').select('name').eq('id', courtId).single().then(({ data: courtData }) => {
-      const dateFormatted = new Date(`${bookingDate}T00:00:00`).toLocaleDateString('es-ES');
-      sendClubNotification({
-        subject: `🎾 Nueva reserva — ${courtData?.name ?? 'Pista'} ${dateFormatted} ${String(startTime).slice(0, 5)}`,
-        html: `
+    void (async () => {
+      try {
+        const { data: courtData } = await serviceSupabase
+          .from('courts')
+          .select('name')
+          .eq('id', courtId)
+          .single();
+        const dateFormatted = new Date(`${bookingDate}T00:00:00`).toLocaleDateString('es-ES');
+        await sendClubNotification({
+          subject: `🎾 Nueva reserva — ${courtData?.name ?? 'Pista'} ${dateFormatted} ${String(startTime).slice(0, 5)}`,
+          html: `
       <h2>Nueva reserva</h2>
       <p><strong>Socio:</strong> ${profile?.full_name ?? user.email ?? 'Sin nombre'}</p>
       <p><strong>Pista:</strong> ${courtData?.name ?? 'Pista'}</p>
@@ -200,8 +206,11 @@ export async function POST(request: Request) {
       <p><strong>Hora:</strong> ${String(startTime).slice(0, 5)} - ${String(endTime).slice(0, 5)}</p>
       <p><strong>Pago:</strong> Bono de socio</p>
     `,
-      }).catch((e) => console.error('SendGrid booking notification error (bono):', e));
-    }).catch((e) => console.error('SendGrid court fetch error (bono):', e));
+        });
+      } catch (e) {
+        console.error('SendGrid booking notification error (bono):', e);
+      }
+    })();
 
     return NextResponse.json({ ok: true, metodo_pago: 'bono' });
   }
@@ -250,11 +259,17 @@ export async function POST(request: Request) {
   }
 
   // Email en background: no bloquea la respuesta al usuario
-  serviceSupabase.from('courts').select('name').eq('id', courtId).single().then(({ data: courtData }) => {
-    const dateFormatted = new Date(`${bookingDate}T00:00:00`).toLocaleDateString('es-ES');
-    sendClubNotification({
-      subject: `🎾 Nueva reserva — ${courtData?.name ?? 'Pista'} ${dateFormatted} ${String(startTime).slice(0, 5)}`,
-      html: `
+  void (async () => {
+    try {
+      const { data: courtData } = await serviceSupabase
+        .from('courts')
+        .select('name')
+        .eq('id', courtId)
+        .single();
+      const dateFormatted = new Date(`${bookingDate}T00:00:00`).toLocaleDateString('es-ES');
+      await sendClubNotification({
+        subject: `🎾 Nueva reserva — ${courtData?.name ?? 'Pista'} ${dateFormatted} ${String(startTime).slice(0, 5)}`,
+        html: `
       <h2>Nueva reserva</h2>
       <p><strong>Socio:</strong> ${profile?.full_name ?? user.email ?? 'Sin nombre'}</p>
       <p><strong>Pista:</strong> ${courtData?.name ?? 'Pista'}</p>
@@ -262,8 +277,11 @@ export async function POST(request: Request) {
       <p><strong>Hora:</strong> ${String(startTime).slice(0, 5)} - ${String(endTime).slice(0, 5)}</p>
       <p><strong>Pago:</strong> ${isActiveMember ? 'Monedero socio' : 'Monedero'}</p>
     `,
-    }).catch((e) => console.error('SendGrid booking notification error (monedero):', e));
-  }).catch((e) => console.error('SendGrid court fetch error (monedero):', e));
+      });
+    } catch (e) {
+      console.error('SendGrid booking notification error (monedero):', e);
+    }
+  })();
 
   return NextResponse.json({ ok: true });
 }
