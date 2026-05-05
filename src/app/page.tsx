@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { CLUB_LOGO_PATH } from '@/lib/club-logo';
+import { EVENPADEL_EVENPADEL_TOURNAMENT_URL } from '@/lib/evenpadel-tournament';
 import { getCachedAuth } from '@/lib/auth-server';
 import { LandingHeader } from '@/components/ui/landing-header';
 
@@ -37,8 +38,6 @@ const NOVEDADES_SLIDER = [
   },
 ];
 
-const TOURNAMENT_URL = 'https://evenpadel.com/event/476';
-
 export default async function Home() {
   let user: Awaited<ReturnType<typeof getCachedAuth>>['user'] = null;
   try {
@@ -69,7 +68,7 @@ export default async function Home() {
             aria-hidden
           />
           <a
-            href={TOURNAMENT_URL}
+            href={EVENPADEL_TOURNAMENT_URL}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Abrir inscripción al torneo en EvenPadel"
@@ -92,7 +91,7 @@ export default async function Home() {
             />
           </div>
           <a
-            href={TOURNAMENT_URL}
+            href={EVENPADEL_TOURNAMENT_URL}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Abrir inscripción al torneo en EvenPadel"
