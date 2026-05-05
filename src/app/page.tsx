@@ -51,20 +51,22 @@ export default async function Home() {
     <div className="relative min-h-screen bg-[#faf8f5] text-stone-900">
       <LandingHeader isLoggedIn={!!user} />
 
-      {/* Hero: imagen algo más estrecha (márgenes laterales) + overlay + clic a EvenPadel */}
+      {/* Hero tipo póster: ancho máx. ~1200px centrado, cartel completo (contain) + degradado suave arriba para la nav */}
       <section className="relative h-[100dvh] min-h-[100dvh] w-full overflow-hidden bg-black">
-        <div className="absolute inset-y-0 left-[3%] right-[3%] z-0 sm:left-[4%] sm:right-[4%] lg:left-[5%] lg:right-[5%]">
-          <img
-            src="/hero-primer-torneo-ordenador.png"
-            alt="Even Padel Tour — Fuente Palmera"
-            className="absolute inset-0 h-full w-full object-cover object-[center_40%]"
-            sizes="94vw"
-            fetchPriority="high"
-          />
-          <div
-            className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(to_bottom,rgba(0,0,0,0.65)_0%,rgba(0,0,0,0.35)_30%,transparent_60%)]"
-            aria-hidden
-          />
+        <div className="absolute inset-0 z-0 flex items-stretch justify-center px-3 sm:px-5 md:px-8">
+          <div className="relative h-full w-full max-w-[1200px]">
+            <img
+              src="/hero-primer-torneo-ordenador.png"
+              alt="Even Padel Tour — Fuente Palmera"
+              className="h-full w-full object-contain object-center"
+              sizes="(max-width: 1232px) 100vw, 1200px"
+              fetchPriority="high"
+            />
+            <div
+              className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(to_bottom,rgba(0,0,0,0.55)_0%,rgba(0,0,0,0.22)_28%,transparent_55%)]"
+              aria-hidden
+            />
+          </div>
         </div>
         <a
           href={TOURNAMENT_URL}

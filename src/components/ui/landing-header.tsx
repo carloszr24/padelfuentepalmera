@@ -10,6 +10,9 @@ const NAV_LINKS = [
   { href: '#contacto', label: 'Contacto' },
 ];
 
+/** Amarillo cartel / mock Even Padel Tour */
+const HERO_YELLOW = '#FFD700';
+
 const SCROLL_THRESHOLD_PX = 50;
 
 type LandingHeaderProps = {
@@ -39,10 +42,16 @@ export function LandingHeader({ isLoggedIn = false }: LandingHeaderProps) {
           : 'absolute border-b border-transparent bg-transparent text-white'
       }`}
     >
-      <div className="relative mx-auto flex min-h-20 max-w-7xl items-center px-4 py-3 sm:min-h-24 sm:px-6 sm:py-4 lg:px-8 lg:py-4 xl:px-10">
+      <div
+        className={`relative mx-auto flex min-h-20 w-full items-center py-3 sm:min-h-24 sm:py-4 ${
+          onHero
+            ? 'max-w-[1200px] px-3 sm:px-5 md:px-8'
+            : 'max-w-7xl px-4 sm:px-6 lg:px-8 lg:py-4 xl:px-10'
+        }`}
+      >
         <div className="flex flex-1 items-center justify-start">
           <nav
-            className={`hidden items-center gap-6 text-base md:flex lg:gap-8 lg:text-lg ${
+            className={`hidden items-center gap-5 text-[15px] font-medium tracking-tight md:flex lg:gap-7 lg:text-base ${
               onHero ? 'font-medium' : ''
             }`}
           >
@@ -81,19 +90,22 @@ export function LandingHeader({ isLoggedIn = false }: LandingHeaderProps) {
           </button>
         </div>
 
-        <a
-          href="/"
-          className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-shrink-0 items-center transition hover:opacity-90"
-          aria-label="Fuente Palmera Pádel - Inicio"
-        >
-          <img
-            src={CLUB_LOGO_PATH}
-            alt="Fuente Palmera Pádel"
-            className={`h-14 w-auto object-contain sm:h-16 ${onHero ? 'drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]' : ''}`}
-            width={64}
-            height={64}
-          />
-        </a>
+        {/* Centro: logo club solo al hacer scroll; sobre el hero el cartel ya lleva branding Even Padel */}
+        {!onHero && (
+          <a
+            href="/"
+            className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-shrink-0 items-center transition hover:opacity-90"
+            aria-label="Fuente Palmera Pádel - Inicio"
+          >
+            <img
+              src={CLUB_LOGO_PATH}
+              alt="Fuente Palmera Pádel"
+              className="h-14 w-auto object-contain sm:h-16"
+              width={64}
+              height={64}
+            />
+          </a>
+        )}
 
         <div className="flex flex-1 items-center justify-end gap-2 sm:gap-3">
           {isLoggedIn ? (
@@ -101,7 +113,7 @@ export function LandingHeader({ isLoggedIn = false }: LandingHeaderProps) {
               href="/panel"
               className={
                 onHero
-                  ? 'rounded-full border border-white px-4 py-2.5 text-base font-medium text-white transition hover:bg-white/10 sm:px-5 sm:py-3 lg:text-lg'
+                  ? 'rounded-lg border-2 border-[#FFD700] px-4 py-2.5 text-sm font-bold uppercase tracking-wide text-[#FFD700] transition hover:bg-[#FFD700]/15 sm:px-5 sm:py-3 lg:text-[15px]'
                   : 'rounded-full border border-stone-300 px-4 py-2.5 text-base font-medium text-stone-700 transition hover:border-stone-400 hover:bg-stone-50 sm:px-5 sm:py-3 lg:text-lg'
               }
             >
@@ -112,7 +124,7 @@ export function LandingHeader({ isLoggedIn = false }: LandingHeaderProps) {
               href="/registro"
               className={
                 onHero
-                  ? 'rounded-full border border-white px-4 py-2.5 text-base font-medium text-white transition hover:bg-white/10 sm:px-5 sm:py-3 lg:text-lg'
+                  ? 'rounded-lg border-2 border-[#FFD700] px-4 py-2.5 text-sm font-bold uppercase tracking-wide text-[#FFD700] transition hover:bg-[#FFD700]/15 sm:px-5 sm:py-3 lg:text-[15px]'
                   : 'rounded-full border border-stone-300 px-4 py-2.5 text-base font-medium text-stone-700 transition hover:border-stone-400 hover:bg-stone-50 sm:px-5 sm:py-3 lg:text-lg'
               }
             >
@@ -121,11 +133,12 @@ export function LandingHeader({ isLoggedIn = false }: LandingHeaderProps) {
           )}
           <a
             href={isLoggedIn ? '/panel/reservas' : '/registro'}
-            className={`hidden rounded-full px-5 py-3 text-base font-semibold text-white shadow-lg transition hover:scale-[1.02] md:inline-flex md:px-6 lg:px-7 lg:py-3.5 lg:text-lg ${
+            className={`hidden px-5 py-3 text-sm shadow-md transition hover:scale-[1.02] md:inline-flex md:px-6 lg:px-7 lg:py-3.5 lg:text-[15px] ${
               onHero
-                ? 'bg-[#2f5cff] shadow-[#2f5cff]/35 hover:bg-[#2547d9] hover:shadow-[#2f5cff]/45'
-                : 'bg-[#1d4ed8] shadow-[#1d4ed8]/40 hover:bg-[#2563eb] hover:shadow-[#1d4ed8]/50'
+                ? 'rounded-lg font-bold uppercase tracking-wide text-black hover:brightness-95'
+                : 'rounded-full bg-[#1d4ed8] font-semibold text-white shadow-[#1d4ed8]/40 hover:bg-[#2563eb] hover:shadow-[#1d4ed8]/50'
             }`}
+            style={onHero ? { backgroundColor: HERO_YELLOW, color: '#000000' } : undefined}
           >
             Reserva tu pista
           </a>
