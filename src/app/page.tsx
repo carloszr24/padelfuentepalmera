@@ -55,16 +55,20 @@ export default async function Home() {
       <section className="relative h-[100dvh] min-h-[100dvh] w-full overflow-hidden bg-black">
         <div className="absolute inset-0 z-0 px-1 sm:px-2 md:px-3">
           <div className="relative h-full w-full">
-            <picture className="block h-full w-full">
-              <source media="(max-width: 767px)" srcSet="/hero-movil.png" />
-              <img
-                src="/hero-primer-torneo-ordenador.png"
-                alt="Even Padel Tour — Fuente Palmera"
-                className="h-full w-full object-contain object-center"
-                sizes="100vw"
-                fetchPriority="high"
-              />
-            </picture>
+            {/* Pantallas menores que lg: hero-movil.png; escritorio ancho: cartel horizontal */}
+            <img
+              src="/hero-movil.png"
+              alt="Even Padel Tour — Fuente Palmera"
+              className="h-full w-full object-contain object-center lg:hidden"
+              sizes="100vw"
+              fetchPriority="high"
+            />
+            <img
+              src="/hero-primer-torneo-ordenador.png"
+              alt="Even Padel Tour — Fuente Palmera"
+              className="hidden h-full w-full object-contain object-center lg:block"
+              sizes="100vw"
+            />
             <div
               className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(to_bottom,rgba(0,0,0,0.55)_0%,rgba(0,0,0,0.22)_28%,transparent_55%)]"
               aria-hidden
