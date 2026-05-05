@@ -51,22 +51,39 @@ export default async function Home() {
     <div className="relative min-h-screen bg-[#faf8f5] text-stone-900">
       <LandingHeader isLoggedIn={!!user} />
 
-      {/* Hero: casi ancho completo (solo un pelín de margen), cartel contain para no recortar + degradado arriba */}
-      <section className="relative h-[100dvh] min-h-[100dvh] w-full overflow-hidden bg-black">
-        <div className="absolute inset-0 z-0 px-1 sm:px-2 md:px-3">
+      {/* Móvil: imagen ancho 100% y alto natural (sin bandas laterales; puede alargar y hacer scroll). Desktop: 100dvh + contain. */}
+      <section className="relative w-full overflow-hidden bg-black lg:h-[100dvh] lg:min-h-[100dvh]">
+        {/* Móvil / tablet: cartel vertical a ancho completo */}
+        <div className="relative z-0 w-full lg:hidden">
+          <img
+            src="/hero-movil.png"
+            alt="Even Padel Tour — Fuente Palmera"
+            className="block h-auto w-full max-w-none"
+            sizes="100vw"
+            width={864}
+            height={1821}
+            fetchPriority="high"
+          />
+          <div
+            className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-[min(42%,220px)] bg-[linear-gradient(to_bottom,rgba(0,0,0,0.55)_0%,rgba(0,0,0,0.2)_55%,transparent_100%)]"
+            aria-hidden
+          />
+          <a
+            href={TOURNAMENT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Abrir inscripción al torneo en EvenPadel"
+            className="absolute inset-0 z-10"
+          />
+        </div>
+
+        {/* Escritorio ancho (lg+): cartel horizontal en viewport */}
+        <div className="absolute inset-0 z-0 hidden px-1 sm:px-2 md:px-3 lg:block">
           <div className="relative h-full w-full">
-            {/* Pantallas menores que lg: hero-movil.png; escritorio ancho: cartel horizontal */}
-            <img
-              src="/hero-movil.png"
-              alt="Even Padel Tour — Fuente Palmera"
-              className="h-full w-full object-contain object-center lg:hidden"
-              sizes="100vw"
-              fetchPriority="high"
-            />
             <img
               src="/hero-primer-torneo-ordenador.png"
               alt="Even Padel Tour — Fuente Palmera"
-              className="hidden h-full w-full object-contain object-center lg:block"
+              className="h-full w-full object-contain object-center"
               sizes="100vw"
             />
             <div
@@ -74,14 +91,14 @@ export default async function Home() {
               aria-hidden
             />
           </div>
+          <a
+            href={TOURNAMENT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Abrir inscripción al torneo en EvenPadel"
+            className="absolute inset-0 z-10"
+          />
         </div>
-        <a
-          href={TOURNAMENT_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Abrir inscripción al torneo en EvenPadel"
-          className="absolute inset-0 z-10"
-        />
       </section>
 
       <main className="mx-auto max-w-5xl px-4 pb-24 pt-14 sm:px-6 md:px-8 sm:pb-32 sm:pt-20">
