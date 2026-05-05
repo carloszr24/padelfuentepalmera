@@ -48,22 +48,28 @@ export default async function Home() {
     // Si falla auth (env vars, Supabase, etc.) mostramos la landing sin usuario
   }
   return (
-    <div className="min-h-screen bg-[#faf8f5] text-stone-900">
+    <div className="relative min-h-screen bg-[#faf8f5] text-stone-900">
       <LandingHeader isLoggedIn={!!user} />
 
-      {/* Hero: solo el cartel, sin velo ni textos; clic abre EvenPadel (el header fijo queda encima) */}
+      {/* Hero ancho completo: img + overlay degradado (contraste navbar) + clic a EvenPadel */}
       <section className="relative h-[100dvh] min-h-[100dvh] w-full overflow-hidden bg-black">
+        <img
+          src="/hero-primer-torneo-ordenador.png"
+          alt="Even Padel Tour — Fuente Palmera"
+          className="absolute inset-0 h-full w-full object-cover object-[center_40%]"
+          sizes="100vw"
+          fetchPriority="high"
+        />
+        <div
+          className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(to_bottom,rgba(0,0,0,0.65)_0%,rgba(0,0,0,0.35)_30%,transparent_60%)]"
+          aria-hidden
+        />
         <a
           href={TOURNAMENT_URL}
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Abrir inscripción al torneo en EvenPadel"
           className="absolute inset-0 z-10"
-        />
-        <div
-          className="absolute inset-[3%] bg-contain bg-center bg-no-repeat sm:inset-[4%]"
-          style={{ backgroundImage: 'url(/hero-primer-torneo-ordenador.png)' }}
-          aria-hidden
         />
       </section>
 
