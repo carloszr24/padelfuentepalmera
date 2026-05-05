@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { CLUB_LOGO_PATH } from '@/lib/club-logo';
-import { EVENPADEL_EVENPADEL_TOURNAMENT_URL } from '@/lib/evenpadel-tournament';
+import { EVENPADEL_TOURNAMENT_URL } from '@/lib/evenpadel-tournament';
 import { getCachedAuth } from '@/lib/auth-server';
 import { LandingHeader } from '@/components/ui/landing-header';
 
