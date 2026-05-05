@@ -51,20 +51,24 @@ export default async function Home() {
     <div className="min-h-screen bg-[#faf8f5] text-stone-900">
       <LandingHeader isLoggedIn={!!user} />
 
-      {/* Hero: solo el cartel, sin velo ni textos; clic abre EvenPadel (el header fijo queda encima) */}
-      <section className="relative h-[100dvh] min-h-[100dvh] w-full overflow-hidden bg-black">
-        <a
-          href={TOURNAMENT_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Abrir inscripción al torneo en EvenPadel"
-          className="absolute inset-0 z-10"
-        />
-        <div
-          className="absolute inset-[3%] bg-contain bg-center bg-no-repeat sm:inset-[4%]"
-          style={{ backgroundImage: 'url(/hero-primer-torneo-ordenador.png)' }}
-          aria-hidden
-        />
+      {/* Hero torneo: altura acotada + fondo responsive (patrón tipo “contain desktop / cover móvil”) + CTA */}
+      <section
+        className="relative box-border flex w-full flex-col items-center justify-end overflow-hidden bg-[#0b0f14] bg-no-repeat px-5 py-10
+          h-[60vh] min-h-[500px] bg-cover bg-[30%_50%]
+          sm:h-[70vh] sm:bg-left
+          lg:h-[85vh] lg:min-h-[600px] lg:max-h-[900px] lg:bg-contain lg:bg-center"
+        style={{ backgroundImage: 'url(/hero-primer-torneo-ordenador.png)' }}
+      >
+        <div className="relative z-10 flex w-full max-w-[1200px] justify-center">
+          <a
+            href={TOURNAMENT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-[10px] bg-[#ffe600] px-[30px] py-3.5 text-base font-bold text-black no-underline transition hover:-translate-y-0.5 hover:shadow-[0_10px_25px_rgba(0,0,0,0.3)] sm:px-10 sm:py-4 sm:text-lg"
+          >
+            INSCRÍBETE →
+          </a>
+        </div>
       </section>
 
       <main className="mx-auto max-w-5xl px-4 pb-24 pt-14 sm:px-6 md:px-8 sm:pb-32 sm:pt-20">
