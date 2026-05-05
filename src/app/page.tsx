@@ -51,19 +51,21 @@ export default async function Home() {
     <div className="relative min-h-screen bg-[#faf8f5] text-stone-900">
       <LandingHeader isLoggedIn={!!user} />
 
-      {/* Hero ancho completo: img + overlay degradado (contraste navbar) + clic a EvenPadel */}
+      {/* Hero: imagen algo más estrecha (márgenes laterales) + overlay + clic a EvenPadel */}
       <section className="relative h-[100dvh] min-h-[100dvh] w-full overflow-hidden bg-black">
-        <img
-          src="/hero-primer-torneo-ordenador.png"
-          alt="Even Padel Tour — Fuente Palmera"
-          className="absolute inset-0 h-full w-full object-cover object-[center_40%]"
-          sizes="100vw"
-          fetchPriority="high"
-        />
-        <div
-          className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(to_bottom,rgba(0,0,0,0.65)_0%,rgba(0,0,0,0.35)_30%,transparent_60%)]"
-          aria-hidden
-        />
+        <div className="absolute inset-y-0 left-[3%] right-[3%] z-0 sm:left-[4%] sm:right-[4%] lg:left-[5%] lg:right-[5%]">
+          <img
+            src="/hero-primer-torneo-ordenador.png"
+            alt="Even Padel Tour — Fuente Palmera"
+            className="absolute inset-0 h-full w-full object-cover object-[center_40%]"
+            sizes="94vw"
+            fetchPriority="high"
+          />
+          <div
+            className="pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(to_bottom,rgba(0,0,0,0.65)_0%,rgba(0,0,0,0.35)_30%,transparent_60%)]"
+            aria-hidden
+          />
+        </div>
         <a
           href={TOURNAMENT_URL}
           target="_blank"
