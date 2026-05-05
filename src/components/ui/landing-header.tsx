@@ -42,13 +42,7 @@ export function LandingHeader({ isLoggedIn = false }: LandingHeaderProps) {
           : 'absolute border-b border-transparent bg-transparent text-white'
       }`}
     >
-      <div
-        className={`relative mx-auto flex min-h-20 w-full items-center py-3 sm:min-h-24 sm:py-4 ${
-          onHero
-            ? 'max-w-[1200px] px-3 sm:px-5 md:px-8'
-            : 'max-w-7xl px-4 sm:px-6 lg:px-8 lg:py-4 xl:px-10'
-        }`}
-      >
+      <div className="relative mx-auto flex min-h-20 w-full max-w-7xl items-center px-4 py-3 sm:min-h-24 sm:px-6 sm:py-4 lg:px-8 lg:py-4 xl:px-10">
         <div className="flex flex-1 items-center justify-start">
           <nav
             className={`hidden items-center gap-5 text-[15px] font-medium tracking-tight md:flex lg:gap-7 lg:text-base ${

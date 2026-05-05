@@ -51,15 +51,15 @@ export default async function Home() {
     <div className="relative min-h-screen bg-[#faf8f5] text-stone-900">
       <LandingHeader isLoggedIn={!!user} />
 
-      {/* Hero tipo póster: ancho máx. ~1200px centrado, cartel completo (contain) + degradado suave arriba para la nav */}
+      {/* Hero: casi ancho completo (solo un pelín de margen), cartel contain para no recortar + degradado arriba */}
       <section className="relative h-[100dvh] min-h-[100dvh] w-full overflow-hidden bg-black">
-        <div className="absolute inset-0 z-0 flex items-stretch justify-center px-3 sm:px-5 md:px-8">
-          <div className="relative h-full w-full max-w-[1200px]">
+        <div className="absolute inset-0 z-0 px-1 sm:px-2 md:px-3">
+          <div className="relative h-full w-full">
             <img
               src="/hero-primer-torneo-ordenador.png"
               alt="Even Padel Tour — Fuente Palmera"
               className="h-full w-full object-contain object-center"
-              sizes="(max-width: 1232px) 100vw, 1200px"
+              sizes="100vw"
               fetchPriority="high"
             />
             <div
