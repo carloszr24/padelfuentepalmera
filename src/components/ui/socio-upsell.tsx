@@ -110,14 +110,10 @@ export function SocioUpsell({ showPayButton = false, ctaLabel, onCtaClick }: Soc
 
         {/* CTA */}
         <div className="mt-6">
-          {!MEMBERSHIP_OPEN ? (
-            <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">
-              Las inscripciones de nuevos socios están cerradas en este momento. Contacta con el club para más información.
-            </div>
-          ) : showPayButton ? (
+          {showPayButton ? (
             <button
               type="button"
-              onClick={handlePay}
+              onClick={MEMBERSHIP_OPEN ? handlePay : undefined}
               disabled={loading}
               className="min-h-[48px] w-full rounded-xl bg-[#1d4ed8] px-6 py-3 text-base font-bold text-white shadow-lg shadow-[#1d4ed8]/25 transition hover:bg-[#2563eb] hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
             >
@@ -126,7 +122,7 @@ export function SocioUpsell({ showPayButton = false, ctaLabel, onCtaClick }: Soc
           ) : (
             <button
               type="button"
-              onClick={onCtaClick}
+              onClick={MEMBERSHIP_OPEN ? onCtaClick : undefined}
               className="min-h-[48px] w-full rounded-xl bg-[#1d4ed8] px-6 py-3 text-base font-bold text-white shadow-lg shadow-[#1d4ed8]/25 transition hover:bg-[#2563eb] hover:-translate-y-0.5"
             >
               {ctaLabel ?? `Ver membresía (${MEMBERSHIP_FEE} €/año)`}
