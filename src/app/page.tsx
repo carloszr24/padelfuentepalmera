@@ -55,7 +55,7 @@ export default async function Home() {
         {/* Móvil / tablet: cartel vertical a ancho completo */}
         <div className="relative z-0 w-full lg:hidden">
           <img
-            src="/hero-movil.png"
+            src="/hero-torneo-movil.png"
             alt="Even Padel Tour — Fuente Palmera"
             className="block h-auto w-full max-w-none"
             sizes="100vw"
