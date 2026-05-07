@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { MEMBERSHIP_OPEN } from '@/lib/features';
 
 const MEMBERSHIP_FEE = 15;
 
@@ -109,7 +110,11 @@ export function SocioUpsell({ showPayButton = false, ctaLabel, onCtaClick }: Soc
 
         {/* CTA */}
         <div className="mt-6">
-          {showPayButton ? (
+          {!MEMBERSHIP_OPEN ? (
+            <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">
+              Las inscripciones de nuevos socios están cerradas en este momento. Contacta con el club para más información.
+            </div>
+          ) : showPayButton ? (
             <button
               type="button"
               onClick={handlePay}

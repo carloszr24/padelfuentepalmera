@@ -7,6 +7,7 @@ import { NextResponse } from 'next/server';
 import { createServerSupabaseClient, createSupabaseServiceClient } from '@/lib/supabase/server';
 import { buildPaymentParams, isCecaConfigured } from '@/lib/cecabank';
 import { checkRateLimit } from '@/lib/rate-limit';
+import { MEMBERSHIP_OPEN } from '@/lib/features';
 
 const MEMBERSHIP_FEE_EUR = 15;
 
@@ -32,6 +33,13 @@ function getBaseUrl(request: Request): string {
 }
 
 export async function POST(request: Request) {
+  if (!MEMBERSHIP_OPEN) {
+    return NextResponse.json(
+      { error: 'Las inscripciones de nuevos socios están cerradas.' },
+      { status: 403 }
+    );
+  }
+
   const ip =
     request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
     request.headers.get('x-real-ip') ??

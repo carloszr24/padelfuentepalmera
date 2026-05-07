@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { SocioUpsell } from '@/components/ui/socio-upsell';
+import { MEMBERSHIP_OPEN } from '@/lib/features';
 
 type PanelMembresiaClientProps = {
   isActiveMember: boolean;
@@ -105,14 +106,21 @@ export function PanelMembresiaClient({ isActiveMember, expiryDate, startDate }: 
         </div>
       ) : (
         <div className="space-y-4">
-          {expiryDate && (
+          {!MEMBERSHIP_OPEN && (
+            <div className="rounded-[var(--panel-radius)] border border-amber-200 p-4" style={{ background: '#fffbeb' }}>
+              <p className="text-sm font-medium text-amber-800">
+                Las inscripciones de nuevos socios están cerradas en este momento. Contacta con el club para más información.
+              </p>
+            </div>
+          )}
+          {expiryDate && MEMBERSHIP_OPEN && (
             <div className="rounded-[var(--panel-radius)] border border-amber-200 p-4" style={{ background: '#fffbeb' }}>
               <p className="text-sm font-medium text-amber-800">
                 Tu membresía caducó el {formatDate(expiryDate)}. Renuévala para seguir reservando pistas.
               </p>
             </div>
           )}
-          <SocioUpsell showPayButton />
+          {MEMBERSHIP_OPEN && <SocioUpsell showPayButton />}
         </div>
       )}
     </div>
