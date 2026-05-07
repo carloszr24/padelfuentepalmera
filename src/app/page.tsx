@@ -80,7 +80,7 @@ export default async function Home() {
         <div className="absolute inset-0 z-0 hidden px-1 sm:px-2 md:px-3 lg:block">
           <div className="relative h-full w-full">
             <img
-              src="/hero-primer-torneo-ordenador.png"
+              src="/hero-torneo-ordenador.png"
               alt="Even Padel Tour — Fuente Palmera"
               className="h-full w-full object-contain object-center"
               sizes="100vw"
