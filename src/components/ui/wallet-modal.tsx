@@ -9,6 +9,14 @@ const QUICK_AMOUNTS = [10, 20, 30, 50, 75, 100];
 const MIN_EUR = 10;
 const MAX_EUR = 500;
 
+function parseEuroAmount(value: string): number | null {
+  const normalized = value.trim().replace(',', '.');
+  if (!normalized) return null;
+  const parsed = Number(normalized);
+  if (Number.isNaN(parsed) || parsed <= 0) return null;
+  return Math.round(parsed * 100) / 100;
+}
+
 type WalletModalProps = {
   open: boolean;
   onClose: () => void;
@@ -40,7 +48,7 @@ export function WalletModal({ open, onClose, trigger }: WalletModalProps) {
   const amount =
     selectedQuick !== null
       ? selectedQuick
-      : (customAmount.trim() ? Number(customAmount) : null);
+      : parseEuroAmount(customAmount);
   const valid = amount !== null && amount >= MIN_EUR && amount <= MAX_EUR;
 
   useEffect(() => {
@@ -127,7 +135,7 @@ export function WalletModal({ open, onClose, trigger }: WalletModalProps) {
         </div>
 
         <p className="mb-4 text-sm font-medium text-stone-600">
-          Recarga mínima {MIN_EUR} €. Serás redirigido a la pasarela de pago para pagar con tarjeta.
+          Recarga mínima {MIN_EUR} € (puedes usar céntimos, ej. 10,50 €). Serás redirigido a la pasarela de pago para pagar con tarjeta.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -158,11 +166,9 @@ export function WalletModal({ open, onClose, trigger }: WalletModalProps) {
             </label>
             <input
               id="wallet-custom"
-              type="number"
-              min={MIN_EUR}
-              max={MAX_EUR}
-              step="1"
-              placeholder="Ej. 25"
+              type="text"
+              inputMode="decimal"
+              placeholder="Ej. 25,50"
               value={customAmount}
               onChange={(e) => {
                 setCustomAmount(e.target.value);

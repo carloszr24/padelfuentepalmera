@@ -77,10 +77,16 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json().catch(() => ({}));
-  const amount = body.amount as number | undefined;
+  const rawAmount = body.amount as number | undefined;
   const clientOrigin = typeof body.origin === 'string' ? body.origin.trim() : undefined;
 
-  if (amount == null || amount < MIN_AMOUNT) {
+  if (rawAmount == null || Number.isNaN(Number(rawAmount))) {
+    return NextResponse.json({ error: 'Cantidad no válida' }, { status: 400 });
+  }
+
+  const amount = Math.round(Number(rawAmount) * 100) / 100;
+
+  if (amount < MIN_AMOUNT) {
     return NextResponse.json({ error: `Cantidad mínima ${MIN_AMOUNT}€` }, { status: 400 });
   }
   if (amount > MAX_AMOUNT) {

@@ -57,7 +57,13 @@ export async function POST(request: Request) {
     );
   }
 
-  const numAmount = Number(amount);
+  const numAmount = Math.round(Number(amount) * 100) / 100;
+  if (Number.isNaN(numAmount)) {
+    return NextResponse.json(
+      { message: 'Datos no válidos' },
+      { status: 400 }
+    );
+  }
   if (numAmount === 0) {
     return NextResponse.json(
       { message: 'La cantidad no puede ser 0' },

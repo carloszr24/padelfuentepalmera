@@ -36,10 +36,15 @@ export function AdminWalletRechargeButton({
     const parsed = Number(value.replace(',', '.'));
     if (Number.isNaN(parsed)) {
       setError('Introduce un importe válido.');
-    } else {
-      setAmount(parsed);
-      setError(null);
+      return;
     }
+    const rounded = Math.round(parsed * 100) / 100;
+    if (Math.abs(parsed - rounded) > 0.0001) {
+      setError('Máximo 2 decimales (céntimos).');
+      return;
+    }
+    setAmount(rounded);
+    setError(null);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -137,7 +142,7 @@ export function AdminWalletRechargeButton({
                     inputMode="decimal"
                     value={amount === '' ? '' : String(amount)}
                     onChange={handleChange}
-                    placeholder={mode === 'add' ? 'Ej. 15' : 'Ej. 5'}
+                    placeholder={mode === 'add' ? 'Ej. 15,50' : 'Ej. 0,50'}
                     className="min-h-[44px] w-full rounded-xl border border-stone-300 bg-white px-4 py-2.5 pr-12 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
                   />
                   <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs font-medium text-stone-500">
