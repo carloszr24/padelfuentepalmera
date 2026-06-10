@@ -16,34 +16,36 @@ export function AdminWalletRechargeButton({
   compact = false,
 }: AdminWalletRechargeButtonProps) {
   const [open, setOpen] = useState(false);
-  const [amount, setAmount] = useState<number | ''>('');
+  const [amountInput, setAmountInput] = useState('');
   const [mode, setMode] = useState<'add' | 'subtract'>('add');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-  const numAmount = typeof amount === 'number' && !Number.isNaN(amount) ? amount : 0;
-  const isValid = numAmount > 0;
-  const finalAmount = mode === 'subtract' ? -numAmount : numAmount;
+  const parseAmount = (value: string): number | null => {
+    const normalized = value.trim().replace(',', '.');
+    if (!normalized || normalized === '.' ) return null;
+    const parsed = Number(normalized);
+    if (Number.isNaN(parsed) || parsed <= 0) return null;
+    return Math.round(parsed * 100) / 100;
+  };
+
+  const parsedAmount = parseAmount(amountInput);
+  const isValid = parsedAmount !== null;
+  const finalAmount = parsedAmount != null ? (mode === 'subtract' ? -parsedAmount : parsedAmount) : 0;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (!value) {
-      setAmount('');
+      setAmountInput('');
       setError(null);
       return;
     }
-    const parsed = Number(value.replace(',', '.'));
-    if (Number.isNaN(parsed)) {
-      setError('Introduce un importe válido.');
+    // Permitir escribir coma/punto mientras se teclea (ej. "15," → "15,50")
+    if (!/^\d+([.,]\d{0,2})?$/.test(value)) {
       return;
     }
-    const rounded = Math.round(parsed * 100) / 100;
-    if (Math.abs(parsed - rounded) > 0.0001) {
-      setError('Máximo 2 decimales (céntimos).');
-      return;
-    }
-    setAmount(rounded);
+    setAmountInput(value);
     setError(null);
   };
 
@@ -93,14 +95,14 @@ export function AdminWalletRechargeButton({
       <div className={compact ? 'flex flex-col gap-1.5' : 'inline-flex flex-wrap items-center gap-2'}>
         <button
           type="button"
-          onClick={() => { setMode('add'); setAmount(''); setError(null); setOpen(true); }}
+          onClick={() => { setMode('add'); setAmountInput(''); setError(null); setOpen(true); }}
           className={`${btnClass} border border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100`}
         >
           Recargar
         </button>
         <button
           type="button"
-          onClick={() => { setMode('subtract'); setAmount(''); setError(null); setOpen(true); }}
+          onClick={() => { setMode('subtract'); setAmountInput(''); setError(null); setOpen(true); }}
           className={`${btnClass} border border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100`}
         >
           Restar
@@ -140,7 +142,7 @@ export function AdminWalletRechargeButton({
                     id="amount-admin"
                     type="text"
                     inputMode="decimal"
-                    value={amount === '' ? '' : String(amount)}
+                    value={amountInput}
                     onChange={handleChange}
                     placeholder={mode === 'add' ? 'Ej. 15,50' : 'Ej. 0,50'}
                     className="min-h-[44px] w-full rounded-xl border border-stone-300 bg-white px-4 py-2.5 pr-12 text-sm text-stone-900 outline-none placeholder:text-stone-400 focus:border-[#1d4ed8] focus:ring-2 focus:ring-[#1d4ed8]/20"
