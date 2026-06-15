@@ -27,7 +27,7 @@ const NOVEDADES_SLIDER = [
   {
     title: 'Clases para todos los niveles',
     category: 'Escuela',
-    image: '/clases-foto.png',
+    image: '/carrusel-clases.jpg',
     instagramUrl: 'https://www.instagram.com/p/DWe81SzDBzZ/',
   },
   {
