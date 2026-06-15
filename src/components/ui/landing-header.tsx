@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { CLUB_LOGO_PATH } from '@/lib/club-logo';
+import { PANEL_LOGO_PATH } from '@/lib/club-logo';
 
 const NAV_LINKS = [
   { href: '#que-te-ofrecemos', label: 'Qué te ofrecemos' },
@@ -90,10 +90,10 @@ export function LandingHeader({ isLoggedIn = false }: LandingHeaderProps) {
           aria-label="Fuente Palmera Pádel - Inicio"
         >
           <img
-            src={CLUB_LOGO_PATH}
+            src={PANEL_LOGO_PATH}
             alt="Fuente Palmera Pádel"
-            className={`w-auto object-contain transition-all duration-300 ${
-              onHero ? 'h-12 drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)] sm:h-14' : 'h-14 sm:h-16'
+            className={`rounded-full object-contain transition-all duration-300 ${
+              onHero ? 'h-12 w-12 drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)] sm:h-14 sm:w-14' : 'h-14 w-14 sm:h-16 sm:w-16'
             }`}
             width={64}
             height={64}
