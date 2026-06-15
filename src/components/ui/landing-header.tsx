@@ -10,8 +10,8 @@ const NAV_LINKS = [
   { href: '#contacto', label: 'Contacto' },
 ];
 
-/** Amarillo cartel / mock Even Padel Tour */
-const HERO_YELLOW = '#FFD700';
+/** Azul corporativo del club */
+const BRAND_BLUE = '#1d4ed8';
 
 const SCROLL_THRESHOLD_PX = 50;
 
@@ -106,7 +106,7 @@ export function LandingHeader({ isLoggedIn = false }: LandingHeaderProps) {
               href="/panel"
               className={
                 onHero
-                  ? 'rounded-lg border-2 border-[#FFD700] px-4 py-2.5 text-sm font-bold uppercase tracking-wide text-[#FFD700] transition hover:bg-[#FFD700]/15 sm:px-5 sm:py-3 lg:text-[15px]'
+                  ? 'rounded-lg border-2 border-white/90 px-4 py-2.5 text-sm font-bold uppercase tracking-wide text-white transition hover:bg-white/15 sm:px-5 sm:py-3 lg:text-[15px]'
                   : 'rounded-full border border-stone-300 px-4 py-2.5 text-base font-medium text-stone-700 transition hover:border-stone-400 hover:bg-stone-50 sm:px-5 sm:py-3 lg:text-lg'
               }
             >
@@ -117,7 +117,7 @@ export function LandingHeader({ isLoggedIn = false }: LandingHeaderProps) {
               href="/registro"
               className={
                 onHero
-                  ? 'rounded-lg border-2 border-[#FFD700] px-4 py-2.5 text-sm font-bold uppercase tracking-wide text-[#FFD700] transition hover:bg-[#FFD700]/15 sm:px-5 sm:py-3 lg:text-[15px]'
+                  ? 'rounded-lg border-2 border-white/90 px-4 py-2.5 text-sm font-bold uppercase tracking-wide text-white transition hover:bg-white/15 sm:px-5 sm:py-3 lg:text-[15px]'
                   : 'rounded-full border border-stone-300 px-4 py-2.5 text-base font-medium text-stone-700 transition hover:border-stone-400 hover:bg-stone-50 sm:px-5 sm:py-3 lg:text-lg'
               }
             >
@@ -126,12 +126,12 @@ export function LandingHeader({ isLoggedIn = false }: LandingHeaderProps) {
           )}
           <a
             href={isLoggedIn ? '/panel/reservas' : '/registro'}
-            className={`hidden px-5 py-3 text-sm shadow-md transition hover:scale-[1.02] md:inline-flex md:px-6 lg:px-7 lg:py-3.5 lg:text-[15px] ${
+            className={`hidden px-5 py-3 text-sm font-semibold text-white shadow-md transition hover:scale-[1.02] md:inline-flex md:px-6 lg:px-7 lg:py-3.5 lg:text-[15px] ${
               onHero
-                ? 'rounded-lg font-bold uppercase tracking-wide text-black hover:brightness-95'
-                : 'rounded-full bg-[#1d4ed8] font-semibold text-white shadow-[#1d4ed8]/40 hover:bg-[#2563eb] hover:shadow-[#1d4ed8]/50'
+                ? 'rounded-lg hover:brightness-110'
+                : 'rounded-full bg-[#1d4ed8] shadow-[#1d4ed8]/40 hover:bg-[#2563eb] hover:shadow-[#1d4ed8]/50'
             }`}
-            style={onHero ? { backgroundColor: HERO_YELLOW, color: '#000000' } : undefined}
+            style={onHero ? { backgroundColor: BRAND_BLUE } : undefined}
           >
             Reserva tu pista
           </a>

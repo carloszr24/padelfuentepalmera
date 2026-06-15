@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Calendar, ChevronDown, ChevronUp, Info, Instagram, Users } from 'lucide-react';
 
-const HERO_YELLOW = '#FFD700';
+const BRAND_BLUE = '#1d4ed8';
+const BRAND_BLUE_LIGHT = '#60a5fa';
 
 type SlideCta = {
   label: string;
@@ -58,13 +59,6 @@ const SLIDES: HeroSlide[] = [
     secondaryCta: { label: 'Saber más', href: '#que-te-ofrecemos', icon: 'info' },
   },
 ];
-
-const STATS = [
-  { value: '3', label: 'Pistas' },
-  { value: '15 €', label: 'Cuota socio/año' },
-  { value: '09:30–22:30', label: 'Horario' },
-  { value: 'Open', label: 'Todo el año' },
-] as const;
 
 const AUTOPLAY_MS = 4500;
 
@@ -205,15 +199,15 @@ export function LandingHero({ isLoggedIn = false }: LandingHeroProps) {
           }`}
         >
           <span
-            className="mb-5 inline-block rounded-full px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em]"
-            style={{ backgroundColor: HERO_YELLOW, color: '#1a2a00' }}
+            className="mb-5 inline-block rounded-full px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-white"
+            style={{ backgroundColor: BRAND_BLUE }}
           >
             {slide.badge}
           </span>
           <h1 className="mb-4 text-[clamp(2.25rem,6vw,4rem)] font-extrabold leading-[1.05] text-white drop-shadow-[0_2px_16px_rgba(0,0,0,0.4)]">
             {slide.headline}
             <br />
-            <span style={{ color: HERO_YELLOW }}>{slide.accent}</span>
+            <span style={{ color: BRAND_BLUE_LIGHT }}>{slide.accent}</span>
           </h1>
           <p className="mb-9 max-w-[420px] text-[clamp(0.875rem,1.6vw,1.0625rem)] leading-relaxed text-white/72">
             {slide.sub}
@@ -224,8 +218,8 @@ export function LandingHero({ isLoggedIn = false }: LandingHeroProps) {
               {...(slide.primaryCta.external
                 ? { target: '_blank', rel: 'noopener noreferrer' }
                 : {})}
-              className="inline-flex items-center gap-2 rounded-lg px-7 py-3.5 text-[15px] font-bold transition hover:-translate-y-0.5 hover:brightness-105"
-              style={{ backgroundColor: HERO_YELLOW, color: '#1a2a00' }}
+              className="inline-flex items-center gap-2 rounded-lg px-7 py-3.5 text-[15px] font-bold text-white transition hover:-translate-y-0.5 hover:brightness-110"
+              style={{ backgroundColor: BRAND_BLUE }}
             >
               <CtaIcon icon={slide.primaryCta.icon} />
               {slide.primaryCta.label}
@@ -241,7 +235,7 @@ export function LandingHero({ isLoggedIn = false }: LandingHeroProps) {
         </div>
       </div>
 
-      <div className="absolute bottom-[90px] left-1/2 z-20 flex -translate-x-1/2 gap-1.5">
+      <div className="absolute bottom-8 left-1/2 z-20 flex -translate-x-1/2 gap-1.5">
         {slides.map((_, index) => (
           <button
             key={index}
@@ -250,7 +244,7 @@ export function LandingHero({ isLoggedIn = false }: LandingHeroProps) {
             className={`h-1.5 rounded-full transition-all duration-300 ${
               index === current ? 'w-5' : 'w-1.5 bg-white/30'
             }`}
-            style={index === current ? { backgroundColor: HERO_YELLOW } : undefined}
+            style={index === current ? { backgroundColor: BRAND_BLUE } : undefined}
             aria-label={`Ir al slide ${index + 1}`}
             aria-current={index === current ? 'true' : undefined}
           />
@@ -261,7 +255,7 @@ export function LandingHero({ isLoggedIn = false }: LandingHeroProps) {
         <button
           type="button"
           onClick={prev}
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition hover:border-[#FFD700] hover:bg-[#FFD700]/20"
+          className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition hover:border-[#1d4ed8] hover:bg-[#1d4ed8]/20"
           aria-label="Slide anterior"
         >
           <ChevronUp className="h-[18px] w-[18px]" aria-hidden />
@@ -269,7 +263,7 @@ export function LandingHero({ isLoggedIn = false }: LandingHeroProps) {
         <button
           type="button"
           onClick={next}
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition hover:border-[#FFD700] hover:bg-[#FFD700]/20"
+          className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition hover:border-[#1d4ed8] hover:bg-[#1d4ed8]/20"
           aria-label="Slide siguiente"
         >
           <ChevronDown className="h-[18px] w-[18px]" aria-hidden />
@@ -279,20 +273,6 @@ export function LandingHero({ isLoggedIn = false }: LandingHeroProps) {
       <p className="absolute right-8 top-6 z-20 hidden text-[11px] uppercase tracking-[0.12em] text-white/40 sm:block">
         0{current + 1} / 0{slides.length}
       </p>
-
-      <div className="absolute inset-x-0 bottom-0 z-20 flex items-center border-t border-white/10 bg-black/60 px-[5vw] py-[18px]">
-        {STATS.map((stat, index) => (
-          <div key={stat.label} className="contents">
-            {index > 0 ? <div className="h-10 w-px bg-white/10" aria-hidden /> : null}
-            <div className="flex-1 text-center">
-              <p className="text-[clamp(1.125rem,2.5vw,1.625rem)] font-bold" style={{ color: HERO_YELLOW }}>
-                {stat.value}
-              </p>
-              <p className="mt-0.5 text-[11px] uppercase tracking-[0.07em] text-white/50">{stat.label}</p>
-            </div>
-          </div>
-        ))}
-      </div>
     </section>
   );
 }
