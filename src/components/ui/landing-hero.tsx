@@ -19,7 +19,8 @@ type HeroSlide = {
   accent: string;
   sub: string;
   image: string;
-  imageMobile?: string;
+  /** Vertical u otras proporciones estrechas: cartel a la derecha, texto a la izquierda */
+  imageLayout?: 'cover' | 'vertical-right';
   primaryCta: SlideCta;
   secondaryCta: SlideCta;
 };
@@ -30,8 +31,7 @@ const SLIDES: HeroSlide[] = [
     headline: 'Juega en',
     accent: 'otro nivel',
     sub: 'Elige pista, día y hora desde el móvil. Pistas de cristal, iluminación cuidada y monedero digital. Sin llamadas.',
-    image: '/hero-pista.png',
-    imageMobile: '/hero-torneo-movil.png',
+    image: '/imagen-reserva.jpeg',
     primaryCta: { label: 'Reserva tu pista', href: '/registro', icon: 'calendar' },
     secondaryCta: { label: 'Qué te ofrecemos', href: '#que-te-ofrecemos', icon: 'info' },
   },
@@ -40,7 +40,7 @@ const SLIDES: HeroSlide[] = [
     headline: 'Aprende con',
     accent: 'los mejores',
     sub: 'Clases para todos los niveles. Grupos e individuales con monitores del club. ¡Mira cómo entrenamos en Instagram!',
-    image: '/carrusel-clases.jpg',
+    image: '/clases-foto.png',
     primaryCta: {
       label: 'Ver clases en Instagram',
       href: 'https://www.instagram.com/p/DWe81SzDBzZ/',
@@ -54,13 +54,15 @@ const SLIDES: HeroSlide[] = [
     headline: 'Únete a la',
     accent: 'familia',
     sub: 'Cuota anual de 15 €. Precios exclusivos en reservas, sorteos para socios y acceso a todos los eventos del club.',
-    image: '/logo-mitico.png',
+    image: '/unete-club-imagen.png',
+    imageLayout: 'vertical-right',
     primaryCta: { label: 'Hazte socio', href: '/registro', icon: 'users' },
     secondaryCta: { label: 'Saber más', href: '#que-te-ofrecemos', icon: 'info' },
   },
 ];
 
-const AUTOPLAY_MS = 4500;
+const AUTOPLAY_MS = 2800;
+const FADE_MS = 120;
 
 type LandingHeroProps = {
   isLoggedIn?: boolean;
@@ -124,7 +126,7 @@ export function LandingHero({ isLoggedIn = false }: LandingHeroProps) {
       window.setTimeout(() => {
         setCurrent((prev) => (prev + 1) % slides.length);
         setContentVisible(true);
-      }, 180);
+      }, FADE_MS);
     }, AUTOPLAY_MS);
   }, [clearTimer, slides.length]);
 
@@ -134,7 +136,7 @@ export function LandingHero({ isLoggedIn = false }: LandingHeroProps) {
       window.setTimeout(() => {
         setCurrent(index);
         setContentVisible(true);
-      }, 180);
+      }, FADE_MS);
       startTimer();
     },
     [startTimer],
@@ -162,32 +164,30 @@ export function LandingHero({ isLoggedIn = false }: LandingHeroProps) {
       onBlurCapture={startTimer}
     >
       <div
-        className="absolute inset-0 flex transition-transform duration-[800ms] ease-[cubic-bezier(0.77,0,0.18,1)] motion-reduce:transition-none"
+        className="absolute inset-0 flex transition-transform duration-[550ms] ease-[cubic-bezier(0.77,0,0.18,1)] motion-reduce:transition-none"
         style={{ transform: `translateX(-${current * 100}%)` }}
         aria-live="polite"
       >
         {slides.map((item, index) => (
           <div key={item.badge} className="relative min-w-full h-full" aria-hidden={index !== current}>
-            {index === 2 ? (
-              <div className="absolute inset-0 bg-gradient-to-br from-stone-950 via-stone-900 to-amber-950" />
-            ) : null}
-            {item.imageMobile ? (
-              <img
-                src={item.imageMobile}
-                alt=""
-                className="absolute inset-0 h-full w-full object-cover lg:hidden"
-              />
-            ) : null}
-            <img
-              src={item.image}
-              alt=""
-              className={`absolute inset-0 h-full w-full ${
-                index === 2
-                  ? 'object-contain p-[min(18vw,140px)] opacity-25'
-                  : 'object-cover'
-              } ${item.imageMobile ? 'hidden lg:block' : ''}`}
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/45 to-black/20" />
+            {item.imageLayout === 'vertical-right' ? (
+              <>
+                <div className="absolute inset-0 bg-[#0a1628]" />
+                <div className="absolute inset-y-0 right-0 flex w-[min(62vw,520px)] items-center justify-end sm:w-[min(48vw,480px)]">
+                  <img
+                    src={item.image}
+                    alt=""
+                    className="h-full w-full object-contain object-right"
+                  />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-r from-black/92 via-black/55 to-black/10 sm:from-black/88 sm:via-black/45" />
+              </>
+            ) : (
+              <>
+                <img src={item.image} alt="" className="absolute inset-0 h-full w-full object-cover object-center" />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/45 to-black/20" />
+              </>
+            )}
           </div>
         ))}
       </div>
@@ -269,10 +269,6 @@ export function LandingHero({ isLoggedIn = false }: LandingHeroProps) {
           <ChevronDown className="h-[18px] w-[18px]" aria-hidden />
         </button>
       </div>
-
-      <p className="absolute right-8 top-6 z-20 hidden text-[11px] uppercase tracking-[0.12em] text-white/40 sm:block">
-        0{current + 1} / 0{slides.length}
-      </p>
     </section>
   );
 }
