@@ -42,7 +42,7 @@ const SLIDES: HeroSlide[] = [
     sub: 'Clases para todos los niveles, desde iniciación hasta competición. Grupos reducidos e individuales con monitores del club.',
     image: '/carrusel-clases.jpg',
     primaryCta: {
-      label: 'Horarios, precios y niveles en Instagram',
+      label: 'Más información',
       href: 'https://www.instagram.com/p/DWe81SzDBzZ/',
       external: true,
       icon: 'instagram',
@@ -212,13 +212,13 @@ export function LandingHero({ isLoggedIn = false }: LandingHeroProps) {
           <p className="mb-9 max-w-[420px] text-[clamp(0.875rem,1.6vw,1.0625rem)] leading-relaxed text-white/72">
             {slide.sub}
           </p>
-          <div className="flex flex-wrap gap-3.5">
+          <div className="flex flex-nowrap items-center gap-3 sm:gap-3.5">
             <a
               href={slide.primaryCta.href}
               {...(slide.primaryCta.external
                 ? { target: '_blank', rel: 'noopener noreferrer' }
                 : {})}
-              className="inline-flex items-center gap-2 rounded-lg px-7 py-3.5 text-[15px] font-bold text-white transition hover:-translate-y-0.5 hover:brightness-110"
+              className="inline-flex shrink-0 items-center gap-2 rounded-lg px-5 py-3 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:brightness-110 sm:px-7 sm:py-3.5 sm:text-[15px]"
               style={{ backgroundColor: BRAND_BLUE }}
             >
               <CtaIcon icon={slide.primaryCta.icon} />
@@ -226,7 +226,7 @@ export function LandingHero({ isLoggedIn = false }: LandingHeroProps) {
             </a>
             <a
               href={slide.secondaryCta.href}
-              className="inline-flex items-center gap-2 rounded-lg border border-white/30 bg-white/10 px-7 py-3.5 text-[15px] font-medium text-white transition hover:bg-white/20"
+              className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-white/30 bg-white/10 px-5 py-3 text-sm font-medium text-white transition hover:bg-white/20 sm:px-7 sm:py-3.5 sm:text-[15px]"
             >
               <CtaIcon icon={slide.secondaryCta.icon} />
               {slide.secondaryCta.label}
