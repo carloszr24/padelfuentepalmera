@@ -84,22 +84,21 @@ export function LandingHeader({ isLoggedIn = false }: LandingHeaderProps) {
           </button>
         </div>
 
-        {/* Centro: logo club solo al hacer scroll; sobre el hero el cartel ya lleva branding Even Padel */}
-        {!onHero && (
-          <a
-            href="/"
-            className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-shrink-0 items-center transition hover:opacity-90"
-            aria-label="Fuente Palmera Pádel - Inicio"
-          >
-            <img
-              src={CLUB_LOGO_PATH}
-              alt="Fuente Palmera Pádel"
-              className="h-14 w-auto object-contain sm:h-16"
-              width={64}
-              height={64}
-            />
-          </a>
-        )}
+        <a
+          href="/"
+          className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-shrink-0 items-center transition hover:opacity-90"
+          aria-label="Fuente Palmera Pádel - Inicio"
+        >
+          <img
+            src={CLUB_LOGO_PATH}
+            alt="Fuente Palmera Pádel"
+            className={`w-auto object-contain transition-all duration-300 ${
+              onHero ? 'h-12 drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)] sm:h-14' : 'h-14 sm:h-16'
+            }`}
+            width={64}
+            height={64}
+          />
+        </a>
 
         <div className="flex flex-1 items-center justify-end gap-2 sm:gap-3">
           {isLoggedIn ? (
