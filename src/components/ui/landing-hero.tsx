@@ -39,10 +39,10 @@ const SLIDES: HeroSlide[] = [
     badge: 'Escuela de pádel',
     headline: 'Aprende con',
     accent: 'los mejores',
-    sub: 'Clases para todos los niveles. Grupos e individuales con monitores del club. ¡Mira cómo entrenamos en Instagram!',
+    sub: 'Clases para todos los niveles, desde iniciación hasta competición. Grupos reducidos e individuales con monitores del club.',
     image: '/carrusel-clases.jpg',
     primaryCta: {
-      label: 'Ver clases en Instagram',
+      label: 'Horarios, precios y niveles en Instagram',
       href: 'https://www.instagram.com/p/DWe81SzDBzZ/',
       external: true,
       icon: 'instagram',
