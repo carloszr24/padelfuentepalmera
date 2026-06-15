@@ -40,7 +40,7 @@ const SLIDES: HeroSlide[] = [
     headline: 'Aprende con',
     accent: 'los mejores',
     sub: 'Clases para todos los niveles. Grupos e individuales con monitores del club. ¡Mira cómo entrenamos en Instagram!',
-    image: '/clases-foto.png',
+    image: '/carrusel-clases.jpg',
     primaryCta: {
       label: 'Ver clases en Instagram',
       href: 'https://www.instagram.com/p/DWe81SzDBzZ/',
