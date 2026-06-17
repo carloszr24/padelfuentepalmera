@@ -7,6 +7,7 @@ import { isSameDayMadridTooSoon } from '@/lib/booking-lead-time';
 // 1. club_schedule (getOpeningForDate): si is_open=false → ningún slot; si true → solo slots entre open_time y close_time (sesión termina antes de cierre).
 // 2. schedule_exceptions: getOpeningForDate ya aplica excepciones (festivos, cierres puntuales) sobre el horario semanal.
 // 3. recurring_blocks: franjas bloqueadas semanalmente por pista → se eliminan.
+//    recurring_block_exceptions: liberan un bloqueo recurrente solo en una fecha concreta.
 // 4. court_schedules + bookings: reservas y bloqueos puntuales → lo que queda es lo disponible.
 
 // Horarios fijos por día: solo estos slots existen. day_of_week 1 = Lunes, 7 = Domingo.
@@ -81,6 +82,7 @@ export async function GET(request: Request) {
     { data: bookings },
     { data: blocks },
     { data: recurringBlocks },
+    { data: recurringExceptions },
   ] = await Promise.all([
     supabase
       .from('bookings')
@@ -95,10 +97,18 @@ export async function GET(request: Request) {
       .eq('blocked_date', date),
     supabase
       .from('recurring_blocks')
-      .select('start_time')
+      .select('id, start_time')
       .eq('court_id', courtId)
       .eq('day_of_week', dayOfWeek),
+    supabase
+      .from('recurring_block_exceptions')
+      .select('recurring_block_id')
+      .eq('exception_date', date),
   ]);
+
+  const exceptedBlockIds = new Set(
+    (recurringExceptions ?? []).map((e) => String(e.recurring_block_id))
+  );
 
   const occupied: { start: string; end: string }[] = [];
   for (const b of bookings ?? []) {
@@ -114,6 +124,7 @@ export async function GET(request: Request) {
     });
   }
   for (const b of recurringBlocks ?? []) {
+    if (exceptedBlockIds.has(String(b.id))) continue;
     const start = String(b.start_time).slice(0, 5);
     occupied.push({
       start,

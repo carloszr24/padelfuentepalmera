@@ -14,6 +14,10 @@ type PageProps = {
 
 async function getReservasData(desde: string, hasta: string) {
   const supabase = createSupabaseServiceClient();
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' });
+  const rangeStart = desde || today;
+  const rangeEnd = hasta || today;
+
   let bookingsQuery = supabase
     .from('bookings')
     .select(
@@ -28,12 +32,18 @@ async function getReservasData(desde: string, hasta: string) {
     { data: courts },
     { data: profiles },
     { data: recurringBlocks },
+    { data: recurringExceptions },
     { data: members },
   ] = await Promise.all([
     bookingsQuery,
     supabase.from('courts').select('id, name').eq('is_active', true).order('name'),
     supabase.from('profiles').select('id, full_name, email').order('full_name'),
-    supabase.from('recurring_blocks').select('court_id, day_of_week, start_time'),
+    supabase.from('recurring_blocks').select('id, court_id, day_of_week, start_time'),
+    supabase
+      .from('recurring_block_exceptions')
+      .select('recurring_block_id, exception_date')
+      .gte('exception_date', rangeStart)
+      .lte('exception_date', rangeEnd),
     supabase.from('members').select('user_id, expiry_date').gte('expiry_date', new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' })),
   ]);
 
@@ -49,12 +59,14 @@ async function getReservasData(desde: string, hasta: string) {
   }));
 
   // Generar reservas técnicas virtuales a partir de bloqueos recurrentes en el rango [desde, hasta]
-  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' });
-  const rangeStart = desde || today;
-  const rangeEnd = hasta || today;
-
   const startDate = new Date(rangeStart + 'T12:00:00');
   const endDate = new Date(rangeEnd + 'T12:00:00');
+
+  const exceptionKeys = new Set(
+    (recurringExceptions ?? []).map(
+      (e) => `${String(e.recurring_block_id)}:${String(e.exception_date).slice(0, 10)}`
+    )
+  );
 
   const courtNameById = new Map<string, string>();
   (courts ?? []).forEach((c) => {
@@ -73,8 +85,14 @@ async function getReservasData(desde: string, hasta: string) {
       const bookingDate = d.toISOString().slice(0, 10);
       const dayOfWeek = ((d.getDay() + 6) % 7) + 1; // ISO: lunes=1
 
-      for (const block of rb as Array<{ court_id: string; day_of_week: number; start_time: string }>) {
+      for (const block of rb as Array<{
+        id: string;
+        court_id: string;
+        day_of_week: number;
+        start_time: string;
+      }>) {
         if (block.day_of_week !== dayOfWeek) continue;
+        if (exceptionKeys.has(`${String(block.id)}:${bookingDate}`)) continue;
         const startStr =
           typeof block.start_time === 'string'
             ? block.start_time.slice(0, 5)
@@ -90,7 +108,7 @@ async function getReservasData(desde: string, hasta: string) {
         const courtIdStr = String(block.court_id);
         const courtName = courtNameById.get(courtIdStr) ?? 'Pista';
 
-        const id = `rb-${courtIdStr}-${bookingDate}-${startStr}`;
+        const id = `rb-${block.id}-${bookingDate}`;
 
         virtualBlocks.push({
           id,
@@ -104,6 +122,8 @@ async function getReservasData(desde: string, hasta: string) {
           payment_method: 'pay_at_club',
           remaining_paid_at: null,
           is_member: false,
+          recurring_block_id: block.id,
+          is_recurring_virtual: true,
           profiles: null,
           courts: { name: courtName },
         });

@@ -25,6 +25,9 @@ export function RecurringBlocksSection() {
   const [modalOpen, setModalOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [releaseModalBlock, setReleaseModalBlock] = useState<Block | null>(null);
+  const [releaseDate, setReleaseDate] = useState('');
+  const [releasing, setReleasing] = useState(false);
   const [form, setForm] = useState({
     court_id: '',
     day_of_week: 1,
@@ -87,6 +90,35 @@ export function RecurringBlocksSection() {
     }
   };
 
+  const handleReleaseDay = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!releaseModalBlock || !releaseDate) return;
+    setReleasing(true);
+    try {
+      const res = await fetch('/api/admin/recurring-block-exceptions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          recurring_block_id: releaseModalBlock.id,
+          exception_date: releaseDate,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        alert(data.message ?? 'Error al liberar el día');
+        return;
+      }
+      setReleaseModalBlock(null);
+      setReleaseDate('');
+      load();
+      router.refresh();
+    } catch {
+      alert('Error de conexión');
+    } finally {
+      setReleasing(false);
+    }
+  };
+
   const handleDelete = async (id: string) => {
     if (!confirm('¿Eliminar este bloqueo permanente?')) return;
     setDeletingId(id);
@@ -121,7 +153,7 @@ export function RecurringBlocksSection() {
     <div className="rounded-[10px] bg-[#f7f7f5] p-5">
       <h2 className="admin-stat-label mb-4">Bloqueos permanentes</h2>
       <p className="mb-4 text-[13px] text-[#6b6b6b]">
-        Franjas recurrentes cada semana que no aparecen como disponibles para los usuarios.
+        Franjas recurrentes cada semana que no aparecen como disponibles para los usuarios. Puedes liberar un día concreto sin eliminar el bloqueo permanente.
       </p>
       <button
         type="button"
@@ -157,14 +189,26 @@ export function RecurringBlocksSection() {
                   <td>{b.start_time}</td>
                   <td className="text-[#6b6b6b]">{b.reason ?? '—'}</td>
                   <td>
-                    <button
-                      type="button"
-                      onClick={() => handleDelete(b.id)}
-                      disabled={deletingId === b.id}
-                      className="admin-btn rounded-lg border border-red-200 bg-red-50 font-semibold text-red-700 hover:bg-red-100 disabled:opacity-60"
-                    >
-                      {deletingId === b.id ? 'Eliminando…' : 'Eliminar'}
-                    </button>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setReleaseModalBlock(b);
+                          setReleaseDate('');
+                        }}
+                        className="admin-btn rounded-lg border border-emerald-200 bg-emerald-50 font-semibold text-emerald-800 hover:bg-emerald-100"
+                      >
+                        Liberar un día
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(b.id)}
+                        disabled={deletingId === b.id}
+                        className="admin-btn rounded-lg border border-red-200 bg-red-50 font-semibold text-red-700 hover:bg-red-100 disabled:opacity-60"
+                      >
+                        {deletingId === b.id ? 'Eliminando…' : 'Eliminar'}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
@@ -172,6 +216,51 @@ export function RecurringBlocksSection() {
           </tbody>
         </table>
       </div>
+
+      {releaseModalBlock && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md rounded-[10px] border border-[#e8e8e4] bg-white p-6 shadow-xl">
+            <h3 className="mb-2 text-lg font-bold text-stone-900">Liberar solo un día</h3>
+            <p className="mb-4 text-sm text-stone-600">
+              {releaseModalBlock.court_name} · {DAY_NAMES[releaseModalBlock.day_of_week - 1]} ·{' '}
+              {releaseModalBlock.start_time}
+            </p>
+            <form onSubmit={handleReleaseDay} className="space-y-4">
+              <div>
+                <label className="mb-1 block text-xs font-bold text-stone-600">
+                  Fecha a liberar (debe ser un {DAY_NAMES[releaseModalBlock.day_of_week - 1].toLowerCase()})
+                </label>
+                <input
+                  type="date"
+                  value={releaseDate}
+                  onChange={(e) => setReleaseDate(e.target.value)}
+                  className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-stone-900"
+                  required
+                />
+              </div>
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setReleaseModalBlock(null);
+                    setReleaseDate('');
+                  }}
+                  className="rounded-xl border border-stone-300 px-4 py-2 text-sm font-bold text-stone-700 hover:bg-stone-100"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={releasing || !releaseDate}
+                  className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-bold text-white hover:bg-emerald-700 disabled:opacity-60"
+                >
+                  {releasing ? 'Liberando…' : 'Liberar ese día'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">

@@ -6,6 +6,7 @@ import { AdminMarkRemainingPaidButton } from '@/components/ui/admin-mark-remaini
 import { AdminMarkDepositPaidButton } from '@/components/ui/admin-mark-deposit-paid-button';
 import { AdminCancelBookingButton } from '@/components/ui/admin-cancel-booking-button';
 import { AdminNoshowButton } from '@/components/ui/admin-noshow-button';
+import { AdminReleaseRecurringBlockButton } from '@/components/ui/admin-release-recurring-block-button';
 
 export type BookingRow = {
   id: string;
@@ -19,6 +20,8 @@ export type BookingRow = {
   payment_method?: string | null;
   remaining_paid_at?: string | null;
   is_member?: boolean;
+  recurring_block_id?: string | null;
+  is_recurring_virtual?: boolean;
   profiles: { full_name: string | null } | { full_name: string | null }[] | null;
   courts: { name: string } | { name: string }[] | null;
 };
@@ -59,6 +62,7 @@ function getCourtName(b: BookingRow): string {
 }
 
 function getProfileName(b: BookingRow): string {
+  if (b.is_recurring_virtual) return 'Bloqueo recurrente';
   if (b.status === 'blocked') return 'Bloqueo de pista';
   const p = b.profiles;
   return Array.isArray(p) ? p[0]?.full_name ?? 'Usuario' : (p as { full_name?: string } | null)?.full_name ?? 'Usuario';
@@ -345,7 +349,7 @@ export function AdminReservasContent({ bookings, desde, hasta }: AdminReservasCo
                           </td>
                           <td className="px-4 py-3 align-middle">
                             <div className="flex flex-col gap-2 items-start">
-                              {(b.status === 'confirmed' || b.status === 'blocked') && (
+                              {(b.status === 'confirmed' || (b.status === 'blocked' && !b.is_recurring_virtual)) && (
                                 <AdminMarkDepositPaidButton
                                   bookingId={b.id}
                                   alreadyPaid={!!b.deposit_paid}
@@ -360,6 +364,14 @@ export function AdminReservasContent({ bookings, desde, hasta }: AdminReservasCo
                             </div>
                           </td>
                           <td className="px-4 py-3 align-middle">
+                            {b.is_recurring_virtual && b.recurring_block_id && (
+                              <AdminReleaseRecurringBlockButton
+                                recurringBlockId={b.recurring_block_id}
+                                exceptionDate={b.booking_date}
+                                courtName={getCourtName(b)}
+                                startTime={b.start_time}
+                              />
+                            )}
                             {b.status === 'confirmed' && (
                               <div className="flex flex-col gap-2 items-start">
                                 <AdminCancelBookingButton bookingId={b.id} />
