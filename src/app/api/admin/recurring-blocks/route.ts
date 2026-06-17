@@ -28,13 +28,20 @@ export async function GET() {
   if (result.error) return result.error;
   const { supabase } = result;
 
-  const [{ data: rows, error }, { data: courtsData }] = await Promise.all([
+  const [{ data: rows, error }, { data: courtsData }, { data: exceptionRows }] = await Promise.all([
     supabase
       .from('recurring_blocks')
       .select('id, court_id, day_of_week, start_time, reason, created_at, courts(name)')
       .order('day_of_week', { ascending: true })
       .order('start_time', { ascending: true }),
     supabase.from('courts').select('id, name').eq('is_active', true).order('name', { ascending: true }),
+    supabase
+      .from('recurring_block_exceptions')
+      .select(
+        'id, recurring_block_id, exception_date, recurring_blocks(court_id, day_of_week, start_time, reason, courts(name))'
+      )
+      .gte('exception_date', new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' }))
+      .order('exception_date', { ascending: true }),
   ]);
 
   if (error) {
@@ -54,7 +61,32 @@ export async function GET() {
 
   const courts = (courtsData ?? []).map((c) => ({ id: String(c.id), name: c.name ?? '' }));
 
-  return NextResponse.json({ blocks, courts });
+  const exceptions = (exceptionRows ?? []).map((row) => {
+    const rb = Array.isArray(row.recurring_blocks)
+      ? row.recurring_blocks[0]
+      : row.recurring_blocks;
+    const courtsRel = rb?.courts;
+    const courtName =
+      (Array.isArray(courtsRel)
+        ? (courtsRel[0] as { name?: string })?.name
+        : (courtsRel as { name?: string } | null)?.name) ?? 'Pista';
+    const startTime =
+      typeof rb?.start_time === 'string'
+        ? rb.start_time.slice(0, 5)
+        : String(rb?.start_time ?? '').slice(0, 5);
+
+    return {
+      id: row.id,
+      recurring_block_id: row.recurring_block_id,
+      exception_date: String(row.exception_date).slice(0, 10),
+      court_name: courtName,
+      day_of_week: rb?.day_of_week ?? 0,
+      start_time: startTime,
+      reason: rb?.reason ?? null,
+    };
+  });
+
+  return NextResponse.json({ blocks, courts, exceptions });
 }
 
 /** POST — Crear bloqueo permanente */

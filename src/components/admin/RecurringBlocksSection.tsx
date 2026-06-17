@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { AdminRestoreRecurringBlockButton } from '@/components/ui/admin-restore-recurring-block-button';
 
 const DAY_NAMES = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 const SLOT_OPTIONS = ['09:30', '11:00', '12:30', '16:30', '18:00', '19:30', '21:00'];
@@ -17,9 +18,29 @@ type Block = {
 
 type Court = { id: string; name: string };
 
+type ReleasedDay = {
+  id: string;
+  recurring_block_id: string;
+  exception_date: string;
+  court_name: string;
+  day_of_week: number;
+  start_time: string;
+  reason: string | null;
+};
+
+function formatExceptionDate(dateStr: string): string {
+  return new Date(dateStr + 'T12:00:00').toLocaleDateString('es-ES', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+}
+
 export function RecurringBlocksSection() {
   const router = useRouter();
   const [blocks, setBlocks] = useState<Block[]>([]);
+  const [releasedDays, setReleasedDays] = useState<ReleasedDay[]>([]);
   const [courts, setCourts] = useState<Court[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -41,14 +62,17 @@ export function RecurringBlocksSection() {
       const res = await fetch('/api/admin/recurring-blocks');
       if (!res.ok) {
         setBlocks([]);
+        setReleasedDays([]);
         setCourts([]);
         return;
       }
       const data = await res.json();
       setBlocks(data.blocks ?? []);
+      setReleasedDays(data.exceptions ?? []);
       setCourts(data.courts ?? []);
     } catch {
       setBlocks([]);
+      setReleasedDays([]);
       setCourts([]);
     } finally {
       setLoading(false);
@@ -209,6 +233,53 @@ export function RecurringBlocksSection() {
                         {deletingId === b.id ? 'Eliminando…' : 'Eliminar'}
                       </button>
                     </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="mt-6 overflow-x-auto">
+        <h3 className="admin-stat-label mb-2">Días liberados (próximos)</h3>
+        <p className="mb-4 text-[13px] text-[#6b6b6b]">
+          Franjas que se liberaron solo en una fecha concreta. Puedes restaurar el bloqueo si fue un error o ya no hace falta dejar la pista disponible.
+        </p>
+        <table className="admin-table w-full min-w-[400px] text-left text-sm">
+          <thead>
+            <tr>
+              <th>Pista</th>
+              <th>Fecha liberada</th>
+              <th>Hora</th>
+              <th>Motivo del bloqueo</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {releasedDays.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="py-6 text-center text-[#6b6b6b]">
+                  No hay días liberados próximamente.
+                </td>
+              </tr>
+            ) : (
+              releasedDays.map((day) => (
+                <tr key={day.id} className="border-b border-[#e8e8e4]">
+                  <td className="font-medium text-[#1a1a1a]">{day.court_name}</td>
+                  <td className="capitalize text-[#1a1a1a]">{formatExceptionDate(day.exception_date)}</td>
+                  <td>{day.start_time}</td>
+                  <td className="text-[#6b6b6b]">{day.reason ?? '—'}</td>
+                  <td>
+                    <AdminRestoreRecurringBlockButton
+                      recurringBlockId={day.recurring_block_id}
+                      exceptionDate={day.exception_date}
+                      courtName={day.court_name}
+                      startTime={day.start_time}
+                      onRestored={() => {
+                        load();
+                      }}
+                    />
                   </td>
                 </tr>
               ))
