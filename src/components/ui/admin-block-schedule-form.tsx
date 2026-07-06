@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { toMadridDateString } from '@/lib/booking-lead-time';
 
 // Horario club: mañana 10-11:30, 11:30-13:00; tarde 16:30-18, 18-19:30, 19:30-21, 21-22:30
 const SLOT_OPTIONS: { start: string; end: string; label: string }[] = [
@@ -66,7 +67,7 @@ export function AdminBlockScheduleForm({ courts }: Props) {
     }
   };
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = toMadridDateString();
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-wrap items-end gap-3 rounded-xl border border-stone-200 bg-white p-4">

@@ -9,6 +9,8 @@ import { PanelPageSkeleton } from '@/components/ui/panel-page-skeleton';
 import { BonoBadge } from '@/components/panel/BonoBadge';
 import { usePanelUser } from '@/contexts/panel-user-context';
 import { getBrowserSupabaseClient } from '@/lib/supabase/client';
+import { toMadridDateString } from '@/lib/booking-lead-time';
+import { BOOKING_TEMP_PAY_AT_CLUB_ONLY, TPV_UNAVAILABLE_DEBT_MESSAGE } from '@/lib/booking-payment-mode';
 
 type Court = { id: string; name: string };
 
@@ -31,7 +33,7 @@ type TxRow = {
   description: string | null;
 };
 
-const today = () => new Date().toISOString().slice(0, 10);
+const today = () => toMadridDateString();
 
 function formatDateShort(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
@@ -86,7 +88,7 @@ export function PanelInicioClient() {
     gastoTotal: number;
   } | null>(null);
 
-  const isBlocked = hasDebt || balance < 0;
+  const isBlocked = BOOKING_TEMP_PAY_AT_CLUB_ONLY ? hasDebt : hasDebt || balance < 0;
   const displayDebtAmount = hasDebt ? debtAmount : balance < 0 ? Math.abs(balance) : 0;
   const upcoming = (bookings ?? [])
     .filter(
@@ -206,14 +208,18 @@ export function PanelInicioClient() {
             <svg className="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden>
               <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.168 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 6a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 6zm0 9a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
             </svg>
-            Tienes una deuda pendiente de {displayDebtAmount.toFixed(2).replace('.', ',')} €. Recarga tu monedero para poder reservar.
+            {BOOKING_TEMP_PAY_AT_CLUB_ONLY
+              ? TPV_UNAVAILABLE_DEBT_MESSAGE
+              : `Tienes una deuda pendiente de ${displayDebtAmount.toFixed(2).replace('.', ',')} €. Recarga tu monedero para poder reservar.`}
           </div>
-          <Link
-            href="/panel/monedero"
-            className="shrink-0 rounded-lg bg-[var(--panel-red)] px-4 py-2 text-[13px] font-semibold text-white transition hover:bg-red-700"
-          >
-            Recargar ahora
-          </Link>
+          {!BOOKING_TEMP_PAY_AT_CLUB_ONLY && (
+            <Link
+              href="/panel/monedero"
+              className="shrink-0 rounded-lg bg-[var(--panel-red)] px-4 py-2 text-[13px] font-semibold text-white transition hover:bg-red-700"
+            >
+              Recargar ahora
+            </Link>
+          )}
         </div>
       )}
 
@@ -227,12 +233,21 @@ export function PanelInicioClient() {
           <p className="mb-3.5 font-bold tracking-tight text-[var(--panel-text)]" style={{ fontFamily: 'var(--font-space-grotesk)', fontSize: '36px' }}>
             {balance < 0 ? '-' : ''}{Math.abs(Number(balance)).toFixed(2).replace('.', ',')} <span className="text-[22px] font-medium text-[var(--panel-text-secondary)]">€</span>
           </p>
-          <Link
-            href="/panel/monedero"
-            className="block w-full rounded-[10px] bg-[var(--panel-accent)] py-2.5 text-center text-sm font-semibold text-white transition hover:bg-[var(--panel-accent-hover)] hover:-translate-y-px"
-          >
-            Recargar monedero
-          </Link>
+          {BOOKING_TEMP_PAY_AT_CLUB_ONLY ? (
+            <Link
+              href="/panel/monedero"
+              className="block w-full rounded-[10px] border border-[var(--panel-border)] bg-white py-2.5 text-center text-sm font-semibold text-[var(--panel-text)] transition hover:bg-[var(--panel-bg)]"
+            >
+              Ver monedero
+            </Link>
+          ) : (
+            <Link
+              href="/panel/monedero"
+              className="block w-full rounded-[10px] bg-[var(--panel-accent)] py-2.5 text-center text-sm font-semibold text-white transition hover:bg-[var(--panel-accent-hover)] hover:-translate-y-px"
+            >
+              Recargar monedero
+            </Link>
+          )}
         </div>
 
         <div className={`border-l-4 border-[var(--panel-green)] ${cardClass}`}>
@@ -410,9 +425,15 @@ export function PanelInicioClient() {
               {balance < 0 ? '-' : ''}{Math.abs(Number(balance)).toFixed(2).replace('.', ',')} <span className="text-xl font-medium text-[var(--panel-text-secondary)]">€</span>
             </p>
           </div>
-          <Link href="/panel/monedero" className="rounded-[12px] bg-[var(--panel-accent)] px-5 py-3 text-sm font-bold text-white">
-            Recargar
-          </Link>
+          {BOOKING_TEMP_PAY_AT_CLUB_ONLY ? (
+            <Link href="/panel/monedero" className="rounded-[12px] border border-[var(--panel-border)] bg-white px-5 py-3 text-sm font-bold text-[var(--panel-text)]">
+              Ver monedero
+            </Link>
+          ) : (
+            <Link href="/panel/monedero" className="rounded-[12px] bg-[var(--panel-accent)] px-5 py-3 text-sm font-bold text-white">
+              Recargar
+            </Link>
+          )}
         </div>
 
         {nextBooking && (

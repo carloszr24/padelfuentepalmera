@@ -8,6 +8,7 @@ import { NextResponse } from 'next/server';
 import { createServerSupabaseClient, createSupabaseServiceClient } from '@/lib/supabase/server';
 import { buildPaymentParams, isCecaConfigured } from '@/lib/cecabank';
 import { checkRateLimit } from '@/lib/rate-limit';
+import { BOOKING_TEMP_PAY_AT_CLUB_ONLY, TPV_UNAVAILABLE_MESSAGE } from '@/lib/booking-payment-mode';
 
 const MIN_AMOUNT = 1;
 const MAX_AMOUNT = 500;
@@ -67,6 +68,10 @@ export async function POST(request: Request) {
 
   if (!user) {
     return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
+  }
+
+  if (BOOKING_TEMP_PAY_AT_CLUB_ONLY) {
+    return NextResponse.json({ error: TPV_UNAVAILABLE_MESSAGE }, { status: 503 });
   }
 
   if (!isCecaConfigured()) {

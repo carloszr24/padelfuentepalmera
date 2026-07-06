@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import { toMadridDateString } from '@/lib/booking-lead-time';
 
 function slotEnd(start: string): string {
   const [h, m] = start.split(':').map(Number);
@@ -16,13 +17,23 @@ function slotEnd(start: string): string {
 
 function buildDateStrip(count: number): { date: string; label: string }[] {
   const out: { date: string; label: string }[] = [];
-  const today = new Date();
-  const dayNames = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+  const now = new Date();
+  const dayNames = ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB'];
   for (let i = 0; i < count; i++) {
-    const d = new Date(today);
-    d.setDate(today.getDate() + i);
-    const dateStr = d.toISOString().slice(0, 10);
-    out.push({ date: dateStr, label: `${dayNames[d.getDay()]} ${d.getDate()}` });
+    const d = new Date(now.getTime() + i * 24 * 60 * 60 * 1000);
+    const dateStr = toMadridDateString(d);
+    const fmt = new Intl.DateTimeFormat('es-ES', {
+      timeZone: 'Europe/Madrid',
+      weekday: 'short',
+      day: 'numeric',
+    });
+    const parts = fmt.formatToParts(d);
+    const dayShort =
+      parts.find((p) => p.type === 'weekday')?.value?.toUpperCase().slice(0, 3) ??
+      dayNames[d.getDay()];
+    const num = parts.find((p) => p.type === 'day')?.value ?? String(d.getDate());
+    const label = i === 0 ? `Hoy ${num}` : `${dayShort} ${num}`;
+    out.push({ date: dateStr, label });
   }
   return out;
 }
@@ -46,7 +57,7 @@ export function AdminCreateBookingModal({
   const [step, setStep] = useState<'choose' | 'slot' | 'done'>('choose');
   const [userId, setUserId] = useState('');
   const [courtId, setCourtId] = useState('');
-  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
+  const [date, setDate] = useState(() => toMadridDateString());
   const [slots, setSlots] = useState<string[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [clubClosed, setClubClosed] = useState(false);
@@ -64,7 +75,7 @@ export function AdminCreateBookingModal({
       setStep('choose');
       setUserId('');
       setCourtId('');
-      setDate(new Date().toISOString().slice(0, 10));
+      setDate(toMadridDateString());
       setSlots([]);
       setClubClosed(false);
       setSelectedSlot('');
@@ -177,7 +188,7 @@ export function AdminCreateBookingModal({
 
         {step === 'slot' && (
           <div className="space-y-4">
-            <p className="text-sm font-medium text-stone-700">{courtName} · {new Date(date).toLocaleDateString('es-ES', { weekday: 'short', day: '2-digit', month: 'short' })} · {userName}</p>
+            <p className="text-sm font-medium text-stone-700">{courtName} · {new Date(date + 'T12:00:00').toLocaleDateString('es-ES', { timeZone: 'Europe/Madrid', weekday: 'short', day: '2-digit', month: 'short' })} · {userName}</p>
             {loadingSlots ? (
               <p className="text-sm font-medium text-stone-600">Cargando horarios...</p>
             ) : clubClosed ? (

@@ -3,7 +3,8 @@
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { AdminMarkRemainingPaidButton } from '@/components/ui/admin-mark-remaining-paid-button';
-import { AdminMarkDepositPaidButton } from '@/components/ui/admin-mark-deposit-paid-button';
+import { AdminDepositActions } from '@/components/ui/admin-deposit-actions';
+import { getExpectedDepositAmount } from '@/lib/booking-deposit';
 import { AdminCancelBookingButton } from '@/components/ui/admin-cancel-booking-button';
 import { AdminNoshowButton } from '@/components/ui/admin-noshow-button';
 import { AdminReleaseRecurringBlockButton } from '@/components/ui/admin-release-recurring-block-button';
@@ -16,13 +17,19 @@ export type BookingRow = {
   end_time: string;
   status: string;
   deposit_paid: boolean;
+  deposit_amount?: number | null;
   pagado_con_bono: boolean;
   payment_method?: string | null;
   remaining_paid_at?: string | null;
   is_member?: boolean;
+  wallet_balance?: number;
+  bono_restantes?: number;
   recurring_block_id?: string | null;
   is_recurring_virtual?: boolean;
-  profiles: { full_name: string | null } | { full_name: string | null }[] | null;
+  profiles:
+    | { full_name: string | null; wallet_balance?: number | null }
+    | { full_name: string | null; wallet_balance?: number | null }[]
+    | null;
   courts: { name: string } | { name: string }[] | null;
 };
 
@@ -59,6 +66,68 @@ function formatTimeRange(start: string, end: string): string {
 function getCourtName(b: BookingRow): string {
   const c = b.courts;
   return Array.isArray(c) ? c[0]?.name ?? 'Pista' : (c as { name?: string } | null)?.name ?? 'Pista';
+}
+
+function getProfileWalletBalance(b: BookingRow): number {
+  if (typeof b.wallet_balance === 'number') return b.wallet_balance;
+  const p = b.profiles;
+  const profile = Array.isArray(p) ? p[0] : p;
+  return Number(profile?.wallet_balance ?? 0);
+}
+
+function getDepositAmount(b: BookingRow): number {
+  if (typeof b.deposit_amount === 'number' && b.deposit_amount > 0) {
+    return b.deposit_amount;
+  }
+  return getExpectedDepositAmount(!!b.is_member);
+}
+
+function PaymentStatusBadge({ b }: { b: BookingRow }) {
+  if (b.status === 'blocked') {
+    return (
+      <span
+        className={`inline-flex w-fit rounded-full px-3 py-1.5 text-xs font-bold ${
+          b.deposit_paid ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+        }`}
+      >
+        {b.deposit_paid ? 'Depósito pagado' : 'Depósito pendiente'}
+      </span>
+    );
+  }
+
+  if (b.pagado_con_bono) {
+    return (
+      <span className="inline-flex w-fit rounded-full bg-violet-100 px-3 py-1.5 text-xs font-bold text-violet-800">
+        Bono socio
+      </span>
+    );
+  }
+
+  if (b.deposit_paid) {
+    const label =
+      b.payment_method === 'wallet'
+        ? 'Depósito pagado · Monedero'
+        : 'Depósito pagado · Efectivo';
+    return (
+      <span className="inline-flex w-fit rounded-full bg-emerald-100 px-3 py-1.5 text-xs font-bold text-emerald-800">
+        {label}
+      </span>
+    );
+  }
+
+  if (b.payment_method === 'pay_at_club') {
+    return (
+      <span className="inline-flex w-fit rounded-full bg-sky-100 px-3 py-1.5 text-xs font-bold text-sky-800">
+        Pago en club · Señal pendiente
+      </span>
+    );
+  }
+
+  return (
+    <span className="inline-flex w-fit rounded-full bg-amber-100 px-3 py-1.5 text-xs font-bold text-amber-800">
+      Depósito pendiente
+    </span>
+  );
 }
 
 function getProfileName(b: BookingRow): string {
@@ -300,59 +369,43 @@ export function AdminReservasContent({ bookings, desde, hasta }: AdminReservasCo
                             {formatTimeRange(b.start_time, b.end_time)}
                           </td>
                           <td className="px-4 py-3 align-middle text-center">
-                            <div className="flex flex-col gap-1 items-center">
-                              <span
-                                className={`inline-flex w-fit rounded-full px-3 py-1.5 text-xs font-bold ${
-                                  b.status === 'confirmed'
-                                    ? 'bg-emerald-100 text-emerald-700'
-                                    : b.status === 'completed'
-                                      ? 'bg-sky-100 text-sky-700'
-                                      : b.status === 'no_show'
-                                        ? 'bg-amber-100 text-amber-700'
-                                        : b.status === 'blocked'
-                                          ? 'bg-stone-200 text-stone-800'
-                                          : 'bg-red-100 text-red-700'
-                                }`}
-                              >
-                                {b.status === 'confirmed'
-                                  ? 'Confirmada'
+                            <span
+                              className={`inline-flex w-fit rounded-full px-3 py-1.5 text-xs font-bold ${
+                                b.status === 'confirmed'
+                                  ? 'bg-emerald-100 text-emerald-700'
                                   : b.status === 'completed'
-                                    ? 'Completada'
+                                    ? 'bg-sky-100 text-sky-700'
                                     : b.status === 'no_show'
-                                      ? 'No-show'
+                                      ? 'bg-amber-100 text-amber-700'
                                       : b.status === 'blocked'
-                                        ? 'Bloqueo'
-                                        : 'Cancelada'}
-                              </span>
-                              {b.status === 'blocked' ? (
-                                <span className="text-[11px] leading-none text-stone-500">
-                                  {b.deposit_paid ? 'Bloqueo de pista (depósito pagado)' : 'Bloqueo de pista (depósito pendiente)'}
-                                </span>
-                              ) : b.pagado_con_bono ? (
-                                <span className="inline-flex w-fit rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
-                                  🎾 Bono
-                                </span>
-                              ) : b.payment_method === 'pay_at_club' ? (
-                                <span className="text-[11px] font-medium leading-none text-blue-600">
-                                  Pago en el club
-                                </span>
-                              ) : b.deposit_paid ? (
-                                <span className="text-[11px] font-medium leading-none text-emerald-600">
-                                  Depósito pagado
-                                </span>
-                              ) : (
-                                <span className="text-[11px] font-medium leading-none text-amber-700">
-                                  Depósito pendiente
-                                </span>
-                              )}
-                            </div>
+                                        ? 'bg-stone-200 text-stone-800'
+                                        : 'bg-red-100 text-red-700'
+                              }`}
+                            >
+                              {b.status === 'confirmed'
+                                ? 'Confirmada'
+                                : b.status === 'completed'
+                                  ? 'Completada'
+                                  : b.status === 'no_show'
+                                    ? 'No-show'
+                                    : b.status === 'blocked'
+                                      ? 'Bloqueo'
+                                      : 'Cancelada'}
+                            </span>
                           </td>
                           <td className="px-4 py-3 align-middle">
                             <div className="flex flex-col gap-2 items-start">
-                              {(b.status === 'confirmed' || (b.status === 'blocked' && !b.is_recurring_virtual)) && (
-                                <AdminMarkDepositPaidButton
+                              <PaymentStatusBadge b={b} />
+                              {(b.status === 'confirmed' || (b.status === 'blocked' && !b.is_recurring_virtual)) &&
+                                !b.deposit_paid &&
+                                !b.pagado_con_bono && (
+                                <AdminDepositActions
                                   bookingId={b.id}
-                                  alreadyPaid={!!b.deposit_paid}
+                                  walletBalance={getProfileWalletBalance(b)}
+                                  depositAmount={getDepositAmount(b)}
+                                  userId={b.user_id}
+                                  bonoRestantes={b.bono_restantes ?? 0}
+                                  isMember={!!b.is_member}
                                 />
                               )}
                               {b.status === 'confirmed' && (

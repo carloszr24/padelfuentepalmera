@@ -7,6 +7,8 @@ import { CancelBookingButton } from '@/components/ui/cancel-booking-button';
 import { PanelReservasSkeleton } from '@/components/ui/panel-page-skeleton';
 import { usePanelUser } from '@/contexts/panel-user-context';
 import { getBrowserSupabaseClient } from '@/lib/supabase/client';
+import { toMadridDateString } from '@/lib/booking-lead-time';
+import { BOOKING_TEMP_PAY_AT_CLUB_ONLY } from '@/lib/booking-payment-mode';
 
 type Court = { id: string; name: string };
 
@@ -22,7 +24,7 @@ type BookingRow = {
   courts: { name: string } | { name: string }[] | null;
 };
 
-const today = () => new Date().toISOString().slice(0, 10);
+const today = () => toMadridDateString();
 
 function formatDateHeader(dateStr: string) {
   return new Date(dateStr).toLocaleDateString('es-ES', {
@@ -113,7 +115,7 @@ export function PanelReservasClient({ initialCourts = [], initialBookings }: Pan
   const [bookings, setBookings] = useState<BookingRow[] | null>(initialBookings ?? null);
   const [tab, setTab] = useState<TabKey>('proximas');
 
-  const isBlocked = hasDebt || balance < 0;
+  const isBlocked = BOOKING_TEMP_PAY_AT_CLUB_ONLY ? hasDebt : hasDebt || balance < 0;
 
   useEffect(() => {
     if (!user?.id || initialBookings !== undefined) return;
@@ -174,7 +176,9 @@ export function PanelReservasClient({ initialCourts = [], initialBookings }: Pan
             Mis reservas
           </h1>
           <p className="mt-0.5 text-[13px] text-[var(--panel-text-secondary)]">
-            El depósito (4,50 €) se descuenta del monedero.
+            {BOOKING_TEMP_PAY_AT_CLUB_ONLY
+              ? 'Reserva sin señal online: el pago íntegro se realiza en el club en efectivo.'
+              : 'El depósito (4,50 €) se descuenta del monedero.'}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -194,11 +198,15 @@ export function PanelReservasClient({ initialCourts = [], initialBookings }: Pan
       {isBlocked && (
         <div className="rounded-[var(--panel-radius)] border border-[#fecaca] p-4" style={{ background: 'var(--panel-red-bg)' }}>
           <p className="text-sm font-medium text-[var(--panel-red)]">
-            Tienes una deuda pendiente. Recarga tu monedero para poder reservar.
+            {BOOKING_TEMP_PAY_AT_CLUB_ONLY
+              ? 'Tienes una deuda pendiente con el club. Acércate al club para regularizarla antes de reservar.'
+              : 'Tienes una deuda pendiente. Recarga tu monedero para poder reservar.'}
           </p>
-          <Link href="/panel/monedero" className="mt-2 inline-block text-sm font-semibold text-[var(--panel-accent)] hover:underline">
-            Ir al monedero →
-          </Link>
+          {!BOOKING_TEMP_PAY_AT_CLUB_ONLY && (
+            <Link href="/panel/monedero" className="mt-2 inline-block text-sm font-semibold text-[var(--panel-accent)] hover:underline">
+              Ir al monedero →
+            </Link>
+          )}
         </div>
       )}
 

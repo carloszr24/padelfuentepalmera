@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import { AlertTriangle } from 'lucide-react';
 import { usePanelUserOptional } from '@/contexts/panel-user-context';
 import { SocioUpsell } from '@/components/ui/socio-upsell';
+import { toMadridDateString } from '@/lib/booking-lead-time';
+import { BOOKING_TEMP_PAY_AT_CLUB_ONLY } from '@/lib/booking-payment-mode';
+import { PayAtClubDisclaimer } from '@/components/ui/pay-at-club-disclaimer';
 
 // Horario club: última reserva 21:00 (sesión hasta 22:30, cierre)
 const SLOT_STARTS = ['10:00', '11:30', '16:30', '18:00', '19:30', '21:00'];
@@ -37,7 +40,7 @@ function buildDateStrip(count: number): { date: string; label: string; dayShort:
   const dayNames = ['DOM', 'LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB'];
   for (let i = 0; i < count; i++) {
     const d = new Date(now.getTime() + i * 24 * 60 * 60 * 1000);
-    const dateStr = d.toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' });
+    const dateStr = toMadridDateString(d);
     const fmt = new Intl.DateTimeFormat('es-ES', { timeZone: 'Europe/Madrid', weekday: 'short', day: 'numeric' });
     const parts = fmt.formatToParts(d);
     const dayShort = parts.find((p) => p.type === 'weekday')?.value?.toUpperCase().slice(0, 3) ?? dayNames[d.getDay()];
@@ -95,7 +98,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
     if (!open) {
       setStep('choose');
       setCourtId('');
-      setDate(new Date().toISOString().slice(0, 10));
+      setDate(toMadridDateString());
       setAvailableSlots([]);
       setClubClosed(false);
       setClubClosedLabel(null);
@@ -108,7 +111,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
   }, [open]);
 
   useEffect(() => {
-    if (!open || step !== 'confirm' || !isMember) return;
+    if (!open || step !== 'confirm' || !isMember || BOOKING_TEMP_PAY_AT_CLUB_ONLY) return;
     let cancelled = false;
     setBonoLoading(true);
     fetch('/api/panel/bono/availability', { cache: 'no-store' })
@@ -176,7 +179,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
           bookingDate: date,
           startTime: selectedSlot + ':00',
           endTime,
-          metodo_pago: isMember ? metodoPago : 'monedero',
+          ...(BOOKING_TEMP_PAY_AT_CLUB_ONLY ? {} : { metodo_pago: isMember ? metodoPago : 'monedero' }),
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -197,6 +200,58 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
       setLoading(false);
     }
   };
+
+  const confirmSummary = (
+    <div className="rounded-xl border border-stone-200 bg-stone-50 p-6">
+      <p className="text-sm font-bold uppercase tracking-wider text-stone-500">Resumen</p>
+      <p className="mt-2 text-lg font-bold text-stone-900">{courtName}</p>
+      <p className="mt-1 text-base font-medium text-stone-700">
+        {date &&
+          new Date(date + 'T12:00').toLocaleDateString('es-ES', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+          })}
+        {' · '}
+        {selectedSlot} – {slotEnd(selectedSlot).slice(0, 5)}
+      </p>
+      {BOOKING_TEMP_PAY_AT_CLUB_ONLY ? (
+        <p className="mt-3 text-base font-medium text-stone-600">
+          Pago: <span className="font-bold text-stone-900">en el club, en efectivo</span>
+          <span className="ml-2 text-sm text-stone-500">(sin señal online)</span>
+        </p>
+      ) : isMember ? (
+        <p className="mt-3 text-base font-medium text-stone-600">
+          Señal: <span className="font-bold text-stone-900">4,50 €</span>
+          <span className="ml-2 text-sm text-stone-500">(resto se abona en el club)</span>
+        </p>
+      ) : (
+        <p className="mt-3 text-base font-medium text-stone-600">
+          Señal: <span className="font-bold text-stone-900">5,00 €</span>
+          <span className="ml-2 text-sm text-stone-500">(resto se abona en el club)</span>
+        </p>
+      )}
+    </div>
+  );
+
+  const confirmActions = (
+    <div className="flex min-h-[44px] flex-col gap-2 border-t border-stone-200 bg-white pt-4 sm:flex-row sm:gap-3">
+      <button
+        type="button"
+        onClick={() => setStep('slots')}
+        className="min-h-[44px] w-full rounded-xl border border-stone-300 px-5 py-2.5 text-base font-bold text-stone-700 hover:bg-stone-100 sm:w-auto"
+      >
+        Atrás
+      </button>
+      <button
+        type="submit"
+        disabled={loading}
+        className="min-h-[44px] w-full rounded-xl bg-[#1d4ed8] px-6 py-3 text-base font-bold text-white shadow-lg shadow-[#1d4ed8]/30 hover:bg-[#2563eb] disabled:opacity-60 sm:ml-auto sm:w-auto"
+      >
+        {loading ? 'Creando...' : 'Confirmar reserva'}
+      </button>
+    </div>
+  );
 
   return (
     <>
@@ -229,7 +284,9 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
                 Reserva tu <span style={{ color: ACCENT }}>pista</span>
               </h2>
               <p className="mt-2 text-base font-medium text-stone-600">
-                Elige tu horario, paga la señal y prepárate para jugar al máximo nivel.
+                {BOOKING_TEMP_PAY_AT_CLUB_ONLY
+                  ? 'Elige tu horario y confirma la reserva. El pago íntegro se realiza en el club.'
+                  : 'Elige tu horario, paga la señal y prepárate para jugar al máximo nivel.'}
               </p>
               <button
                 type="button"
@@ -369,7 +426,16 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
                 </div>
               )}
 
-              {step === 'confirm' && !isMember && (
+              {step === 'confirm' && BOOKING_TEMP_PAY_AT_CLUB_ONLY && (
+                <form onSubmit={handleConfirm} className="space-y-6">
+                  {confirmSummary}
+                  <PayAtClubDisclaimer />
+                  {error && <p className="text-base font-medium text-red-600">{error}</p>}
+                  {confirmActions}
+                </form>
+              )}
+
+              {step === 'confirm' && !BOOKING_TEMP_PAY_AT_CLUB_ONLY && !isMember && (
                 <form onSubmit={handleConfirm} className="space-y-6">
                   <div className="rounded-xl border border-stone-200 bg-stone-50 p-6">
                     <p className="text-sm font-bold uppercase tracking-wider text-stone-500">Resumen</p>
@@ -429,7 +495,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
                 </form>
               )}
 
-              {step === 'confirm' && isMember && (
+              {step === 'confirm' && !BOOKING_TEMP_PAY_AT_CLUB_ONLY && isMember && (
                 <form onSubmit={handleConfirm} className="flex flex-col h-full">
                   <div className="flex-1 overflow-y-auto space-y-6 pb-4">
                     <div className="rounded-xl border border-stone-200 bg-stone-50 p-6">

@@ -8,6 +8,7 @@ import { createServerSupabaseClient, createSupabaseServiceClient } from '@/lib/s
 import { buildPaymentParams, isCecaConfigured } from '@/lib/cecabank';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { MEMBERSHIP_OPEN } from '@/lib/features';
+import { BOOKING_TEMP_PAY_AT_CLUB_ONLY, TPV_UNAVAILABLE_MESSAGE } from '@/lib/booking-payment-mode';
 
 const MEMBERSHIP_FEE_EUR = 15;
 
@@ -38,6 +39,10 @@ export async function POST(request: Request) {
       { error: 'Las inscripciones de nuevos socios están cerradas.' },
       { status: 403 }
     );
+  }
+
+  if (BOOKING_TEMP_PAY_AT_CLUB_ONLY) {
+    return NextResponse.json({ error: TPV_UNAVAILABLE_MESSAGE }, { status: 503 });
   }
 
   const ip =

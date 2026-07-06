@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import { createServerSupabaseClient, createSupabaseServiceClient } from '@/lib/supabase/server';
 import { sendClubNotification } from '@/lib/sendgrid';
 import { getOpeningForDate } from '@/lib/club-schedule';
-import { isSameDayMadridTooSoon, minutesFromClock } from '@/lib/booking-lead-time';
+import { isSameDayMadridTooSoon, minutesFromClock, toMadridDateString } from '@/lib/booking-lead-time';
+import { BOOKING_TEMP_PAY_AT_CLUB_ONLY } from '@/lib/booking-payment-mode';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { isValidUUID } from '@/lib/utils';
 
@@ -73,14 +74,20 @@ export async function POST(request: Request) {
     fullNameNorm === 'administrador fuente palmera';
   const hasDebt = (profileRes.data as { has_debt?: boolean } | null)?.has_debt === true;
   const balance = Number((profileRes.data as { wallet_balance?: number } | null)?.wallet_balance ?? 0);
-  if (!isAdmin && (hasDebt || balance < 0)) {
+  if (!isAdmin && !BOOKING_TEMP_PAY_AT_CLUB_ONLY && (hasDebt || balance < 0)) {
     return NextResponse.json(
       { message: 'Tienes una deuda pendiente o saldo insuficiente. Recarga tu monedero para poder reservar.' },
       { status: 400 }
     );
   }
+  if (!isAdmin && BOOKING_TEMP_PAY_AT_CLUB_ONLY && hasDebt) {
+    return NextResponse.json(
+      { message: 'Tienes una deuda pendiente con el club. Acércate al club para regularizarla antes de reservar.' },
+      { status: 400 }
+    );
+  }
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = toMadridDateString();
   const membership = membershipRes.data;
   const isActiveMember =
     membership?.is_paid === true &&
@@ -141,6 +148,49 @@ export async function POST(request: Request) {
       { message: 'La franja horaria no está dentro del horario de apertura.' },
       { status: 400 }
     );
+  }
+
+  if (BOOKING_TEMP_PAY_AT_CLUB_ONLY) {
+    const { data: bookingId, error: freeError } = await serviceSupabase.rpc('booking_reserve_free', {
+      p_user_id: user.id,
+      p_court_id: courtId,
+      p_booking_date: bookingDate,
+      p_start_time: startTime,
+      p_end_time: endTime,
+    });
+
+    if (freeError) {
+      return NextResponse.json(
+        { message: freeError.message ?? 'Error al crear la reserva' },
+        { status: 400 }
+      );
+    }
+
+    void (async () => {
+      try {
+        const { data: courtData } = await serviceSupabase
+          .from('courts')
+          .select('name')
+          .eq('id', courtId)
+          .single();
+        const dateFormatted = new Date(`${bookingDate}T00:00:00`).toLocaleDateString('es-ES');
+        await sendClubNotification({
+          subject: `🎾 Nueva reserva — ${courtData?.name ?? 'Pista'} ${dateFormatted} ${String(startTime).slice(0, 5)}`,
+          html: `
+      <h2>Nueva reserva</h2>
+      <p><strong>Socio:</strong> ${profile?.full_name ?? user.email ?? 'Sin nombre'}</p>
+      <p><strong>Pista:</strong> ${courtData?.name ?? 'Pista'}</p>
+      <p><strong>Fecha:</strong> ${dateFormatted}</p>
+      <p><strong>Hora:</strong> ${String(startTime).slice(0, 5)} - ${String(endTime).slice(0, 5)}</p>
+      <p><strong>Pago:</strong> En el club (efectivo, sin señal online — TPV temporalmente no disponible)</p>
+    `,
+        });
+      } catch (e) {
+        console.error('SendGrid booking notification error (pay at club):', e);
+      }
+    })();
+
+    return NextResponse.json({ ok: true, metodo_pago: 'pay_at_club' });
   }
 
   if (metodoPago === 'bono') {

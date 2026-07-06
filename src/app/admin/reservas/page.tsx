@@ -5,6 +5,7 @@ import { AdminCreateBookingTrigger } from '@/components/ui/admin-create-booking-
 import { AdminReservasContent, type BookingRow } from '@/components/admin/AdminReservasContent';
 import { AdminCourtBlocksSection } from '@/components/admin/AdminCourtBlocksSection';
 import { RecurringBlocksSection } from '@/components/admin/RecurringBlocksSection';
+import { toMadridDateString } from '@/lib/booking-lead-time';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,7 +22,7 @@ async function getReservasData(desde: string, hasta: string) {
   let bookingsQuery = supabase
     .from('bookings')
     .select(
-      'id, user_id, booking_date, start_time, end_time, status, deposit_paid, payment_method, remaining_paid_at, pagado_con_bono, profiles!bookings_user_id_fkey(full_name), courts(name)'
+      'id, user_id, booking_date, start_time, end_time, status, deposit_paid, deposit_amount, payment_method, remaining_paid_at, pagado_con_bono, profiles!bookings_user_id_fkey(full_name, wallet_balance), courts(name)'
     )
     .order('booking_date', { ascending: false })
     .order('start_time', { ascending: false });
@@ -34,6 +35,7 @@ async function getReservasData(desde: string, hasta: string) {
     { data: recurringBlocks },
     { data: recurringExceptions },
     { data: members },
+    { data: bonos },
   ] = await Promise.all([
     bookingsQuery,
     supabase.from('courts').select('id, name').eq('is_active', true).order('name'),
@@ -45,6 +47,7 @@ async function getReservasData(desde: string, hasta: string) {
       .gte('exception_date', rangeStart)
       .lte('exception_date', rangeEnd),
     supabase.from('members').select('user_id, expiry_date').gte('expiry_date', new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' })),
+    supabase.from('bonos_socio').select('user_id, partidos_totales, partidos_usados'),
   ]);
 
   const activeMemberIds = new Set<string>(
@@ -53,10 +56,25 @@ async function getReservasData(desde: string, hasta: string) {
       .filter((id): id is string => typeof id === 'string' && id.length > 0)
   );
 
-  const bookingsList: BookingRow[] = ((bookings ?? []) as BookingRow[]).map((b) => ({
-    ...b,
-    is_member: !!(b.user_id && activeMemberIds.has(b.user_id)),
-  }));
+  const bonoRestantesByUser = new Map<string, number>();
+  for (const bono of bonos ?? []) {
+    if (!bono.user_id) continue;
+    const restantes = Math.max(
+      0,
+      Number(bono.partidos_totales ?? 0) - Number(bono.partidos_usados ?? 0)
+    );
+    bonoRestantesByUser.set(String(bono.user_id), restantes);
+  }
+
+  const bookingsList: BookingRow[] = ((bookings ?? []) as BookingRow[]).map((b) => {
+    const profile = Array.isArray(b.profiles) ? b.profiles[0] : b.profiles;
+    return {
+      ...b,
+      is_member: !!(b.user_id && activeMemberIds.has(b.user_id)),
+      wallet_balance: Number(profile?.wallet_balance ?? 0),
+      bono_restantes: b.user_id ? bonoRestantesByUser.get(String(b.user_id)) ?? 0 : 0,
+    };
+  });
 
   // Generar reservas técnicas virtuales a partir de bloqueos recurrentes en el rango [desde, hasta]
   const startDate = new Date(rangeStart + 'T12:00:00');
@@ -82,7 +100,7 @@ async function getReservasData(desde: string, hasta: string) {
       d <= endDate;
       d.setDate(d.getDate() + 1)
     ) {
-      const bookingDate = d.toISOString().slice(0, 10);
+      const bookingDate = toMadridDateString(d);
       const dayOfWeek = ((d.getDay() + 6) % 7) + 1; // ISO: lunes=1
 
       for (const block of rb as Array<{

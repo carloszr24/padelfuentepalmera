@@ -1,6 +1,13 @@
 /** Antelación mínima (minutos) entre "ahora" (Madrid) e inicio de la franja, mismo día. */
 export const MIN_BOOKING_LEAD_MINUTES = 25;
 
+const MADRID_TZ = 'Europe/Madrid';
+
+/** Fecha calendario `yyyy-mm-dd` en Europe/Madrid (evita desfases por UTC con toISOString). */
+export function toMadridDateString(date: Date = new Date()): string {
+  return date.toLocaleDateString('en-CA', { timeZone: MADRID_TZ });
+}
+
 export function minutesFromClock(hhmm: string): number {
   const [h, m] = hhmm.slice(0, 5).split(':').map(Number);
   return h * 60 + m;

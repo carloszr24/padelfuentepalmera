@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { MEMBERSHIP_OPEN } from '@/lib/features';
+import { BOOKING_TEMP_PAY_AT_CLUB_ONLY, TPV_UNAVAILABLE_MESSAGE } from '@/lib/booking-payment-mode';
+import { TpvUnavailableNotice } from '@/components/ui/tpv-unavailable-notice';
 
 const MEMBERSHIP_FEE = 15;
 
@@ -110,7 +112,11 @@ export function SocioUpsell({ showPayButton = false, ctaLabel, onCtaClick }: Soc
 
         {/* CTA */}
         <div className="mt-6">
-          {showPayButton ? (
+          {BOOKING_TEMP_PAY_AT_CLUB_ONLY ? (
+            <TpvUnavailableNotice
+              message={`${TPV_UNAVAILABLE_MESSAGE} Para hacerte socio, acércate al club.`}
+            />
+          ) : showPayButton ? (
             <button
               type="button"
               onClick={MEMBERSHIP_OPEN ? handlePay : undefined}

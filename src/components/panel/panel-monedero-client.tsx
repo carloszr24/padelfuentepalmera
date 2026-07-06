@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { PanelMonederoSkeleton } from '@/components/ui/panel-page-skeleton';
 import { WalletRechargeButton } from '@/components/ui/wallet-recharge-button';
 import { usePanelUser } from '@/contexts/panel-user-context';
+import { BOOKING_TEMP_PAY_AT_CLUB_ONLY } from '@/lib/booking-payment-mode';
 import { getBrowserSupabaseClient } from '@/lib/supabase/client';
 
 type TxRow = {
@@ -120,7 +121,9 @@ export function PanelMonederoClient({ initialTransactions }: PanelMonederoClient
             Monedero
           </h1>
           <p className="mt-0.5 text-[13px] text-[var(--panel-text-secondary)]">
-            Recarga mínima 10 €. Usa el saldo para pagar el depósito de tus reservas.
+            {BOOKING_TEMP_PAY_AT_CLUB_ONLY
+              ? 'Consulta tu saldo y el historial de movimientos.'
+              : 'Recarga mínima 10 €. Usa el saldo para pagar el depósito de tus reservas.'}
           </p>
         </div>
         <Link href="/panel" className="rounded-lg border border-[var(--panel-border)] bg-white px-4 py-2.5 text-sm font-semibold text-[var(--panel-text)] hover:bg-[var(--panel-bg)]" prefetch>
@@ -137,10 +140,14 @@ export function PanelMonederoClient({ initialTransactions }: PanelMonederoClient
           </p>
           {balance < 0 && (
             <p className="mt-1.5 text-sm font-medium text-amber-700">
-              Recarga para saldar la deuda y poder reservar de nuevo.
+              {BOOKING_TEMP_PAY_AT_CLUB_ONLY
+                ? 'Acércate al club para saldar la deuda y poder reservar de nuevo.'
+                : 'Recarga para saldar la deuda y poder reservar de nuevo.'}
             </p>
           )}
-          <p className="mt-1.5 text-[11px] font-medium text-[var(--panel-text-secondary)]">Recarga con tarjeta. Mínimo 10 €.</p>
+          {!BOOKING_TEMP_PAY_AT_CLUB_ONLY && (
+            <p className="mt-1.5 text-[11px] font-medium text-[var(--panel-text-secondary)]">Recarga con tarjeta. Mínimo 10 €.</p>
+          )}
           <div className="mt-4">
             <WalletRechargeButton />
           </div>
