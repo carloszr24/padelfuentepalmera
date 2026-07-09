@@ -201,36 +201,50 @@ export async function POST(request: Request) {
       );
     }
 
-    // Consumir bono de forma atómica (la función SQL hace FOR UPDATE internamente)
-    const bonoResult = await serviceSupabase.rpc('usar_bono', { p_user_id: user.id });
-    if (bonoResult.error) {
-      return NextResponse.json(
-        { message: bonoResult.error.message ?? 'Error al usar el bono.' },
-        { status: 400 }
-      );
-    }
-    if (bonoResult.data !== true) {
-      return NextResponse.json(
-        { message: 'Bono no disponible, elige otro método de pago' },
-        { status: 409 }
-      );
-    }
+    let insertResult = await serviceSupabase.rpc('booking_create_with_bono', {
+      p_user_id: user.id,
+      p_court_id: courtId,
+      p_booking_date: bookingDate,
+      p_start_time: startTime,
+      p_end_time: endTime,
+      p_created_by: user.id,
+    });
 
-    const insertResult = await serviceSupabase
-      .from('bookings')
-      .insert({
-        user_id: user.id,
-        court_id: courtId,
-        booking_date: bookingDate,
-        start_time: startTime,
-        end_time: endTime,
-        status: 'confirmed',
-        deposit_paid: true,
-        pagado_con_bono: true,
-        created_by: user.id,
-      })
-      .select('id')
-      .single();
+    // Fallback temporal mientras se aplica la función SQL nueva en Supabase.
+    if (
+      insertResult.error &&
+      (insertResult.error.message ?? '').toLowerCase().includes('could not find the function')
+    ) {
+      const bonoResult = await serviceSupabase.rpc('usar_bono', { p_user_id: user.id });
+      if (bonoResult.error) {
+        return NextResponse.json(
+          { message: bonoResult.error.message ?? 'Error al usar el bono.' },
+          { status: 400 }
+        );
+      }
+      if (bonoResult.data !== true) {
+        return NextResponse.json(
+          { message: 'Bono no disponible, elige otro método de pago' },
+          { status: 409 }
+        );
+      }
+
+      insertResult = await serviceSupabase
+        .from('bookings')
+        .insert({
+          user_id: user.id,
+          court_id: courtId,
+          booking_date: bookingDate,
+          start_time: startTime,
+          end_time: endTime,
+          status: 'confirmed',
+          deposit_paid: true,
+          pagado_con_bono: true,
+          created_by: user.id,
+        })
+        .select('id')
+        .single();
+    }
 
     if (insertResult.error) {
       const msg = insertResult.error.message ?? 'Error al crear la reserva con bono.';

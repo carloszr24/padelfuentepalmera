@@ -63,11 +63,18 @@ export async function POST(request: Request) {
     // 1. ¿Es un pago de membresía?
     const { data: memOp } = await supabase
       .from('membership_payments_pending')
-      .select('user_id')
+      .select('user_id, status')
       .eq('num_operacion', data.Num_operacion)
       .maybeSingle();
 
     if (memOp?.user_id) {
+      if (memOp.status === 'completed') {
+        return new NextResponse(OK_RESPONSE, {
+          status: 200,
+          headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+        });
+      }
+
       const { error: memberError } = await supabase.rpc('activate_membership', {
         p_user_id: memOp.user_id,
       });

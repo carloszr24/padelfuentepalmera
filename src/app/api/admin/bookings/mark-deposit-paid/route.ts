@@ -125,32 +125,44 @@ export async function POST(request: Request) {
       );
     }
 
-    const bonoResult = await service.rpc('usar_bono', { p_user_id: booking.user_id });
-    if (bonoResult.error) {
-      return NextResponse.json(
-        { message: bonoResult.error.message ?? 'Error al usar el bono' },
-        { status: 400 }
-      );
-    }
-    if (bonoResult.data !== true) {
-      return NextResponse.json(
-        { message: 'Bono no disponible' },
-        { status: 409 }
-      );
+    let bonoApplyResult = await service.rpc('admin_apply_booking_bono', {
+      p_booking_id: body.bookingId,
+      p_admin_id: user.id,
+      p_deposit: depositAmount,
+    });
+
+    // Fallback temporal mientras se aplica la función SQL nueva en Supabase.
+    if (
+      bonoApplyResult.error &&
+      (bonoApplyResult.error.message ?? '').toLowerCase().includes('could not find the function')
+    ) {
+      const bonoResult = await service.rpc('usar_bono', { p_user_id: booking.user_id });
+      if (bonoResult.error) {
+        return NextResponse.json(
+          { message: bonoResult.error.message ?? 'Error al usar el bono' },
+          { status: 400 }
+        );
+      }
+      if (bonoResult.data !== true) {
+        return NextResponse.json(
+          { message: 'Bono no disponible' },
+          { status: 409 }
+        );
+      }
+
+      bonoApplyResult = await service
+        .from('bookings')
+        .update({
+          deposit_paid: true,
+          pagado_con_bono: true,
+          deposit_amount: depositAmount,
+        })
+        .eq('id', body.bookingId);
     }
 
-    const { error: updateError } = await service
-      .from('bookings')
-      .update({
-        deposit_paid: true,
-        pagado_con_bono: true,
-        deposit_amount: depositAmount,
-      })
-      .eq('id', body.bookingId);
-
-    if (updateError) {
+    if (bonoApplyResult.error) {
       return NextResponse.json(
-        { message: updateError.message ?? 'Error al marcar reserva con bono' },
+        { message: bonoApplyResult.error.message ?? 'Error al marcar reserva con bono' },
         { status: 400 }
       );
     }
