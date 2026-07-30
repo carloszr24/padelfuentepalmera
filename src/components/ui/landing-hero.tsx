@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Calendar, ChevronDown, ChevronUp, Info, Instagram, Users } from 'lucide-react';
+import { Calendar, ChevronDown, ChevronUp, Info, Instagram } from 'lucide-react';
 
 const BRAND_BLUE = '#1d4ed8';
 const BRAND_BLUE_LIGHT = '#60a5fa';
@@ -10,7 +10,7 @@ type SlideCta = {
   label: string;
   href: string;
   external?: boolean;
-  icon?: 'calendar' | 'instagram' | 'users' | 'info';
+  icon?: 'calendar' | 'instagram' | 'info';
 };
 
 type HeroSlide = {
@@ -49,16 +49,6 @@ const SLIDES: HeroSlide[] = [
     },
     secondaryCta: { label: 'Más novedades', href: '#novedades', icon: 'info' },
   },
-  {
-    badge: 'Hazte socio',
-    headline: 'Únete a la',
-    accent: 'familia',
-    sub: 'Cuota anual de 15 €. Precios exclusivos en reservas, sorteos para socios y acceso a todos los eventos del club.',
-    image: '/unete-club-imagen.png',
-    imageLayout: 'vertical-right',
-    primaryCta: { label: 'Hazte socio', href: '/registro', icon: 'users' },
-    secondaryCta: { label: 'Saber más', href: '#que-te-ofrecemos', icon: 'info' },
-  },
 ];
 
 const AUTOPLAY_MS = 2800;
@@ -75,8 +65,6 @@ function CtaIcon({ icon }: { icon?: SlideCta['icon'] }) {
       return <Calendar className={className} aria-hidden />;
     case 'instagram':
       return <Instagram className={className} aria-hidden />;
-    case 'users':
-      return <Users className={className} aria-hidden />;
     case 'info':
     default:
       return <Info className={className} aria-hidden />;
@@ -96,15 +84,6 @@ export function LandingHero({ isLoggedIn = false }: LandingHeroProps) {
         primaryCta: {
           ...slide.primaryCta,
           href: isLoggedIn ? '/panel/reservas' : '/registro',
-        },
-      };
-    }
-    if (index === 2) {
-      return {
-        ...slide,
-        primaryCta: {
-          ...slide.primaryCta,
-          href: isLoggedIn ? '/panel/membresia' : '/registro',
         },
       };
     }
