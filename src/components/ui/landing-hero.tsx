@@ -40,7 +40,7 @@ const SLIDES: HeroSlide[] = [
     headline: 'Aprende con',
     accent: 'los mejores',
     sub: 'Clases para todos los niveles, desde iniciación hasta competición. Grupos reducidos e individuales con monitores del club.',
-    image: '/carrusel-clases.jpg',
+    image: '/carrusel-clases.png',
     primaryCta: {
       label: 'Más información',
       href: 'https://www.instagram.com/p/DWe81SzDBzZ/',
