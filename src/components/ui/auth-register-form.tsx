@@ -3,9 +3,10 @@
 import Link from 'next/link';
 import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
-import { getBrowserSupabaseClient } from '@/lib/supabase/client';
+import { useRouter } from 'next/navigation';
 
 export function AuthRegisterForm() {
+  const router = useRouter();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -15,12 +16,7 @@ export function AuthRegisterForm() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [registeredEmail, setRegisteredEmail] = useState<string | null>(null);
   const [alreadyHasAccount, setAlreadyHasAccount] = useState(false);
-
-  const [resendLoading, setResendLoading] = useState(false);
-  const [resendSent, setResendSent] = useState(false);
-  const [resendError, setResendError] = useState<string | null>(null);
 
   const PHONE_MAX_LENGTH = 9;
   const phoneDigitsOnly = phone.replace(/\D/g, '');
@@ -45,75 +41,54 @@ export function AuthRegisterForm() {
       return;
     }
 
+    const trimmedEmail = email.trim().toLowerCase();
+
     try {
       setLoading(true);
-      const supabase = getBrowserSupabaseClient();
-      const phoneToSend = phoneDigitsOnly.slice(0, PHONE_MAX_LENGTH) || undefined;
-
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: fullName,
-            phone: phoneToSend,
-          },
-        },
+      const registerRes = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: trimmedEmail,
+          password,
+          full_name: fullName.trim() || undefined,
+          phone: phoneDigitsOnly.slice(0, PHONE_MAX_LENGTH),
+        }),
       });
+      const registerData = (await registerRes.json().catch(() => ({}))) as { message?: string };
 
-      if (signUpError) {
-        const msg = (signUpError.message ?? '').toLowerCase();
-        const isLeakedPassword =
-          msg.includes('breach') ||
-          msg.includes('pwned') ||
-          msg.includes('compromised') ||
-          msg.includes('leaked') ||
-          msg.includes('data breach');
-        setError(
-          isLeakedPassword
-            ? 'Esta contraseña ha aparecido en una filtración de datos. Elige otra más segura (por ejemplo una frase larga o generada por un gestor de contraseñas).'
-            : signUpError.message
-        );
-        return;
-      }
-
-      // Si el usuario ya existía, Supabase no devuelve error pero identities viene vacío.
-      const identities = (signUpData?.user as { identities?: unknown[] } | undefined)?.identities;
-      if (identities?.length === 0) {
-        await supabase.auth.signOut();
+      if (registerRes.status === 409) {
         setAlreadyHasAccount(true);
         return;
       }
 
-      // Cerrar sesión para que no quede logueado hasta que verifique el email.
-      await supabase.auth.signOut();
-      setRegisteredEmail(email);
+      if (!registerRes.ok) {
+        setError(registerData.message ?? 'No se ha podido crear la cuenta.');
+        return;
+      }
+
+      const loginRes = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: trimmedEmail, password }),
+        credentials: 'include',
+      });
+      const loginData = (await loginRes.json().catch(() => ({}))) as { message?: string };
+
+      if (!loginRes.ok) {
+        setError(
+          loginData.message ??
+            'Cuenta creada, pero no se pudo iniciar sesión automáticamente. Entra en Iniciar sesión con tu email y contraseña.'
+        );
+        return;
+      }
+
+      router.push('/panel');
+      router.refresh();
     } catch {
       setError('No se ha podido completar el registro. Inténtalo de nuevo.');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleResend = async () => {
-    if (!registeredEmail) return;
-    setResendError(null);
-    try {
-      setResendLoading(true);
-      const supabase = getBrowserSupabaseClient();
-      const { error: resendError } = await supabase.auth.resend({
-        type: 'signup',
-        email: registeredEmail,
-      });
-      if (resendError) {
-        setResendError(resendError.message);
-        return;
-      }
-      setResendSent(true);
-    } catch {
-      setResendError('No se ha podido reenviar. Inténtalo más tarde.');
-    } finally {
-      setResendLoading(false);
     }
   };
 
@@ -139,48 +114,6 @@ export function AuthRegisterForm() {
         >
           Ir a iniciar sesión
         </Link>
-      </div>
-    );
-  }
-
-  if (registeredEmail) {
-    return (
-      <div className="space-y-5 text-sm">
-        <div className="flex justify-center">
-          <div className="flex size-16 items-center justify-center rounded-full bg-green-100 text-green-600">
-            <svg className="size-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-          </div>
-        </div>
-        <h2 className="text-center text-xl font-bold text-stone-900">
-          ¡Revisa tu correo!
-        </h2>
-        <p className="text-center text-stone-600">
-          Hemos enviado un email de verificación a <strong>{registeredEmail}</strong>. Haz clic en el enlace del correo para activar tu cuenta.
-        </p>
-        <p className="text-center text-xs text-stone-500">
-          Si no lo encuentras, revisa la carpeta de spam.
-        </p>
-        <div className="space-y-2">
-          <button
-            type="button"
-            onClick={handleResend}
-            disabled={resendLoading || resendSent}
-            className="w-full rounded-full border border-stone-300 bg-white px-4 py-2.5 text-sm font-semibold text-stone-700 transition hover:bg-stone-50 disabled:opacity-60"
-          >
-            {resendLoading ? 'Enviando...' : resendSent ? 'Email reenviado' : 'Reenviar email de verificación'}
-          </button>
-          {resendError && <p className="text-center text-xs text-red-600">{resendError}</p>}
-        </div>
-        <p className="text-center">
-          <Link
-            href="/login"
-            className="text-sm font-semibold text-[#1d4ed8] hover:text-[#1e40af]"
-          >
-            Volver a iniciar sesión
-          </Link>
-        </p>
       </div>
     );
   }
