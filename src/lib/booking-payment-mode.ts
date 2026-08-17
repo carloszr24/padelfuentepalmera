@@ -3,7 +3,7 @@
  * Las reservas web se confirman sin señal; el importe íntegro se abona en el club en efectivo.
  * Poner a false cuando el TPV vuelva a funcionar.
  */
-export const BOOKING_TEMP_PAY_AT_CLUB_ONLY = true;
+export const BOOKING_TEMP_PAY_AT_CLUB_ONLY = false;
 
 export const PAY_AT_CLUB_DISCLAIMER =
   'De forma temporal, el club no dispone de TPV online. La pista se abona íntegramente en el club y en efectivo al llegar. No se cobra señal por la web. Cuando el TPV vuelva a estar operativo, se restablecerá el pago de señal online.';
