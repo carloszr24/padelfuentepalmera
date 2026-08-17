@@ -1,13 +1,12 @@
 /**
- * Parámetros del formulario de pago (checkout) – según manual v8.31.
+ * Parámetros del formulario de pago (checkout) – según manual oficial Cecabank/Unicaja.
  * Cadena: Clave + MerchantID + AcquirerBIN + TerminalID + Num_operacion +
- * Importe + TipoMoneda + Exponente + Cifrado + URL_OK + URL_NOK.
- * v8.27: no enviar Pago_soportado ni Pago_elegido.
- * v8.27+: Cifrado solo acepta HMAC o HMAC-1; SHA2 no permitido en nuevos comercios.
+ * Importe + TipoMoneda + Exponente + "SHA2" + URL_OK + URL_NOK.
+ * Firma = SHA-256(cadena) en hexadecimal minúsculas (sección 5, "Cálculo de la firma").
  */
 
 import { getCecaConfig } from './config';
-import { generateSignatureHmac } from './signature';
+import { generateSignature } from './signature';
 
 export type BuildPaymentParamsInput = {
   amount: number;
@@ -39,9 +38,7 @@ export function buildPaymentParams(input: BuildPaymentParamsInput): {
   const importeCents = Math.round(amount * 100);
   const importeVal = importeCents.toString();
 
-  // Manual v8.31 sección 3.2.2: Cifrado solo puede ser HMAC o HMAC-1.
-  // SHA2 era método legacy y no está permitido en nuevos comercios.
-  const cifrado = 'HMAC';
+  const cifrado = 'SHA2';
 
   const cadenaCompleta =
     config.secretKey +
@@ -56,12 +53,7 @@ export function buildPaymentParams(input: BuildPaymentParamsInput): {
     urlOk +
     urlNok;
 
-  let firma: string;
-  try {
-    firma = generateSignatureHmac(config.secretKey, numOp, cadenaCompleta);
-  } catch {
-    return null;
-  }
+  const firma = generateSignature(cadenaCompleta);
 
   const rawFields: Record<string, string> = {
     MerchantID: config.merchantId,

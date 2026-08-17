@@ -31,7 +31,7 @@ export async function GET() {
   const config = getCecaConfig();
   return NextResponse.json({
     configured,
-    cifrado: 'HMAC',
+    cifrado: 'SHA2',
     env: process.env.CECA_ENV ?? 'not set',
     env_vars: {
       hasMerchantId: !!config.merchantId,
