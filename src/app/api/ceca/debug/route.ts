@@ -1,11 +1,13 @@
 /**
  * GET /api/ceca/debug?secret=XXX&amount=10
  * Envía una petición de prueba a Ceca desde el servidor y devuelve la respuesta.
- * Solo funciona si CECA_DEBUG_SECRET está definido y coincide con ?secret=.
+ * Solo para admins autenticados, y además requiere que CECA_DEBUG_SECRET coincida con ?secret=.
  * Útil para ver qué devuelve Ceca (código de error, HTML, etc.) sin pasar por el navegador.
  */
 
+import { timingSafeEqual } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
+import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { buildPaymentParams, isCecaConfigured } from '@/lib/cecabank';
 
 const FALLBACK_BASE = (
@@ -14,12 +16,38 @@ const FALLBACK_BASE = (
   'https://www.padelfuentepalmera.com'
 ).replace(/\/$/, '');
 
+function secretsMatch(a: string, b: string): boolean {
+  const bufA = Buffer.from(a, 'utf8');
+  const bufB = Buffer.from(b, 'utf8');
+  if (bufA.length !== bufB.length) return false;
+  return timingSafeEqual(bufA, bufB);
+}
+
 export async function GET(request: NextRequest) {
+  const supabase = await createServerSupabaseClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
+  }
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single();
+
+  if (profile?.role !== 'admin') {
+    return NextResponse.json({ error: 'Solo administradores' }, { status: 403 });
+  }
+
   const secret = request.nextUrl.searchParams.get('secret');
   const amountParam = request.nextUrl.searchParams.get('amount');
   const allowedSecret = process.env.CECA_DEBUG_SECRET;
 
-  if (!allowedSecret || secret !== allowedSecret) {
+  if (!allowedSecret || !secret || !secretsMatch(secret, allowedSecret)) {
     return NextResponse.json(
       { error: 'Falta CECA_DEBUG_SECRET o no coincide con ?secret=' },
       { status: 403 }
