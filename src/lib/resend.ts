@@ -19,6 +19,7 @@ export async function sendClubNotification({
   await getResend().emails.send({
     to: 'fuentepalmerapadel@gmail.com',
     from: 'info@padelfuentepalmera.com',
+    replyTo: 'fuentepalmerapadel@gmail.com',
     subject,
     html,
   });
