@@ -1,6 +1,13 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY!);
+let resend: Resend | null = null;
+
+function getResend(): Resend {
+  if (!resend) {
+    resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resend;
+}
 
 export async function sendClubNotification({
   subject,
@@ -9,7 +16,7 @@ export async function sendClubNotification({
   subject: string;
   html: string;
 }) {
-  await resend.emails.send({
+  await getResend().emails.send({
     to: 'fuentepalmerapadel@gmail.com',
     from: 'info@padelfuentepalmera.com',
     subject,
