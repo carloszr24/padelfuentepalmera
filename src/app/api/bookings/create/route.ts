@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient, createSupabaseServiceClient } from '@/lib/supabase/server';
-import { sendClubNotification } from '@/lib/sendgrid';
+import { sendClubNotification } from '@/lib/resend';
 import { getOpeningForDate } from '@/lib/club-schedule';
 import { isSameDayMadridTooSoon, minutesFromClock, toMadridDateString } from '@/lib/booking-lead-time';
 import { BOOKING_TEMP_PAY_AT_CLUB_ONLY } from '@/lib/booking-payment-mode';
@@ -186,7 +186,7 @@ export async function POST(request: Request) {
     `,
         });
       } catch (e) {
-        console.error('SendGrid booking notification error (pay at club):', e);
+        console.error('Resend booking notification error (pay at club):', e);
       }
     })();
 
@@ -272,7 +272,7 @@ export async function POST(request: Request) {
     `,
         });
       } catch (e) {
-        console.error('SendGrid booking notification error (bono):', e);
+        console.error('Resend booking notification error (bono):', e);
       }
     })();
 
@@ -343,7 +343,7 @@ export async function POST(request: Request) {
     `,
       });
     } catch (e) {
-      console.error('SendGrid booking notification error (monedero):', e);
+      console.error('Resend booking notification error (monedero):', e);
     }
   })();
 

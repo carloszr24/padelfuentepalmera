@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
-import { sendClubNotification } from '@/lib/sendgrid';
+import { sendClubNotification } from '@/lib/resend';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { isValidUUID } from '@/lib/utils';
 
@@ -93,7 +93,7 @@ export async function POST(request: Request) {
     `,
     });
   } catch (emailError) {
-    console.error('SendGrid cancel notification error:', emailError);
+    console.error('Resend cancel notification error:', emailError);
   }
 
   return NextResponse.json({ ok: true });

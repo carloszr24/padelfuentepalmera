@@ -1,6 +1,6 @@
-import sgMail from '@sendgrid/mail';
+import { Resend } from 'resend';
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
+const resend = new Resend(process.env.RESEND_API_KEY!);
 
 export async function sendClubNotification({
   subject,
@@ -9,7 +9,7 @@ export async function sendClubNotification({
   subject: string;
   html: string;
 }) {
-  await sgMail.send({
+  await resend.emails.send({
     to: 'fuentepalmerapadel@gmail.com',
     from: 'info@padelfuentepalmera.com',
     subject,
