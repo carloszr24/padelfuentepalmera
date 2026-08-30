@@ -147,7 +147,12 @@ export async function PUT(request: Request) {
     return NextResponse.json({ message: 'id obligatorio y válido' }, { status: 400 });
   }
 
-  const updates: { start_date?: string; expiry_date?: string; is_paid?: boolean } = {};
+  const updates: {
+    start_date?: string;
+    expiry_date?: string;
+    is_paid?: boolean;
+    expiry_alert_sent_at?: null;
+  } = {};
   if (typeof body.is_paid === 'boolean') updates.is_paid = body.is_paid;
   if (typeof body.start_date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(body.start_date.trim().slice(0, 10))) {
     const startStr = body.start_date.trim().slice(0, 10);
@@ -156,6 +161,8 @@ export async function PUT(request: Request) {
     expiry.setFullYear(expiry.getFullYear() + 1);
     updates.start_date = startStr;
     updates.expiry_date = expiry.toISOString().slice(0, 10);
+    // Nueva fecha de caducidad: permitir que el cron vuelva a avisar en el nuevo ciclo.
+    updates.expiry_alert_sent_at = null;
   }
 
   if (Object.keys(updates).length === 0) {
