@@ -170,6 +170,8 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
     if (!courtId || !date || !selectedSlot) return;
     setError(null);
     setLoading(true);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15_000);
     try {
       const res = await fetch('/api/bookings/create', {
         method: 'POST',
@@ -181,6 +183,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
           endTime,
           ...(BOOKING_TEMP_PAY_AT_CLUB_ONLY ? {} : { metodo_pago: isMember ? metodoPago : 'monedero' }),
         }),
+        signal: controller.signal,
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -194,9 +197,14 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
       setOpen(false);
       onSuccess?.();
       router.refresh();
-    } catch {
-      setError('Error de conexión. Inténtalo de nuevo.');
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        setError('Esto está tardando más de lo normal. Comprueba tu conexión e inténtalo de nuevo.');
+      } else {
+        setError('Error de conexión. Inténtalo de nuevo.');
+      }
     } finally {
+      clearTimeout(timeoutId);
       setLoading(false);
     }
   };
