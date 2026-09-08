@@ -3,6 +3,7 @@ import { createSupabaseServiceClient } from '@/lib/supabase/server';
 import { AdminPageHeader } from '@/components/ui/admin-page-header';
 import { AdminMarkRemainingPaidButton } from '@/components/ui/admin-mark-remaining-paid-button';
 import { AdminWalletRechargeButton } from '@/components/ui/admin-wallet-recharge-button';
+import { PaymentStatusBadge } from '@/components/ui/payment-status-badge';
 
 type PageProps = { params: Promise<{ id: string }> };
 
@@ -45,7 +46,9 @@ export default async function AdminUsuarioPage({ params }: PageProps) {
       .eq('type', 'booking_deposit'),
     supabase
       .from('bookings')
-      .select('id, booking_date, start_time, end_time, status, remaining_paid_at, courts(name)')
+      .select(
+        'id, booking_date, start_time, end_time, status, remaining_paid_at, deposit_paid, pagado_con_bono, payment_method, courts(name)'
+      )
       .eq('user_id', id)
       .order('booking_date', { ascending: false })
       .order('start_time', { ascending: false }),
@@ -136,8 +139,15 @@ export default async function AdminUsuarioPage({ params }: PageProps) {
                           : 'bg-stone-100 text-stone-600'
                       }`}
                     >
-                      {b.status === 'confirmed' ? 'Confirmada' : b.status}
+                      {b.status === 'confirmed'
+                        ? 'Confirmada'
+                        : b.status === 'completed'
+                          ? 'Completada'
+                          : b.status === 'no_show'
+                            ? 'No-show'
+                            : 'Cancelada'}
                     </span>
+                    <PaymentStatusBadge b={b} />
                     {b.status === 'confirmed' && (
                       <AdminMarkRemainingPaidButton
                         bookingId={b.id}

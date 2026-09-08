@@ -8,6 +8,7 @@ import { getExpectedDepositAmount } from '@/lib/booking-deposit';
 import { AdminCancelBookingButton } from '@/components/ui/admin-cancel-booking-button';
 import { AdminNoshowButton } from '@/components/ui/admin-noshow-button';
 import { AdminReleaseRecurringBlockButton } from '@/components/ui/admin-release-recurring-block-button';
+import { PaymentStatusBadge } from '@/components/ui/payment-status-badge';
 
 export type BookingRow = {
   id: string;
@@ -80,56 +81,6 @@ function getDepositAmount(b: BookingRow): number {
     return b.deposit_amount;
   }
   return getExpectedDepositAmount(!!b.is_member);
-}
-
-function PaymentStatusBadge({ b }: { b: BookingRow }) {
-  if (b.status === 'blocked') {
-    return (
-      <span
-        className={`inline-flex w-fit rounded-full px-3 py-1.5 text-xs font-bold ${
-          b.deposit_paid ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
-        }`}
-      >
-        {b.deposit_paid ? 'Depósito pagado' : 'Depósito pendiente'}
-      </span>
-    );
-  }
-
-  if (b.pagado_con_bono) {
-    return (
-      <span className="inline-flex w-fit rounded-full bg-violet-100 px-3 py-1.5 text-xs font-bold text-violet-800">
-        Bono socio
-      </span>
-    );
-  }
-
-  if (b.deposit_paid) {
-    const label =
-      b.payment_method === 'wallet'
-        ? 'Depósito pagado · Monedero'
-        : b.payment_method === 'pay_at_club'
-          ? 'Depósito pagado · Club'
-          : 'Depósito pagado · Efectivo';
-    return (
-      <span className="inline-flex w-fit rounded-full bg-emerald-100 px-3 py-1.5 text-xs font-bold text-emerald-800">
-        {label}
-      </span>
-    );
-  }
-
-  if (b.payment_method === 'pay_at_club') {
-    return (
-      <span className="inline-flex w-fit rounded-full bg-sky-100 px-3 py-1.5 text-xs font-bold text-sky-800">
-        Pago en club · Señal pendiente
-      </span>
-    );
-  }
-
-  return (
-    <span className="inline-flex w-fit rounded-full bg-amber-100 px-3 py-1.5 text-xs font-bold text-amber-800">
-      Depósito pendiente
-    </span>
-  );
 }
 
 function getProfileName(b: BookingRow): string {
