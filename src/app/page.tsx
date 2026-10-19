@@ -154,7 +154,7 @@ export default async function Home() {
               <br />
               <a href="tel:+34634500753" className="hover:text-stone-900 hover:underline">+34 634 50 07 53</a>
               {' · '}
-              <a href="mailto:info@padelfuentepalmera.com" className="hover:text-stone-900 hover:underline">info@padelfuentepalmera.com</a>
+              <a href="mailto:fuentepalmerapadel@gmail.com" className="hover:text-stone-900 hover:underline">fuentepalmerapadel@gmail.com</a>
             </p>
           </div>
           <div className="flex gap-8">
