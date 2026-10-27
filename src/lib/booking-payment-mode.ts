@@ -11,7 +11,7 @@ export const PAY_AT_CLUB_DISCLAIMER =
 export const TPV_UNAVAILABLE_TITLE = 'TPV temporalmente no disponible';
 
 export const TPV_UNAVAILABLE_MESSAGE =
-  'El pago online con tarjeta no está operativo de forma temporal. Para recargar el monedero, hacerte socio o abonar importes pendientes, acércate al club. Cuando el TPV vuelva, podrás hacerlo desde aquí.';
+  'El pago online con tarjeta no está operativo de forma temporal. Para recargar el monedero o abonar importes pendientes, acércate al club. Cuando el TPV vuelva, podrás hacerlo desde aquí.';
 
 export const TPV_UNAVAILABLE_DEBT_MESSAGE =
   'Tienes una deuda pendiente con el club. Acércate al club para regularizarla; la recarga online no está disponible de forma temporal.';

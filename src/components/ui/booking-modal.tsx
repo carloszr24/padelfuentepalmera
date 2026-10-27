@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { AlertTriangle } from 'lucide-react';
 import { usePanelUserOptional } from '@/contexts/panel-user-context';
-import { SocioUpsell } from '@/components/ui/socio-upsell';
+import { formatDepositEur, getExpectedDepositAmount } from '@/lib/booking-deposit';
 import { toMadridDateString } from '@/lib/booking-lead-time';
 import { BOOKING_TEMP_PAY_AT_CLUB_ONLY } from '@/lib/booking-payment-mode';
 import { PayAtClubDisclaimer } from '@/components/ui/pay-at-club-disclaimer';
@@ -230,7 +230,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
         </p>
       ) : isMember ? (
         <p className="mt-3 text-base font-medium text-stone-600">
-          Señal: <span className="font-bold text-stone-900">4,50 €</span>
+          Señal: <span className="font-bold text-stone-900">{formatDepositEur(getExpectedDepositAmount(true, date))}</span>
           <span className="ml-2 text-sm text-stone-500">(resto se abona en el club)</span>
         </p>
       ) : (
@@ -464,13 +464,6 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
                       <span className="ml-2 text-sm text-stone-500">(resto se abona en el club)</span>
                     </p>
                   </div>
-                  <p className="rounded-xl border border-[#1d4ed8]/30 bg-[#1d4ed8]/5 px-4 py-3 text-base font-semibold text-stone-800">
-                    Hazte socio y ahorra 0,50 € en esta reserva.
-                  </p>
-                  <SocioUpsell
-                    ctaLabel="Hazte socio"
-                    onCtaClick={() => { setOpen(false); window.location.href = '/panel/membresia'; }}
-                  />
                   <div
                     className="mb-4 flex gap-3 rounded-r-lg border-l-[3px] py-3 pl-4 pr-4 text-sm text-stone-700"
                     style={{ backgroundColor: '#fefce8', borderLeftColor: '#f59e0b' }}
@@ -521,7 +514,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
                       </p>
                       <p className="mt-3 text-base font-medium text-stone-600">
                         Señal:{' '}
-                        <span className="font-bold text-stone-900">4,50 €</span>
+                        <span className="font-bold text-stone-900">{formatDepositEur(getExpectedDepositAmount(true, date))}</span>
                         <span className="ml-2 text-sm text-stone-500">(resto se abona en el club)</span>
                       </p>
                     </div>
@@ -572,7 +565,7 @@ export function BookingModal({ courts, triggerLabel = 'Nueva reserva', triggerCl
                       <div>
                         <p className="font-semibold text-stone-800">Política de cancelación</p>
                         <p className="mt-1 leading-snug">
-                          Si cancelas con menos de 24 horas de antelación, perderás la señal (4,50 €) y deberás abonar el resto de la pista en el club antes de poder realizar nuevas reservas.
+                          Si cancelas con menos de 24 horas de antelación, perderás la señal ({formatDepositEur(getExpectedDepositAmount(true, date))}) y deberás abonar el resto de la pista en el club antes de poder realizar nuevas reservas.
                         </p>
                       </div>
                     </div>

@@ -178,7 +178,7 @@ export function PanelReservasClient({ initialCourts = [], initialBookings }: Pan
           <p className="mt-0.5 text-[13px] text-[var(--panel-text-secondary)]">
             {BOOKING_TEMP_PAY_AT_CLUB_ONLY
               ? 'Reserva sin señal online: el pago íntegro se realiza en el club en efectivo.'
-              : 'El depósito (4,50 €) se descuenta del monedero.'}
+              : 'La señal se descuenta del monedero.'}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">

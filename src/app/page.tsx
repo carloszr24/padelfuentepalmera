@@ -73,7 +73,7 @@ export default async function Home() {
               <FeatureCard
                 icon="💳"
                 title="Monedero digital"
-                description="Recarga online, paga el depósito (4,50 €) y el resto en el club."
+                description="Recarga online, paga la señal (5 €) y el resto en el club."
               />
               <FeatureCard
                 icon="🏐"

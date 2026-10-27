@@ -4,6 +4,7 @@ import { sendClubNotification } from '@/lib/resend';
 import { getOpeningForDate } from '@/lib/club-schedule';
 import { isSameDayMadridTooSoon, minutesFromClock, toMadridDateString } from '@/lib/booking-lead-time';
 import { BOOKING_TEMP_PAY_AT_CLUB_ONLY } from '@/lib/booking-payment-mode';
+import { getExpectedDepositAmount } from '@/lib/booking-deposit';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { isValidUUID } from '@/lib/utils';
 
@@ -95,7 +96,7 @@ export async function POST(request: Request) {
     membership.expiry_date >= today;
 
   const metodoPago: 'bono' | 'monedero' = metodo_pago === 'bono' ? 'bono' : 'monedero';
-  const deposit = isActiveMember ? 4.5 : 5.0;
+  const deposit = getExpectedDepositAmount(isActiveMember, bookingDate);
 
   const startNorm = String(startTime).slice(0, 5);
   const endNorm = String(endTime).slice(0, 5);

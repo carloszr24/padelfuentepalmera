@@ -80,7 +80,7 @@ function getDepositAmount(b: BookingRow): number {
   if (typeof b.deposit_amount === 'number' && b.deposit_amount > 0) {
     return b.deposit_amount;
   }
-  return getExpectedDepositAmount(!!b.is_member);
+  return getExpectedDepositAmount(!!b.is_member, b.booking_date);
 }
 
 function getProfileName(b: BookingRow): string {

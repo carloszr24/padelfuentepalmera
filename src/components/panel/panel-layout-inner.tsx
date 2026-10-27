@@ -3,6 +3,7 @@
 import type { ReactNode } from 'react';
 import { PanelMobileHeader } from '@/components/panel/panel-mobile-header';
 import { PanelTopnav } from '@/components/panel/panel-topnav';
+import { MemberPriceNotice } from '@/components/panel/member-price-notice';
 
 export function PanelLayoutInner({ children }: { children: ReactNode }) {
   return (
@@ -17,6 +18,7 @@ export function PanelLayoutInner({ children }: { children: ReactNode }) {
         className="mx-auto w-full max-w-[1280px] px-4 pb-[120px] pt-4 md:mt-16 md:px-12 md:pb-10 md:pt-9"
       >
         <PanelMobileHeader />
+        <MemberPriceNotice />
         <div className="min-w-0 max-w-full overflow-x-hidden">{children}</div>
       </main>
     </div>
