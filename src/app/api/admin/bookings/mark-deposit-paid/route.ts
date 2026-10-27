@@ -97,12 +97,11 @@ export async function POST(request: Request) {
     .maybeSingle();
 
   const isMember = !!memberRow;
+  // La señal aún no está pagada (comprobado arriba): deposit_amount es el valor por defecto de la BD, no se usa.
   const depositAmount =
     typeof body.depositAmount === 'number' && body.depositAmount > 0
       ? body.depositAmount
-      : Number(booking.deposit_amount) > 0
-        ? Number(booking.deposit_amount)
-        : getExpectedDepositAmount(isMember, booking.booking_date);
+      : getExpectedDepositAmount(isMember, booking.booking_date);
 
   if (method === 'wallet') {
     const { error: walletError } = await service.rpc('admin_charge_booking_deposit_wallet', {

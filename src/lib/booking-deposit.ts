@@ -5,7 +5,7 @@ export const NON_MEMBER_DEPOSIT_EUR = 5;
 export const UNIFIED_DEPOSIT_FROM_DATE = '2026-11-01';
 
 export function getExpectedDepositAmount(isMember: boolean, bookingDate?: string | null): number {
-  if (bookingDate && bookingDate.slice(0, 10) >= UNIFIED_DEPOSIT_FROM_DATE) {
+  if (typeof bookingDate === 'string' && bookingDate.slice(0, 10) >= UNIFIED_DEPOSIT_FROM_DATE) {
     return NON_MEMBER_DEPOSIT_EUR;
   }
   return isMember ? MEMBER_DEPOSIT_EUR : NON_MEMBER_DEPOSIT_EUR;

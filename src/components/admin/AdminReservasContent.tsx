@@ -77,7 +77,8 @@ function getProfileWalletBalance(b: BookingRow): number {
 }
 
 function getDepositAmount(b: BookingRow): number {
-  if (typeof b.deposit_amount === 'number' && b.deposit_amount > 0) {
+  // Con la señal sin cobrar, deposit_amount es solo el valor por defecto de la BD (4,50): no sirve.
+  if (b.deposit_paid && typeof b.deposit_amount === 'number' && b.deposit_amount > 0) {
     return b.deposit_amount;
   }
   return getExpectedDepositAmount(!!b.is_member, b.booking_date);
