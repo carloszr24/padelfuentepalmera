@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { AdminMarkRemainingPaidButton } from '@/components/ui/admin-mark-remaining-paid-button';
 import { AdminDepositActions } from '@/components/ui/admin-deposit-actions';
-import { getExpectedDepositAmount } from '@/lib/booking-deposit';
+import { getExpectedDepositAmount, getRestFromDeposit, isMorningWeekdayRate } from '@/lib/booking-deposit';
 import { AdminCancelBookingButton } from '@/components/ui/admin-cancel-booking-button';
 import { AdminNoshowButton } from '@/components/ui/admin-noshow-button';
 import { AdminReleaseRecurringBlockButton } from '@/components/ui/admin-release-recurring-block-button';
@@ -81,7 +81,7 @@ function getDepositAmount(b: BookingRow): number {
   if (b.deposit_paid && typeof b.deposit_amount === 'number' && b.deposit_amount > 0) {
     return b.deposit_amount;
   }
-  return getExpectedDepositAmount(!!b.is_member, b.booking_date);
+  return getExpectedDepositAmount(!!b.is_member, b.booking_date, b.start_time);
 }
 
 function getProfileName(b: BookingRow): string {
@@ -321,6 +321,11 @@ export function AdminReservasContent({ bookings, desde, hasta }: AdminReservasCo
                           </td>
                           <td className="px-4 py-3 align-middle font-medium text-stone-800">
                             {formatTimeRange(b.start_time, b.end_time)}
+                            {b.status !== 'blocked' && isMorningWeekdayRate(b.booking_date, b.start_time) && (
+                              <span className="mt-1 block w-fit rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+                                Tarifa mañana · 12 €
+                              </span>
+                            )}
                           </td>
                           <td className="px-4 py-3 align-middle text-center">
                             <span
@@ -382,7 +387,7 @@ export function AdminReservasContent({ bookings, desde, hasta }: AdminReservasCo
                             {b.status === 'confirmed' && (
                               <div className="flex flex-col gap-2 items-start">
                                 <AdminCancelBookingButton bookingId={b.id} />
-                                {showNoshow && <AdminNoshowButton bookingId={b.id} />}
+                                {showNoshow && <AdminNoshowButton bookingId={b.id} restAmount={getRestFromDeposit(getDepositAmount(b))} />}
                               </div>
                             )}
                           </td>

@@ -4,7 +4,7 @@ import { sendClubNotification } from '@/lib/resend';
 import { getOpeningForDate } from '@/lib/club-schedule';
 import { isSameDayMadridTooSoon, minutesFromClock, toMadridDateString } from '@/lib/booking-lead-time';
 import { BOOKING_TEMP_PAY_AT_CLUB_ONLY } from '@/lib/booking-payment-mode';
-import { getExpectedDepositAmount } from '@/lib/booking-deposit';
+import { formatDepositEur, getExpectedDepositAmount, isMorningWeekdayRate } from '@/lib/booking-deposit';
 import { checkRateLimit } from '@/lib/rate-limit';
 import { isValidUUID } from '@/lib/utils';
 
@@ -96,7 +96,10 @@ export async function POST(request: Request) {
     membership.expiry_date >= today;
 
   const metodoPago: 'bono' | 'monedero' = metodo_pago === 'bono' ? 'bono' : 'monedero';
-  const deposit = getExpectedDepositAmount(isActiveMember, bookingDate);
+  const deposit = getExpectedDepositAmount(isActiveMember, bookingDate, startTime);
+  const tarifaLinea = isMorningWeekdayRate(bookingDate, startTime)
+    ? `Tarifa de mañana (pista 12 €, señal ${formatDepositEur(deposit)})`
+    : `Tarifa normal (señal ${formatDepositEur(deposit)})`;
 
   const startNorm = String(startTime).slice(0, 5);
   const endNorm = String(endTime).slice(0, 5);
@@ -241,6 +244,7 @@ export async function POST(request: Request) {
           status: 'confirmed',
           deposit_paid: true,
           pagado_con_bono: true,
+          deposit_amount: deposit,
           created_by: user.id,
         })
         .select('id')
@@ -250,6 +254,19 @@ export async function POST(request: Request) {
     if (insertResult.error) {
       const msg = insertResult.error.message ?? 'Error al crear la reserva con bono.';
       return NextResponse.json({ message: msg }, { status: 400 });
+    }
+
+    // La función SQL del bono no guarda la señal: se registra aquí la que corresponde (5 € o 3 € en mañanas).
+    const bonoBookingId =
+      typeof insertResult.data === 'string'
+        ? insertResult.data
+        : (insertResult.data as { id?: string } | null)?.id;
+    if (bonoBookingId) {
+      const { error: depositError } = await serviceSupabase
+        .from('bookings')
+        .update({ deposit_amount: deposit })
+        .eq('id', bonoBookingId);
+      if (depositError) console.error('Bono booking deposit_amount update error:', depositError);
     }
 
     // Email en background: no bloquea la respuesta al usuario
@@ -270,6 +287,7 @@ export async function POST(request: Request) {
       <p><strong>Fecha:</strong> ${dateFormatted}</p>
       <p><strong>Hora:</strong> ${String(startTime).slice(0, 5)} - ${String(endTime).slice(0, 5)}</p>
       <p><strong>Pago:</strong> Bono de socio</p>
+      <p><strong>Tarifa:</strong> ${tarifaLinea}</p>
     `,
         });
       } catch (e) {
@@ -341,6 +359,7 @@ export async function POST(request: Request) {
       <p><strong>Fecha:</strong> ${dateFormatted}</p>
       <p><strong>Hora:</strong> ${String(startTime).slice(0, 5)} - ${String(endTime).slice(0, 5)}</p>
       <p><strong>Pago:</strong> ${isActiveMember ? 'Monedero socio' : 'Monedero'}</p>
+      <p><strong>Tarifa:</strong> ${tarifaLinea}</p>
     `,
       });
     } catch (e) {

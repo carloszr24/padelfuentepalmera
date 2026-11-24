@@ -56,7 +56,7 @@ export async function POST(request: Request) {
 
   const { data: booking, error: fetchError } = await service
     .from('bookings')
-    .select('id, user_id, booking_date, status, deposit_paid, pagado_con_bono, deposit_amount')
+    .select('id, user_id, booking_date, start_time, status, deposit_paid, pagado_con_bono, deposit_amount')
     .eq('id', body.bookingId)
     .single();
 
@@ -101,7 +101,7 @@ export async function POST(request: Request) {
   const depositAmount =
     typeof body.depositAmount === 'number' && body.depositAmount > 0
       ? body.depositAmount
-      : getExpectedDepositAmount(isMember, booking.booking_date);
+      : getExpectedDepositAmount(isMember, booking.booking_date, booking.start_time);
 
   if (method === 'wallet') {
     const { error: walletError } = await service.rpc('admin_charge_booking_deposit_wallet', {
